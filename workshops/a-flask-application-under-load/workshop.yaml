@@ -1,0 +1,68 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: a-flask-application-under-load
+title: A Flask application under load
+version: 0.1.0
+description: Profile a web application with Tachyon, a small Flask site started under the profiler for a fixed time and sent requests from a second terminal. What is different about profiling a server, what the flame graph of one looks like, thread by thread, and what wall-clock and CPU time each say about it.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/a-flask-application-under-load
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, flask, web]
+duration: 20m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs Flask, and makes `python` in the terminals
+# and behind the checks the Python 3.15 that has the profiler, the
+# same interpreter as the server it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-a-flask-application-under-load
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8081
+    description: Port the gazette's web site listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: site
+# The server runs under the profiler in the terminal on the left, and
+# the requests are sent from the one on the right.
+layouts:
+  site:
+    main:
+      areas:
+        - { tabs: ["file:gazette/web.py", "file:load.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:server"] }
+            - { size: 0.4, tabs: ["terminal:client"] }
+gating: soft
+finish: |
+  You have profiled a web server. It was started under the profiler
+  with a duration, because a server never finishes, and sent requests
+  from a second terminal, because a server does nothing until asked.
+  With `-a` the flame graph had two towers: the main thread, waiting
+  for connections, and the threads that served the requests, with
+  Werkzeug and Flask above the application's own views. Wall-clock
+  time showed what the server was doing, waiting included, and CPU
+  time showed where the processor went. In both, one view was far
+  wider than the rest, though it served a tenth of the requests.
+
+  Next in these workshops is **The slow endpoint**
+  (`the-slow-endpoint`), which finds the line in that view and fixes
+  it.
+
+  The [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes `run`, `-m`, `-d` and `-a`.
+pages:
+  - pages/01-welcome.md
+  - pages/02-a-server-under-the-profiler.md
+  - pages/03-the-shape-of-a-server.md
+  - pages/04-where-the-processor-went.md
+  - pages/05-finish.md

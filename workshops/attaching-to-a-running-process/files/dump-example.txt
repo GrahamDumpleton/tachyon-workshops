@@ -1,0 +1,64 @@
+Stack dump for PID 105730, thread 106156 (has GIL, on CPU; most recent call last):
+  File "/usr/local/lib/python3.15/threading.py", line 1180, in Thread._bootstrap
+    self._bootstrap_inner()
+  File "/usr/local/lib/python3.15/threading.py", line 1218, in Thread._bootstrap_inner
+    self._context.run(self.run)
+  File "/usr/local/lib/python3.15/threading.py", line 1160, in Thread.run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/local/lib/python3.15/socketserver.py", line 694, in ThreadingMixIn.process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/local/lib/python3.15/socketserver.py", line 359, in BaseServer.finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "__init__", in __init__
+  File "/usr/local/lib/python3.15/socketserver.py", line 763, in BaseRequestHandler.__init__
+    self.handle()
+  File "env/lib/python3.15/site-packages/werkzeug/serving.py", line 402, in WSGIRequestHandler.handle
+    super().handle()
+  File "/usr/local/lib/python3.15/http/server.py", line 474, in BaseHTTPRequestHandler.handle
+    self.handle_one_request()
+  File "/usr/local/lib/python3.15/http/server.py", line 462, in BaseHTTPRequestHandler.handle_one_request
+    method()
+  File "env/lib/python3.15/site-packages/werkzeug/serving.py", line 374, in WSGIRequestHandler.run_wsgi
+    execute(self.server.app)
+  File "env/lib/python3.15/site-packages/werkzeug/serving.py", line 335, in WSGIRequestHandler.run_wsgi.<locals>.execute
+    application_iter = app(environ, start_response)
+  File "env/lib/python3.15/site-packages/flask/app.py", line 1536, in Flask.__call__
+    return self.wsgi_app(environ, start_response)
+  File "env/lib/python3.15/site-packages/flask/app.py", line 1511, in Flask.wsgi_app
+    response = self.full_dispatch_request()
+  File "env/lib/python3.15/site-packages/flask/app.py", line 917, in Flask.full_dispatch_request
+    rv = self.dispatch_request()
+  File "env/lib/python3.15/site-packages/flask/app.py", line 902, in Flask.dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "gazette/web.py", line 101, in search
+    row = db.execute(ARTICLE, (mention["article_id"],)).fetchone()
+
+Stack dump, thread 105730 (main thread, idle; most recent call last):
+  File "<frozen runpy>", line 201, in _run_module_as_main
+  File "<frozen runpy>", line 87, in _run_code
+  File "env/lib/python3.15/site-packages/flask/__main__.py", line 3, in <module>
+    main()
+  File "env/lib/python3.15/site-packages/flask/cli.py", line 1131, in main
+    cli.main()
+  File "env/lib/python3.15/site-packages/click/core.py", line 1552, in Command.main
+    rv = self.invoke(ctx)
+  File "env/lib/python3.15/site-packages/click/core.py", line 2032, in Group.invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "env/lib/python3.15/site-packages/click/core.py", line 1415, in Command.invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "env/lib/python3.15/site-packages/click/core.py", line 910, in Context.invoke
+    return callback(*args, **kwargs)
+  File "env/lib/python3.15/site-packages/click/decorators.py", line 93, in make_pass_decorator.<locals>.decorator.<locals>.new_func
+    return ctx.invoke(f, obj, *args, **kwargs)
+  File "env/lib/python3.15/site-packages/click/core.py", line 910, in Context.invoke
+    return callback(*args, **kwargs)
+  File "env/lib/python3.15/site-packages/flask/cli.py", line 991, in run_command
+    run_simple(
+  File "env/lib/python3.15/site-packages/werkzeug/serving.py", line 1129, in run_simple
+    srv.serve_forever()
+  File "env/lib/python3.15/site-packages/werkzeug/serving.py", line 823, in BaseWSGIServer.serve_forever
+    super().serve_forever(poll_interval=poll_interval)
+  File "/usr/local/lib/python3.15/socketserver.py", line 232, in BaseServer.serve_forever
+    ready = selector.select(poll_interval)
+  File "/usr/local/lib/python3.15/selectors.py", line 398, in _PollLikeSelector.select
+    fd_event_list = self._selector.poll(timeout)

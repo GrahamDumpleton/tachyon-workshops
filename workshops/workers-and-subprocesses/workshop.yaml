@@ -1,0 +1,69 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: workers-and-subprocesses
+title: Workers and subprocesses
+version: 0.1.0
+description: Profile a program that does its work in other processes, with Tachyon's --subprocesses option. A job runner on a pool of four processes, whose own profile is all waiting, and a web site under gunicorn with three workers. What the profiler follows, the file it writes for each process, and how to tell the files apart.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/workers-and-subprocesses
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, multiprocessing, gunicorn]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs Flask and gunicorn, and makes `python` in
+# the terminals and behind the checks the Python 3.15 that has the
+# profiler, the same interpreter as the programs it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-workers-and-subprocesses
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8085
+    description: Port the gazette's web site listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: workers
+# The programs run under the profiler in the terminal on the left, and
+# the requests to the web site are sent from the one on the right.
+layouts:
+  workers:
+    main:
+      areas:
+        - { tabs: ["file:gazette/jobs.py", "file:gazette/web.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:server"] }
+            - { size: 0.4, tabs: ["terminal:client"] }
+gating: soft
+finish: |
+  You have profiled two programs that do their work in other
+  processes. The profiler samples the process it started, and the
+  job runner's own profile was all waiting, for workers it could not
+  see into. With `--subprocesses` it started a profiler for every
+  Python process the program started, and wrote a file for each,
+  named by the number of the process: the four workers with
+  `build_digest` in them, and the helpers that `multiprocessing`
+  starts for itself. Under gunicorn the same option gave a file for
+  the arbiter, asleep, and one for each of three workers, each
+  serving its share of the requests on its main thread.
+
+  Next in these workshops is **Profiling a test suite**
+  (`profiling-a-test-suite`), which points the profiler at pytest.
+
+  The "Subprocess profiling" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes `--subprocesses`.
+pages:
+  - pages/01-welcome.md
+  - pages/02-the-parent-alone.md
+  - pages/03-following-the-children.md
+  - pages/04-a-server-with-workers.md
+  - pages/05-finish.md

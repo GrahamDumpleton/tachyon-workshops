@@ -1,0 +1,59 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: profiling-a-test-suite
+title: Profiling a test suite
+version: 0.1.0
+description: Find out where a slow test suite spends its time, with Tachyon around pytest. A recording of the whole run, the flame graph with the tests and the fixtures in it, the heatmap of conftest.py, and three fixes to three common habits, a fixture rebuilt for every test, a sleep where a join would do, and a file parsed once for each case.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/profiling-a-test-suite
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, pytest, testing]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs pytest, and makes `python` in the terminal
+# and behind the checks the Python 3.15 that has the profiler, the
+# same interpreter as the test run it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-profiling-a-test-suite
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: suite
+layouts:
+  suite:
+    main:
+      areas:
+        - { tabs: ["file:tests/conftest.py", "file:tests/test_store.py", "file:tests/test_refresh.py", "file:tests/test_dates.py"] }
+        - { size: 0.5, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have profiled a test suite and made it several times quicker.
+  The profiler went around pytest as it goes around any module, with
+  `run -m pytest`, and one recording gave the flame graph and the
+  heatmap. The flame graph had pytest's machinery at the top and two
+  branches beneath it, the tests and their fixtures, and the widest
+  boxes were three habits: a database built again for every test
+  that asked for it, a sleep in place of a join, and a file parsed
+  once for each of a hundred cases. Each was a change of a line or
+  two.
+
+  Next in these workshops is **Attaching to a running process**
+  (`attaching-to-a-running-process`), which profiles a program that
+  the profiler did not start.
+
+  The [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes `run -m`.
+pages:
+  - pages/01-welcome.md
+  - pages/02-the-suite-under-the-profiler.md
+  - pages/03-tests-and-fixtures.md
+  - pages/04-the-fixture.md
+  - pages/05-the-other-two.md
+  - pages/06-finish.md

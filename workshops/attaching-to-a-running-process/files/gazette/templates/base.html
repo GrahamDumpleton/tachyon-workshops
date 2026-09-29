@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}The Gazette{% endblock %}</title>
+</head>
+<body>
+<header>
+<h1><a href="/">The Gazette</a></h1>
+<form action="/search"><input name="q" value="{{ word|default('') }}"> <button>Search</button></form>
+</header>
+{% block content %}{% endblock %}
+<footer>The Gazette, a newsroom that exists to be profiled.</footer>
+</body>
+</html>

@@ -1051,19 +1051,24 @@ One ordered collection of seven workshops, each a kind of program:
 a WSGI application, that application's slow endpoint, an ASGI service,
 worker processes, a test suite, a process already running, and a
 profile from a service somewhere else. The first two are a pair, the
-diagnosis and the fix, and are written together. Fifteen to twenty
-minutes each, about two hours in total. Each is self-contained: the
-Flask application is shipped with each of the workshops that use it,
-and each restates in a sentence what a sample and a flame graph are.
+diagnosis and the fix, and were written together. Fifteen to
+twenty-five minutes each, a little over two hours in total. Each is
+self-contained: the Flask application is shipped with each of the
+workshops that use it, and each restates in a sentence what a sample
+and a flame graph are.
 
-Every workshop here runs the program in one terminal and drives it
-from a second, with the profiler wrapped around the program in the
-first (`run -d <seconds>`, so the profile is written when the duration
-ends without anyone stopping the server) and the flame graph or
-heatmap opening in a pane. The load comes from a shipped `load.py`
-that sends a few hundred requests with `urllib` on a handful of
-threads, so the pages do not depend on `curl` for load, though `curl`
-is used for single requests where the response is the point.
+Every workshop that profiles a server runs it in one terminal and
+drives it from a second, with the profiler wrapped around the server
+in the first (`run -d <seconds>`, so the profile is written when the
+duration ends without anyone stopping the server) and the flame graph
+or heatmap opening in the HTML viewer. The load comes from a shipped
+`load.py`, which sends requests with `urllib` from four threads at a
+fixed pace, two hundred a second in all, until a time is up or the
+server stops answering. The pace is fixed so that two recordings made
+before and after a fix are of the same load. The start and the load
+are two actions placed together, with the explanation before them,
+since the duration begins when the first is clicked; the check that
+follows waits for the profile to be written.
 
 ## The applications workshops
 
@@ -1072,41 +1077,45 @@ is used for single requests where the response is the point.
 What does a profile of a web application look like, and what should I
 expect to see in it?
 
-The `gazette` newsroom behind Flask, `gazette/web.py`: an index page,
-an article page, a search endpoint over the word index, and a health
-check, with a sqlite database built from the articles on first start.
-The welcome page says what is different about profiling a server (it
-never finishes, so a duration is needed; it does nothing until asked,
-so load is needed; and the interesting time is per request, not
-total), and starts it under the profiler in the first terminal with
-`python -m profiling.sampling run -a -d 20 --flamegraph -o
-flamegraph.html -m flask --app gazette.web run --port {{ server_port }}`,
-explaining `-m` for a module and `-a` because the development server
-handles each request on a thread, which a quiz asks the learner to
-predict the consequence of.
+The `gazette` newsroom behind Flask, `gazette/web.py`: a front page,
+an article page, a search over the word index, and a health check,
+with a sqlite database, `data/gazette.db`, built from the articles on
+first start. The welcome page says what is different about profiling
+a server (it never finishes, so a duration is needed; it does nothing
+until asked, so load is needed; and it does many small things, so the
+question is which kind of request costs the most). The second page
+explains `run -a -d 20 --flamegraph -o wall.html -m flask --app
+gazette.web run --port {{ server_port }}`, with `-m` for a module and
+`-a` because the development server handles each request on a
+thread, which a quiz asks the learner to predict the consequence of,
+and then starts it and sends the load.
 
-Then `load.py` from the second terminal for fifteen seconds, then a
-wait for the profiler to write, then the flame graph in the pane. The
-page reads a server's flame graph for a reader who has only seen a
-script's: the main thread is the accept loop, mostly waiting; the
-worker threads each show the same shape, Werkzeug's handler, Flask's
-dispatch, the view; the search view is wider than the others. The
-per-thread dropdown lets the learner look at one request thread. Then
-the same with `--mode=cpu`, and the accept loop vanishes, and the page
-says which view to use for "what is the server doing" (wall) and
-"where is the CPU going" (cpu).
+The third page reads a server's flame graph for a reader who has only
+seen a script's. It has two towers, found by the name in the top box,
+since which is the wider depends on how busy the server was: the main
+thread, which is the accept loop ending in `select`, and the request
+threads laid over one another, the standard library's servers, then
+Werkzeug and Flask, then the views. The boxes are labelled with a
+line, and `search` on the line of its query is far wider than the
+rest. The Thread Filter is described as it is on this server, a list
+of thousands, since the development server starts a thread for each
+request. The fourth page profiles again with `--mode cpu`: the main
+thread's tower all but goes, the total falls, and the page says which
+view answers "what is the server doing" (wall) and "where is the
+processor going" (cpu).
 
-Closes by naming what a request costs in the picture and hands to
-**The slow endpoint**, which is the same application with a question.
-Both servers are stopped, or have exited on their duration, before the
-finish.
+Closes by setting the table `load.py` prints, the view from outside,
+beside the flame graph, the view from inside, and hands to **The slow
+endpoint**. Both servers have exited on their duration before the
+finish, which a check confirms.
 
-- Format: two terminals and files, with a results pane. Ships the
-  `gazette` package with `web.py`, `templates/`, `load.py` and the
-  data. Variables: `server_port`, default 8081. Checks: `shell` checks
-  that the server answers `/health` on the port during the run, that
-  `flamegraph.html` exists and contains `search` and `werkzeug`, and
-  that the cpu-mode file exists.
+- Format: two terminals and files, with the flame graphs in the HTML
+  viewer. Ships the `gazette` package with `web.py` and `templates/`,
+  `load.py` and the data. Variables: `server_port`, default 8081.
+  Checks: a `shell` check that the server answers `/health` after it
+  starts, `shell` checks that wait for `wall.html` and `cpu.html` and
+  look for the request threads, Flask and the views in them, and a
+  check that nothing is left listening.
 
 - Requires: `flask` pinned to the release checked (3.1.3 on
   2026-09-29).
@@ -1119,34 +1128,44 @@ One endpoint is slow; how do I find the line and prove the fix?
 
 The same application, and the search endpoint is the slow one because
 `search` looks up each matching article with its own `SELECT`, the
-classic query in a loop. The workshop is the fundamentals collection's
-tools applied in order: the flame graph from a `-d 20` run under load
-to see `search` wide and `sqlite3.Cursor.execute` under it many times;
-the heatmap of `web.py` to find the `for` loop with the `execute` in
-it; the fix as a `file-write`, one query with an `IN` clause; a second
-run under the same load, and a differential flame graph against the
-first run's binary capture with `search` in blue and the `execute`
-path elided. The page is explicit about comparing like with like: same
-`load.py`, same duration, same mode, and a baseline recorded in the
-binary format so the diff has something to diff against.
+classic query in a loop, a thousand queries for a search on a common
+word. The workshop is the fundamentals collection's tools applied in
+order, all from one recording: a baseline under load with `--binary`,
+replayed as a table; the flame graph, to see `search` wide with
+nothing beneath it, since sqlite is C and its time stays on the
+Python line that called it; the heatmap of `web.py`, to find the loop
+with the `execute` in it; the fix as a `file-write`, one query with a
+`JOIN`, an `ORDER BY` and a `LIMIT`; a second recording under the
+same load; and the proof three ways, what the readers saw, the two
+tables, and a differential flame graph.
 
-The page also shows the profile's limits honestly: the time the query
-took inside sqlite's C code is a `<native>` marker at best, and the
-database's own view of the query (its plan) is not the profiler's
-business; the profiler says where in the Python the time went, which
-was enough here.
+The differential flame graph has `search` blue and nearly everything
+else red, the main thread's `select` included, because the fixed
+server's threads were busy for less time in all and the profiler
+scales the baseline before comparing. The page says so, with a quiz,
+and sends the learner to the tables for the amounts. The page on the
+flame graph is explicit about the profile's limits: the time inside
+sqlite is not divided up, `--native` would add nothing since a query
+does not call back into Python, and how the database carried out the
+query is the database's business.
+
+The heatmap's pages are numbered by how many samples each file had,
+so the number of the page for `web.py` differs between machines. The
+workshop finds it by its title and copies it to `heatmap-web.html`.
 
 Closes with the loop the fundamentals collection ended on, record,
-change, compare, now on a service. Next is **An async service that
-stalls**.
+change, compare, now on a service, and names `front_page` as the next
+to look at. Next is **An async service that stalls**.
 
-- Format: two terminals and files, with a results pane. Ships the
-  `gazette` package with the slow `search`, `search_fixed.py` as the
-  `file-write` body, `load.py` and the data. Variables: `server_port`,
-  default 8082. Checks: `shell` checks that `baseline.bin`,
-  `heatmap/index.html` and `diff.html` exist and that the learner's
-  `web.py` contains the `IN` query; a `kernel` check on the two
-  `.pstats` files that `search`'s cumulative share fell.
+- Format: two terminals and files, with the flame graphs and the
+  heatmap in the HTML viewer. Ships the `gazette` package with the
+  slow `search`, `fixed/web.py` as the `file-write` source, `load.py`
+  and the data. Variables: `server_port`, default 8082. Checks:
+  `shell` checks that wait for `baseline.bin` and `fixed.bin`, that
+  the heatmap page is `web.py`'s, that the learner's `web.py` has the
+  `JOIN`, and that `diff.html` is a comparison; `kernel` checks on the
+  two tables that `search` has the most samples of any view before,
+  and less than half its share after.
 
 - Requires: `flask`.
 
@@ -1154,129 +1173,152 @@ stalls**.
 
 ### 3. `an-async-service-that-stalls`: An async service that stalls
 
-My async service is slow under load and the CPU is idle; what is
+My async service is slow under load and the machine is idle; what is
 blocking the loop?
 
 The newsroom as an ASGI service, `gazette/asgi.py`, on Starlette under
-uvicorn, with the search endpoint awaiting a slow upstream (the local
-slow server again, through `httpx`) and one endpoint, the article
-page, that renders with a synchronous call that takes a few
-milliseconds of CPU, the mistake every async service makes once. Under
-load the whole service stalls while that call runs, and the page has
-the learner see it before explaining it: `load.py` against the search
-endpoint alone reports one latency; against both endpoints together
-the search latency jumps, though search did nothing different.
+uvicorn. The search endpoint awaits an index service,
+`index_server.py`, through `httpx`; the service takes a twentieth of a
+second to answer, with a sleep as the honest stand-in. The article
+page lists the five articles most like the one shown, which it finds
+by comparing the article's words with every other article's, some
+hundredth of a second of computing with no `await` in it. The page has
+the learner see the stall before explaining it: `load.py` against the
+search endpoint alone reports one latency; with articles being read
+as well the search latency doubles, though a search did nothing
+different.
 
-Then the profiler with `--async-aware -d 20 --flamegraph` around
-`uvicorn` (`run -m uvicorn gazette.asgi:app --port {{ server_port }}`),
-and the flame graph shows tasks: the search tasks are nearly all
-waiting (`--async-mode=all` to see them parked), and the article
-tasks hold the loop in `render_article`. The page explains the event
-loop's rule (one task runs at a time and runs until it awaits), why a
-blocking call in one task delays every other, and the two fixes (make
-the call await something, or hand it to a thread with
-`asyncio.to_thread`), and applies the second as a `file-write`, then
-profiles again to show the article tasks' frames now under a worker
-thread and the search latency back where it was. FastAPI is named as
-the framework most readers would have used here, with the reason it is
-not (no pydantic-core wheels for 3.15 yet) and the note that the
-profile of a FastAPI service looks the same, since it is Starlette
-underneath.
+Then the profiler with its defaults around uvicorn (`run -d 15
+--flamegraph -m uvicorn gazette.asgi:app`), since the loop's thread is
+the main thread. Under `_run_once` the tower divides into `select`,
+the loop waiting, and `Handle._run`, the loop at work, and the second
+is four times the first, with `related` beneath it. A quiz asks where
+`search` is, which is nearly nowhere: the request that suffers is the
+one that waits. The next page profiles with `--async-aware` as a
+table, which says the same by task, and explains two things found in
+writing: the async-aware flame graph is no use for a server, and
+`--async-mode all` answers another question.
+
+The fix is in two steps, because the first one everybody reaches for
+does not work. `asyncio.to_thread` moves `render_article` to a thread,
+and the search latency hardly changes, since the thread and the loop
+share the interpreter's lock; the flame graph with `-a` shows the
+work under the pool's threads and the sidebar shows a quarter of the
+samples waiting for the GIL. A `ProcessPoolExecutor` started in the
+application's lifespan, with `run_in_executor`, gives the loop back:
+the search latency returns to what it was alone, and `related` is no
+longer in the profile at all, which hands to the next workshop.
+FastAPI is named as the framework most readers would have used, with
+the reason it is not.
 
 Closes with the rule for reading an async service's profile: look at
-what is running, not at what is waiting, and reach for
-`--async-mode=all` when the question is what everyone is waiting for.
-Next is **Workers and subprocesses**.
+what is running, not at what is slow. Next is **Workers and
+subprocesses**.
 
-- Format: two terminals and files, with a results pane. Ships
-  `gazette/asgi.py`, `slow_server.py`, `load.py`, `templates/` and the
-  data, plus `render_fixed.py`. Variables: `server_port`, default 8083,
-  and `upstream_port`, default 8084. Checks: `shell` checks that both
-  servers answer, that the async-aware flame graph contains `<task>`
-  and `render_article`, and that the learner's `asgi.py` contains
-  `to_thread`.
+- Format: three terminals and files, with the flame graphs in the
+  HTML viewer. Ships `gazette/asgi.py`, `index_server.py`, `load.py`
+  (eight readers, one request after another, three articles for every
+  search) and the data, plus `threaded/asgi.py` and `pooled/asgi.py`.
+  Variables: `server_port`, default 8083, and `upstream_port`, default
+  8084. Checks: `shell` checks that both servers answer and that both
+  are stopped, that the flame graphs have the functions each page
+  describes, and that the async-aware table has `related` at the top;
+  `kernel` checks on what `load.py` printed that a search slowed when
+  articles were read and recovered with the pool.
 
 - Requires: `starlette`, `uvicorn`, `httpx`, pinned to the releases
-  checked.
+  checked (1.7.0, 0.54.0 and 0.28.1 on 2026-09-29).
 
-- Length: 20 minutes.
+- Length: 25 minutes.
 
 ### 4. `workers-and-subprocesses`: Workers and subprocesses
 
 My program does its work in child processes; how do I profile those?
 
 Two shapes of the same problem. First a job runner:
-`gazette/jobs.py` builds the digests of workshop 8 on a
+`gazette/jobs.py` builds digests of the archive on a
 `ProcessPoolExecutor` of four workers. The profiler with defaults sees
-the parent, and the parent's table is nearly all
-`selectors.select`, waiting on its children, which a quiz predicts.
-Then `--subprocesses`, and the page explains what the profiler does:
-it notices each Python child as it appears, starts a profiler for it
+the parent, and the parent's table is nearly all `Condition.wait`,
+waiting for its children, which a quiz predicts. Then
+`--subprocesses`, and the page explains what the profiler does: it
+notices each Python child as it appears, starts a profiler for it
 with the same options, and writes one output per process,
-`profile_<pid>.pstats` or `flamegraph_<pid>.html`, up to a hundred at
-once, recursively through grandchildren. The learner opens one worker's
-flame graph and sees `build_digest`, and the page says how to tell the
-processes apart (the pid in the file name, and the command line each
-shows in its root frame).
+`flamegraph_<pid>.html`, up to a hundred at once, through
+grandchildren. The run writes seven files for a pool of four: the
+parent, the four workers, and the two processes `multiprocessing`
+starts for itself on Linux, which a quiz asks about. The files are
+told apart by what is in them, so the page finds a worker's by a
+function only a worker runs and copies it to `worker.html`.
 
-Then gunicorn: the Flask newsroom under `gunicorn -w 3` for a fixed
-duration, with `--subprocesses`, under load, and four flame graphs,
-the arbiter mostly sleeping and three workers each serving a share of
-the requests. The page uses this to say what a production WSGI server
+Then gunicorn: the Flask newsroom under `gunicorn -w 3` for twenty
+seconds, with `--subprocesses`, under load, and four flame graphs,
+the arbiter asleep in `wait_for_signals` and three workers each
+serving a share of the requests on its main thread. The top of a
+worker's tower is the arbiter's frames, since the worker was forked
+from it. The page uses this to say what a production WSGI server
 looks like to the profiler compared with the development server of
-workshop 1 (processes rather than threads, and so no GIL between
-workers), and that `--live` is not available with `--subprocesses`
-because one terminal cannot show several profilers.
+workshop 1 (processes and not threads, so `--subprocesses` and not
+`-a`), and that no total over the processes is made for you.
 
-Closes with when to reach for `--subprocesses` (pools, `multiprocessing`,
-pre-fork servers, anything that shells out to Python) and what it does
-not do (follow a process it did not start; that is workshop 6). Next
-is **Profiling a test suite**.
+Closes with when to reach for `--subprocesses` and what to expect of
+it, that `--live` is refused with it, and that it follows descendants
+only. Next is **Profiling a test suite**.
 
-- Format: two terminals and files, with a results pane. Ships
-  `gazette/jobs.py`, `gazette/web.py` and its templates, `load.py` and
-  the data. Variables: `server_port`, default 8085. Checks: `shell`
-  checks that at least three `flamegraph_*.html` files exist after
-  each run and that one of the job runner's contains `build_digest`.
+- Format: two terminals and files, with the flame graphs in the HTML
+  viewer. Ships `gazette/jobs.py`, `gazette/web.py` and its
+  templates, `load.py` and the data. Variables: `server_port`, default
+  8085. Checks: a `kernel` check on the parent's table; `kernel`
+  checks that the flame graphs moved to `jobs/` and `site/` are one
+  for each process, with the workers' having `build_digest` or
+  requests in them; `shell` checks on the copies.
 
-- Requires: `flask`, `gunicorn`.
+- Requires: `flask`, `gunicorn` (26.2.0 on 2026-09-29).
 
 - Length: 15 minutes.
 
 ### 5. `profiling-a-test-suite`: Profiling a test suite
 
-My tests take four minutes; where does the time go?
+My tests are slow; where does the time go?
 
-A test suite for the newsroom, `tests/`, with pytest, and a few of the
-tests slow for the usual reasons: one rebuilds the sqlite database in
-a function-scoped fixture that should be session-scoped, one sleeps
-waiting for a thread it could join, one parses the whole article file
-for each of forty parametrised cases. `python -m profiling.sampling run
--m pytest tests -q` with `--flamegraph`, and the flame graph is pytest's
-machinery with the tests above it; the page shows the search box with
-`test_` to find them, and the three slow ones wide. The heatmap of
-`conftest.py` finds the fixture. The fixes are three `file-write`s,
-and the suite runs again under the profiler in a fraction of the time.
+A test suite for the newsroom, `tests/`, with pytest: 118 tests of a
+small store, a date formatter and a word count made on a thread,
+which take four or five seconds for three of the usual reasons. The
+`db` fixture builds the sqlite database for every test that asks for
+it; two tests sleep for a second waiting for a thread they could
+join; and a test with a hundred parametrised cases parses the whole
+article file for each. `run --binary -o before.bin -m pytest -q`
+records the run, and the flame graph from it is pytest's machinery
+with two branches beneath, `pytest_runtest_call` with the tests and
+`pytest_runtest_setup` with their fixtures, each about half. The page
+shows the search box with `test_` to find the learner's own code. The
+heatmap of `conftest.py`, found by its title, shows the fixture's
+line. The fixes are three `file-write`s, the fixture's scope first
+and then the other two together, with a run after each, and the suite
+ends at a fifth of a second.
 
 The page uses `-m` to make the general point: anything you run as
 `python -m something` can be run as `python -m profiling.sampling run
--m something`, with its arguments after it, which covers test runners,
-management commands, linters and build tools. It also says why the
-tracing profiler is the wrong tool here (a test suite is many small
-calls, so the tracer's overhead is at its worst and changes what is
-slow).
+-m something`, with its arguments after it. It also says, in a quiz,
+why the tracing profiler is the wrong tool here.
 
-Closes with the habit: profile the suite once a release and keep the
-binary. Next is **Attaching to a running process**.
+A `pytest.ini` is shipped so that pytest takes the workspace as its
+root and keeps its cache there, and not in whatever directory above
+it has a `pyproject.toml`.
 
-- Format: terminal and files, with a results pane. Ships the `gazette`
-  package, `tests/` and `conftest.py`, and the three fixed files.
-  Checks: `shell` checks that the flame graph contains `test_` and
-  `conftest`, that the fixed `conftest.py` says `scope="session"`, and
-  a `kernel` check that the second run's `.pstats` has under half the
-  samples of the first.
+Closes with the three habits and how to read a test run, and the
+suggestion to profile the suite once a release and keep the
+recording. Next is **Attaching to a running process**.
 
-- Requires: `pytest`, `flask`.
+- Format: terminal and files, with the flame graphs and the heatmap
+  in the HTML viewer. Ships the `gazette` package (`store.py`,
+  `dates.py`, `refresh.py`), `tests/` with `conftest.py`,
+  `pytest.ini`, the data, and the three fixed files under
+  `fixed/tests/`. Checks: `kernel` checks on what pytest printed,
+  that every test passed and that the run was shorter after the first
+  fix and under half after all three; `shell` checks on the flame
+  graph, the heatmap page and the replaced files.
+
+- Requires: `pytest` (9.1.1 on 2026-09-29).
 
 - Length: 15 minutes.
 
@@ -1289,45 +1331,46 @@ The headline feature of the profiler, and the one most hosts refuse to
 an ordinary user, so this workshop is honest about both. The welcome
 page explains why attach is the feature production people want (no
 restart, no code change, no deploy, a profile of the process that is
-misbehaving right now) and then the permission model, fully: on Linux
-the kernel's Yama `ptrace_scope` decides, and at its common setting of
-1 a process may read only its descendants, so `attach` to a service
-started by systemd or a shell fails with a permission error, and the
-ways round it (`ptrace_scope` 0, `CAP_SYS_PTRACE` on the profiler's
-binary, or root) are each an administrator's decision the workshop
-will not make; on macOS `task_for_pid` needs root or a debugger
-entitlement; on Windows, `SeDebugPrivilege`. In a container the
-container's kernel decides, and Docker Desktop's has no Yama at all,
-so attach works there for the same user; on Binder and in a codespace
-it depends on the node.
+misbehaving right now). The second page gives the permission model:
+on Linux the kernel's Yama `ptrace_scope` decides, and at its common
+setting of 1 a process may read only its descendants; on macOS and
+Windows reading another process needs privilege; in a container the
+host's kernel decides, and Docker Desktop's has no Yama at all.
 
-Then the probe: the Flask newsroom is started in the second terminal
-without the profiler, and an `execute-capture` runs `dump` against a
-throwaway child of the shell and stores whether it succeeded. Two
-tracks follow. Where attach is allowed: `dump {{ pid }}` for a
-snapshot of the running server's stacks with `--all-threads`, then
-`attach --live {{ pid }}` for twenty seconds while `load.py` runs, then
-`attach -d 15 --flamegraph -o attached.html {{ pid }}`, and the page
-points out that the server was never restarted and never knew. Where
-it is refused: the page shows the error the profiler gives, shipped as
-a file, walks a shipped flame graph captured by attach elsewhere, and
-shows the fallback that always works, which is to have started the
-service under `run -d` in the first place, or to profile a child of
-your own shell. The pid comes from the server's own output, captured
-into a variable, so the learner never types one.
+Then the probe: an `execute-capture` runs `dump` against a throwaway
+child of the shell and stores whether it succeeded, and the Flask
+newsroom is started in the first terminal without the profiler. The
+probe comes before the server is started, since a capture made while
+a terminal is busy takes a minute to return (see Known blockers).
+Two tracks follow. Where attach is allowed: `dump -a` for a snapshot
+of the running server's stacks while `load.py` runs, then `attach -a
+-d 15 --flamegraph -o attached.html` under load, and a check that the
+server is the process it was and still answers. Where it is refused:
+the shipped `dump-example.txt` and `attached-example.html`, made by
+the same commands in the container, and the message the profiler
+prints when refused, shipped as `attach-refused.txt`, with the advice
+not to follow its suggestions on a machine that is not yours to
+decide for. The pid comes from a file the application writes when it
+starts, `gazette.pid`, read in the command with `$(cat gazette.pid)`,
+so the learner never types one.
 
-Closes with the decision the reader will face at work: ask the
-administrator for `CAP_SYS_PTRACE` on a profiling host, or arrange to
-start services under `run`. Next is **A profile from production**.
+A page for both tracks sets out the choices where attach is refused:
+root, `ptrace_scope` 0, `CAP_SYS_PTRACE` on a copy of the interpreter
+kept for profiling, each an administrator's decision the workshop
+will not make, and the two arrangements that need none, starting the
+service under `run` or reproducing the problem where you may. Next is
+**A profile from production**.
 
-- Format: two terminals and files, with a results pane. Ships the
-  `gazette` package with `web.py`, `load.py`, the data,
-  `attach-refused.txt` and `attached-example.html`. Variables:
-  `server_port`, default 8086; captures `can_attach` and `server_pid`.
-  Checks: `shell` checks that the probe ran and set `can_attach`, that
-  the server answered, and, on the allowed track, that `attached.html`
-  exists and contains `search`; on the refused track, that the example
-  was opened.
+- Format: three terminals and files, with the flame graph in the
+  HTML viewer. Ships the `gazette` package with `web.py`, `load.py`,
+  the data, `dump-example.txt`, `attach-refused.txt` and
+  `attached-example.html`. Variables: `server_port`, default 8086;
+  captures `can_attach`. Checks: a `shell` check that the probe
+  answered; `kernel` checks that read `can_attach` and look at the
+  learner's `dump.txt` and `attached.html` on the allowed track and
+  at the shipped examples on the refused one; `shell` checks that the
+  server answers, is the same process after attaching, and is stopped
+  at the end.
 
 - Requires: `flask`.
 
@@ -1339,45 +1382,49 @@ How do I get a profile from a machine I cannot look at, and compare it
 with last week's?
 
 The record and replay workflow of the fundamentals collection, on a
-service, with the addition the user asked for: a notebook that turns
-two profiles into a chart. The newsroom runs under `run -d 20 --binary
--o monday.bin` with `load.py`, then again after the search fix of
-workshop 2 as `friday.bin`, standing in for two captures from a
-production host, each a few tens of kilobytes. The page explains the
-operational shape: the profiler captures in the binary format because
-it is the cheapest to write and the smallest to copy, the file is
-copied off the host, and every picture is made at the desk with
-`replay`. A `replay --flamegraph` of each opens in the pane, and
-`replay --jsonl` writes the two profiles as JSON lines.
+service, with a notebook that turns two profiles into a chart. The
+newsroom runs under `run -a -d 20 --binary -o monday.bin` with
+`load.py`, then again after the search fix of workshop 2 as
+`friday.bin`, standing in for two captures from a production host,
+each a hundred kilobytes or so. The pages explain the operational
+shape: the profiler captures in the binary format because it is the
+cheapest to write and small enough to copy, the file is copied off
+the host, and every picture is made at the desk with `replay`, which
+needs the file and Python and nothing else. A `replay --flamegraph`
+of Monday opens in the viewer, and `replay --jsonl` writes the two
+profiles as JSON lines, whose five kinds of record the page
+describes.
 
 Then the notebook, created by the page on the workshop's kernel: a
 cell that loads both JSONL files, resolves the string and frame
-tables, and totals samples per function; a cell that prints the ten
-hottest functions of each as a table; and a cell that draws a
-horizontal bar chart with matplotlib, the two captures side by side
-per function, so the search endpoint's fall from Monday to Friday is a
-bar that shrank. The page says what the chart adds to the differential
-flame graph of workshop 2 (numbers, a shape you can put in a report,
-and a script you can run in CI against every nightly capture) and what
-it loses (the paths). A final cell loads the `.pstats` form of one
-capture with `pstats.Stats` to show the standard library route to the
-same numbers.
+tables, and totals the samples of each function; a cell that prints
+Monday's ten hottest functions beside what they came to on Friday, in
+seconds; and a cell that draws a horizontal bar chart with
+matplotlib, the two captures side by side, and saves it as
+`chart.png`. The page says what the chart adds to the differential
+flame graph of workshop 2 (seconds and not shares, a shape you can
+put in a report, and a script you can run against every nightly
+capture) and what it loses (the paths). A final cell loads the
+`.pstats` form of one capture with `pstats.Stats` to show the
+standard library route to the same numbers.
 
 Closes the collection: the reader has profiled a WSGI application, an
 ASGI service, worker processes and a test suite, knows what attach
-needs, and has a profile pipeline from a host to a chart. The finish
-names the module docs and the Firefox Profiler as the two places to go
-next.
+needs, and has a way from a recording to a chart. The finish names
+the module docs and the Firefox Profiler as the two places to go
+next, and the last page describes continuous profiling in a
+paragraph.
 
-- Format: two terminals and files, then a notebook, with a results
-  pane. Ships the `gazette` package, `search_fixed.py`, `load.py` and
-  the data. Variables: `server_port`, default 8087. Checks: `shell`
-  checks that `monday.bin`, `friday.bin` and both JSONL files exist;
-  `learner-kernel` checks that the notebook's totals name `search` in
-  both captures with the Friday count lower, and that a figure was
-  drawn (a name the cell assigns).
+- Format: two terminals and files, then a notebook, with the flame
+  graph in the HTML viewer. Ships the `gazette` package,
+  `fixed/web.py`, `load.py` and the data. Variables: `server_port`,
+  default 8087. Checks: `shell` checks that wait for `monday.bin` and
+  `friday.bin`; a `kernel` check that both JSONL files are whole;
+  `learner-kernel` checks that the notebook's totals have `search` in
+  both captures with Friday's under half of Monday's, that the chart
+  was drawn and saved, and that the pstats file was read.
 
-- Requires: `flask`, `matplotlib`.
+- Requires: `flask`, `matplotlib` (3.11.2 on 2026-09-29).
 
 - Length: 20 minutes.
 
@@ -1395,7 +1442,7 @@ this profiler, since the kernel would have to be attached to and the
 kernel is not a child of anything the learner runs; the notebook in
 workshop 7 analyses profiles rather than making them. Continuous
 profiling in production, sampling for minutes at low rates from a
-sidecar, is described in workshop 7's finish and not built.
+sidecar, is described on workshop 7's last page and not built.
 
 ## Later collections
 
@@ -1473,11 +1520,12 @@ and cannot profile the kernel it runs in.
 never finishes, and a learner should not have to stop one at the right
 moment, so every server is started as `run -d <seconds> ...` and
 writes its profile when the duration ends; a second terminal drives it
-with a shipped `load.py` (a few hundred requests on a few threads with
-`urllib`) and `curl` for single requests. Every server is stopped with
-`interrupt`, or has exited on its duration, before the page that
-started it ends, and listens on `127.0.0.1` on a port held in a
-`number` variable with a default, so it can be moved if taken.
+with a shipped `load.py` (requests sent with `urllib` from a few
+threads, at a fixed pace where two recordings are to be compared).
+Every server is stopped with `interrupt`, or has exited on its
+duration, before the page that started it ends, and listens on
+`127.0.0.1` on a port held in a `number` variable with a default, so
+it can be moved if taken.
 
 **A recurring cast: the gazette.** Every program the workshops profile
 is a piece of a small newsroom: `gazette/report.py` (a word-count
@@ -1802,6 +1850,81 @@ checked again on 3.15.0 final:
   other two modes. The docs' section on restrictions names only cpu
   and gil; the entry for `--mode` names all three.
 
+Found writing the applications collection, on 3.15.0rc2 and
+jupyterlab-workshop 0.13.0:
+
+- **An `execute-capture` takes a minute while a terminal is busy.**
+  With a server running in a workshop terminal, a capture of `echo
+  yes` took 60 seconds in the self-test to return, and under a
+  second with no server running. The command itself ran in a tenth
+  of a second. A `shell` check in the same place returned at once, so
+  it is the capture, or what follows it, that waits; the cause was
+  not established. Workshop 6 makes its probe before it starts the
+  server. Worth reporting to the extension.
+
+- **The number of a heatmap page depends on the machine.** The pages
+  are numbered by how many samples each file had, frameworks
+  included, so the page for the application's own file is
+  `file_0006.html` on one run and another number on the next.
+  Workshops 2 and 5 find the page by its title with `grep -l` and
+  copy it to a name of its own.
+
+- **The async-aware flame graph is no use for a server.** Each task
+  is a root of its own, by name, and uvicorn starts a task for every
+  request, so the graph of fifteen seconds has thousands of towers
+  too thin to draw and shows next to nothing. The async-aware table
+  adds the tasks together and is what workshop 3 uses. With
+  `--async-mode all` the table's top rows are the places tasks wait
+  inside asyncio and the libraries, and the blocking function is far
+  down it.
+
+- **`asyncio.to_thread` does not cure a call that computes.** The
+  design had the blocking call moved to a thread and the latency
+  restored. Measured, a search took 55 ms alone, 111 ms with the loop
+  blocked, 100 ms with the call on a thread and 52 ms with it in a
+  pool of processes. Workshop 3 teaches both steps.
+
+- **How slow a query in a loop is depends on the disk.** With the
+  sqlite database in the checkout mounted from macOS, a search of a
+  thousand queries took 40 to 100 ms; on the container's own disk,
+  which is what the self-test and Binder have, 6 to 10 ms. An
+  in-memory database made the loop too cheap to find. The load asks
+  for common words so that the search is the widest view on either,
+  and pages give the order of the views and not their times.
+
+- **The differential flame graph of a fixed server is red nearly
+  everywhere**, the idle main thread included, for the reason
+  workshop 13 of the fundamentals collection found: the baseline is
+  scaled to the newer recording's total. Workshop 2 explains it and
+  uses tables for the amounts.
+
+- **The development server's Thread Filter has thousands of
+  entries**, one for each request's thread. Workshop 1 says so
+  and reads the threads added together.
+
+- **MarkupSafe has no wheel for Python 3.15** (checked 2026-09-29).
+  pip builds it from source, and without a compiler it installs with
+  its pure Python fallback, so Flask installs and works in the
+  container, a little slower at escaping.
+
+- **gunicorn 26 makes a control socket under the home directory**,
+  `~/.gunicorn/gunicorn.ctl`, unless given `--no-control-socket`,
+  which workshop 4 gives.
+
+- **Several workers importing the application at once raced to build
+  the database.** `web.py` now builds into a scratch file named for
+  the process and moves it into place.
+
+- **pytest takes the nearest directory with a `pyproject.toml` as its
+  root**, which for a workspace inside this checkout is the
+  checkout, and would keep its cache there. Workshop 5 ships a
+  `pytest.ini`.
+
+- **The profiler's message when refused suggests `sudo` and turning
+  `ptrace_scope` off.** Workshop 6 ships the message, and tells the
+  learner to do neither on a machine that is not theirs to decide
+  for.
+
 ## Open questions
 
 - **Binder and Codespaces builds.** Neither `binder/environment.yml`
@@ -1833,8 +1956,9 @@ the program above a `shell` terminal at two fifths), the
 `environment-create` first step with a `shell` check that `python` is
 3.15, and the `pstats`-reading `kernel` checks; the fourth settled how
 a flame graph is shown. Each later one adds one idea to a format that
-already works. The fundamentals collection is complete; the
-applications collection is next.
+already works. The applications collection was written in its own
+order, the Flask application and its load generator first, since
+five of the seven use them. Both collections are complete.
 
 | # | Workshop | Status |
 |---|----------|--------|
@@ -1855,13 +1979,13 @@ applications collection is next.
 
 | # | Workshop | Status |
 |---|----------|--------|
-| 1 | `a-flask-application-under-load` | Planned |
-| 2 | `the-slow-endpoint` | Planned |
-| 3 | `an-async-service-that-stalls` | Planned |
-| 4 | `workers-and-subprocesses` | Planned |
-| 5 | `profiling-a-test-suite` | Planned |
-| 6 | `attaching-to-a-running-process` | Planned |
-| 7 | `a-profile-from-production` | Planned |
+| 1 | `a-flask-application-under-load` | Done |
+| 2 | `the-slow-endpoint` | Done |
+| 3 | `an-async-service-that-stalls` | Done |
+| 4 | `workers-and-subprocesses` | Done |
+| 5 | `profiling-a-test-suite` | Done |
+| 6 | `attaching-to-a-running-process` | Done |
+| 7 | `a-profile-from-production` | Done |
 
 Setting up the repository, on 2026-09-29, touched: the Justfile
 (both collections' variables, lists and `index-<collection>` recipes,

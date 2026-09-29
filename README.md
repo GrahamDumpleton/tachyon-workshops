@@ -46,11 +46,10 @@ The repository holds two collections and is laid out for more. Each
 collection is a course: its workshops are numbered in the order to take
 them, and the Finish dialog of each offers the next. A
 [catalog](catalog.json) names every collection, so one URL offers them
-all. The fourteen workshops of the fundamentals collection are
-written and tested, and those of the applications collection are
-designed and not yet written; the design of every one is in
-[OUTLINE.md](OUTLINE.md), and its status table records where each
-stands.
+all. The fourteen workshops of the fundamentals collection and the
+seven of the applications collection are written and tested; the
+design of every one is in [OUTLINE.md](OUTLINE.md), and its status
+table records where each stands.
 
 ### Profiling with Tachyon
 
@@ -150,39 +149,50 @@ they build.
 
 ### Tachyon on real applications
 
-Seven workshops, about two hours in total, in the order to take them.
-Each runs a realistic program in one terminal and drives it from a
-second, with the profiler between them.
+Seven workshops, a little over two hours in total, in the order to
+take them. Each runs a realistic program in one terminal and drives
+it from a second, with the profiler between them.
 
 1. **A Flask application under load** (`a-flask-application-under-load`,
-   20 minutes). Profile the development server while a load generator
-   hits it: why all threads matter, and the flame graph of a request.
+   20 minutes). Profile the development server for a fixed time while
+   a load generator sends it requests: why a server needs a duration,
+   a load and every thread, the two towers of its flame graph, and
+   wall-clock against CPU time.
 
-2. **The slow endpoint** (`the-slow-endpoint`, 20 minutes). Find the
-   view that is slow, follow the heatmap to the query in a loop, fix
-   it, and prove the fix with a differential flame graph.
+2. **The slow endpoint** (`the-slow-endpoint`, 20 minutes). Record a
+   baseline under load, find the view with the flame graph and the
+   line with the heatmap, replace a query in a loop with one query,
+   and prove the fix with a second recording, in tables and in a
+   differential flame graph.
 
 3. **An async service that stalls** (`an-async-service-that-stalls`,
-   20 minutes). A Starlette service under uvicorn with one blocking
-   call in a coroutine, seen through async-aware profiling.
+   25 minutes). A Starlette service under uvicorn whose searches
+   slow down when articles are read: the event loop's thread in a
+   flame graph, the tasks in an async-aware table, a fix with a
+   thread that does not work and why, and one with a process pool
+   that does.
 
 4. **Workers and subprocesses** (`workers-and-subprocesses`,
-   15 minutes). A job runner on a process pool, and gunicorn with
-   several workers, profiled with one profile per process.
+   15 minutes). A job runner on a process pool, whose own profile is
+   all waiting, and gunicorn with three workers, profiled with
+   `--subprocesses`: a file for each process, and how to tell them
+   apart.
 
 5. **Profiling a test suite** (`profiling-a-test-suite`, 15 minutes).
-   The profiler on `python -m pytest`, and what a slow test suite
-   looks like from the outside.
+   The profiler around `python -m pytest`: the tests and the fixtures
+   in the flame graph, the heatmap of `conftest.py`, and three fixes
+   to three common habits.
 
 6. **Attaching to a running process** (`attaching-to-a-running-process`,
-   15 minutes). Attach to a server that was started without the
-   profiler, where the platform allows it, and what the permission
-   rules are where it does not.
+   15 minutes). `dump` and `attach` on a server that was started
+   without the profiler, where the machine allows it, with shipped
+   examples where it does not, and what the permission rules and the
+   choices are.
 
 7. **A profile from production** (`a-profile-from-production`,
-   20 minutes). Capture a binary profile of a running service for a
-   fixed duration, carry it away, replay it, and compare two captures
-   in a notebook with a chart.
+   20 minutes). Record a service in the binary format, twice, a fix
+   apart, replay the recordings as a flame graph and as JSON lines,
+   and compare them in a notebook with a table and a chart.
 
 ## Launch on Binder
 

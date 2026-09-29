@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}{{ word }}: The Gazette{% endblock %}
+{% block content %}
+<p>{{ count }} articles mention <strong>{{ word }}</strong>. The newest {{ articles|length }}:</p>
+{% for article in articles %}
+{% include "_teaser.html" %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,77 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: a-profile-from-production
+title: A profile from production
+version: 0.1.0
+description: Carry a profile from the machine that made it to a notebook and a chart, with Tachyon's binary recordings and replay. Two captures of a web application under load, a week and a fix apart, replayed at the desk as a flame graph and as JSON lines, then loaded in a notebook, totalled by function and drawn side by side.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/a-profile-from-production
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, notebook, flask]
+duration: 20m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs Flask and matplotlib, and makes `python` in
+# the terminals and behind the notebook the Python 3.15 that has the
+# profiler, the same interpreter as the server it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-a-profile-from-production
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8087
+    description: Port the gazette's web site listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: desk
+# The server runs under the profiler in the terminal on the left, and
+# the requests are sent from the one on the right, which is also
+# where the recordings are replayed. The notebook opens above them.
+layouts:
+  desk:
+    main:
+      areas:
+        - { name: desk, tabs: ["file:gazette/web.py", "file:load.py"] }
+        - size: 0.45
+          split: columns
+          areas:
+            - { tabs: ["terminal:server"] }
+            - { size: 0.5, tabs: ["terminal:client"] }
+gating: soft
+finish: |
+  You have taken a profile from where it was made to where it could
+  be read. The recordings were made in the binary format, which is
+  the cheapest to write and small enough to copy anywhere, and
+  everything else was made from them afterwards with `replay`: a
+  flame graph to look at, and JSON lines for a program to read. A
+  notebook totalled the samples by function and drew Monday beside
+  Friday, and the fix was one bar that shrank.
+
+  That is the last of **Tachyon on real applications**. You have
+  profiled a web application on threads, an asyncio service, a pool
+  of processes and a server with workers, and a test suite. You know
+  what attaching to a running process asks of the machine, and you
+  have a way from a recording to a chart.
+
+  Two places to go next. The
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  is the reference for every option used in these workshops. And
+  `--gecko` writes a profile for the
+  [Firefox Profiler](https://profiler.firefox.com/), which draws
+  the samples along a line of time, thread by thread, where a flame
+  graph adds them up.
+pages:
+  - pages/01-welcome.md
+  - pages/02-monday.md
+  - pages/03-friday.md
+  - pages/04-at-the-desk.md
+  - pages/05-a-notebook.md
+  - pages/06-a-chart.md
+  - pages/07-finish.md

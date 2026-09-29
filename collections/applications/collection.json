@@ -11,5 +11,269 @@
     "web"
   ],
   "ordered": true,
-  "workshops": []
+  "workshops": [
+    {
+      "name": "a-flask-application-under-load",
+      "title": "A Flask application under load",
+      "description": "Profile a web application with Tachyon, a small Flask site started under the profiler for a fixed time and sent requests from a second terminal. What is different about profiling a server, what the flame graph of one looks like, thread by thread, and what wall-clock and CPU time each say about it.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "flask",
+        "web"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "20m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/a-flask-application-under-load",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/a-flask-application-under-load"
+          }
+        }
+      ]
+    },
+    {
+      "name": "the-slow-endpoint",
+      "title": "The slow endpoint",
+      "description": "Find out why one page of a web application is slow, fix it and prove the fix, with Tachyon. A baseline recorded under load, the flame graph to find the view, the heatmap to find the line, a query in a loop replaced by one query, and a second recording compared with the first.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "flask",
+        "web"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "20m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/the-slow-endpoint",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/the-slow-endpoint"
+          }
+        }
+      ]
+    },
+    {
+      "name": "an-async-service-that-stalls",
+      "title": "An async service that stalls",
+      "description": "Find what is holding up an asyncio web service with Tachyon, a Starlette application under uvicorn whose searches slow down when articles are being read. The event loop's thread in a flame graph, the tasks in an async-aware table, a fix with a thread that does not work and why, and one with a process pool that does.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "asyncio",
+        "web"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "25m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/an-async-service-that-stalls",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/an-async-service-that-stalls"
+          }
+        }
+      ]
+    },
+    {
+      "name": "workers-and-subprocesses",
+      "title": "Workers and subprocesses",
+      "description": "Profile a program that does its work in other processes, with Tachyon's --subprocesses option. A job runner on a pool of four processes, whose own profile is all waiting, and a web site under gunicorn with three workers. What the profiler follows, the file it writes for each process, and how to tell the files apart.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "multiprocessing",
+        "gunicorn"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/workers-and-subprocesses",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/workers-and-subprocesses"
+          }
+        }
+      ]
+    },
+    {
+      "name": "profiling-a-test-suite",
+      "title": "Profiling a test suite",
+      "description": "Find out where a slow test suite spends its time, with Tachyon around pytest. A recording of the whole run, the flame graph with the tests and the fixtures in it, the heatmap of conftest.py, and three fixes to three common habits, a fixture rebuilt for every test, a sleep where a join would do, and a file parsed once for each case.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "pytest",
+        "testing"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/profiling-a-test-suite",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/profiling-a-test-suite"
+          }
+        }
+      ]
+    },
+    {
+      "name": "attaching-to-a-running-process",
+      "title": "Attaching to a running process",
+      "description": "Profile a web application that is already running, without restarting it, with Tachyon's dump and attach commands. A snapshot of every thread's stack, and a flame graph of fifteen seconds of a server that never knew. Who the kernel lets read a process, how to find out what your machine allows, and what to do where it is refused.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "attach",
+        "flask"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/attaching-to-a-running-process",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/attaching-to-a-running-process"
+          }
+        }
+      ]
+    },
+    {
+      "name": "a-profile-from-production",
+      "title": "A profile from production",
+      "description": "Carry a profile from the machine that made it to a notebook and a chart, with Tachyon's binary recordings and replay. Two captures of a web application under load, a week and a fix apart, replayed at the desk as a flame graph and as JSON lines, then loaded in a notebook, totalled by function and drawn side by side.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "notebook",
+        "flask"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "20m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/a-profile-from-production",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/a-profile-from-production"
+          }
+        }
+      ]
+    }
+  ]
 }

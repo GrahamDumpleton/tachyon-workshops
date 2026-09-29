@@ -1,0 +1,74 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: attaching-to-a-running-process
+title: Attaching to a running process
+version: 0.1.0
+description: Profile a web application that is already running, without restarting it, with Tachyon's dump and attach commands. A snapshot of every thread's stack, and a flame graph of fifteen seconds of a server that never knew. Who the kernel lets read a process, how to find out what your machine allows, and what to do where it is refused.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/attaching-to-a-running-process
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, attach, flask]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs Flask, and makes `python` in the terminals
+# and behind the checks the Python 3.15 that has the profiler, the
+# same interpreter as the server it reads.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-attaching-to-a-running-process
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8086
+    description: Port the gazette's web site listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: attach
+# The web site runs in the terminal on the left for the whole of the
+# workshop, with no profiler around it. The profiler is run in the
+# one in the middle, and the requests are sent from the one on the
+# right.
+layouts:
+  attach:
+    main:
+      areas:
+        - { tabs: ["file:gazette/web.py", "file:load.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:server"] }
+            - { size: 0.45, tabs: ["terminal:shell"] }
+            - { size: 0.2, tabs: ["terminal:client"] }
+gating: soft
+finish: |
+  You have met the two commands that read a process the profiler did
+  not start. `dump` takes one reading of every thread's stack, a
+  traceback of a program that has not failed, which is the first
+  thing to ask of one that has hung. `attach` samples as `run` does,
+  for as long as you say, and takes every option `run` takes. Neither
+  restarts the program, changes it or slows it. Both need the
+  kernel's leave to read another process's memory, which a Linux
+  machine at its usual setting gives only for a process's own
+  descendants, and you know how to find out what a machine allows
+  and what the choices are where it does not.
+
+  Next in these workshops is **A profile from production**
+  (`a-profile-from-production`), the last of them, which carries a
+  recording from the machine that made it to a notebook and a chart.
+
+  The "Platform requirements" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes what each operating system asks for.
+pages:
+  - pages/01-welcome.md
+  - pages/02-who-may-read-a-process.md
+  - pages/03-a-snapshot.md
+  - pages/04-a-profile-without-a-restart.md
+  - pages/05-where-it-is-refused.md
+  - pages/06-finish.md

@@ -1,0 +1,78 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: an-async-service-that-stalls
+title: An async service that stalls
+version: 0.1.0
+description: Find what is holding up an asyncio web service with Tachyon, a Starlette application under uvicorn whose searches slow down when articles are being read. The event loop's thread in a flame graph, the tasks in an async-aware table, a fix with a thread that does not work and why, and one with a process pool that does.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/an-async-service-that-stalls
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, asyncio, web]
+duration: 25m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs Starlette, uvicorn and httpx, and makes
+# `python` in the terminals and behind the checks the Python 3.15 that
+# has the profiler, the same interpreter as the server it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-an-async-service-that-stalls
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8083
+    description: Port the gazette's web site listens on, on 127.0.0.1. Change it if the port is taken.
+  - name: upstream_port
+    type: number
+    default: 8084
+    description: Port the gazette's index service listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: service
+# The web site runs in the terminal on the left, the requests are sent
+# from the one in the middle, and the index service the site calls
+# runs in the one on the right for the whole of the workshop.
+layouts:
+  service:
+    main:
+      areas:
+        - { tabs: ["file:gazette/asgi.py", "file:load.py", "file:index_server.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:server"] }
+            - { size: 0.4, tabs: ["terminal:client"] }
+            - { size: 0.2, tabs: ["terminal:index"] }
+gating: soft
+finish: |
+  You have found what held up an asyncio service. Searches that spent
+  their time waiting for another service took twice as long when
+  articles were being read, and the flame graph of the event loop's
+  thread showed why: the loop was in `related`, computing, for most
+  of the run, and while it computes nothing else moves. The
+  async-aware table said the same by task. Moving the call to a
+  thread changed the picture and not the latency, since the thread
+  and the loop share one interpreter lock. Moving it to a pool of
+  processes gave the loop back to the requests.
+
+  Next in these workshops is **Workers and subprocesses**
+  (`workers-and-subprocesses`), which profiles the processes that the
+  work has just been moved to.
+
+  The "Async-aware profiling" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes `--async-aware` and `--async-mode`.
+pages:
+  - pages/01-welcome.md
+  - pages/02-watch-it-stall.md
+  - pages/03-what-holds-the-loop.md
+  - pages/04-the-tasks.md
+  - pages/05-a-thread-is-not-enough.md
+  - pages/06-another-process.md
+  - pages/07-finish.md

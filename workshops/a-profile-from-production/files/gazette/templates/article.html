@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}: The Gazette{% endblock %}
+{% block content %}
+<article>
+<h2>{{ article.title }}</h2>
+<p class="byline">{{ article.author }}, {{ article.section }}, {{ article.date }}</p>
+{% for paragraph in paragraphs %}
+<p>{{ paragraph }}</p>
+{% endfor %}
+</article>
+{% endblock %}

@@ -1,0 +1,72 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: the-slow-endpoint
+title: The slow endpoint
+version: 0.1.0
+description: Find out why one page of a web application is slow, fix it and prove the fix, with Tachyon. A baseline recorded under load, the flame graph to find the view, the heatmap to find the line, a query in a loop replaced by one query, and a second recording compared with the first.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/the-slow-endpoint
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, flask, web]
+duration: 20m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs Flask, and makes `python` in the terminals
+# and behind the checks the Python 3.15 that has the profiler, the
+# same interpreter as the server it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-the-slow-endpoint
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8082
+    description: Port the gazette's web site listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: site
+# The server runs under the profiler in the terminal on the left, and
+# the requests are sent from the one on the right, which is also
+# where the recordings are replayed.
+layouts:
+  site:
+    main:
+      areas:
+        - { tabs: ["file:gazette/web.py", "file:load.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:server"] }
+            - { size: 0.5, tabs: ["terminal:client"] }
+gating: soft
+finish: |
+  You have taken a slow page from a complaint to a proof. A baseline
+  recorded under load, in the binary format, gave every picture that
+  followed. The flame graph named the view, `search`, and showed
+  that the time was the view's own. The heatmap named the line, a
+  query inside a loop, run a thousand times for one search. One query
+  replaced the loop, and a second recording under the same load
+  showed the line's time fall to a fraction of what it was, in the
+  table and in the differential flame graph, where `search` was blue
+  among red.
+
+  Next in these workshops is **An async service that stalls**
+  (`an-async-service-that-stalls`), where the slow part is not slow
+  itself and makes everything else wait.
+
+  The [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes `replay` and each of the formats.
+pages:
+  - pages/01-welcome.md
+  - pages/02-a-baseline-under-load.md
+  - pages/03-which-view.md
+  - pages/04-which-line.md
+  - pages/05-the-fix.md
+  - pages/06-the-proof.md
+  - pages/07-finish.md
