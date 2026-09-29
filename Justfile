@@ -193,21 +193,22 @@ bump VERSION:
 container-build:
     docker build -t {{image}} -f container/Dockerfile .
 
-# Start JupyterLab in the container on http://127.0.0.1:8888/lab?token=tachyon with this checkout mounted.
+# Start JupyterLab in the container on http://127.0.0.1:8888/?token=tachyon with this checkout mounted.
 container-lab *ARGS:
-    docker run --rm -it -p 127.0.0.1:8888:8888 -e JUPYTER_TOKEN=tachyon -v "$PWD":/home/learner/tachyon-workshops {{image}} {{ARGS}}
+    @echo "Open http://127.0.0.1:8888/?token=tachyon once JupyterLab has started"
+    docker run --rm --init -it -p 127.0.0.1:8888:8888 -e JUPYTER_TOKEN=tachyon -v "$PWD":/home/learner/tachyon-workshops {{image}} {{ARGS}}
 
 # Self-test one workshop inside the container; extra args go to `jupyter workshop test`.
 container-test NAME *ARGS:
-    docker run --rm -v "$PWD":/home/learner/tachyon-workshops {{image}} jupyter workshop test workshops/{{NAME}} {{ARGS}}
+    docker run --rm --init -v "$PWD":/home/learner/tachyon-workshops {{image}} jupyter workshop test workshops/{{NAME}} {{ARGS}}
 
 # Lint everything inside the container, as `just lint` does here.
 container-lint:
-    docker run --rm -v "$PWD":/home/learner/tachyon-workshops {{image}} bash -c 'set -e; jupyter workshop lint catalog.json; for i in collections/*/collection.json; do jupyter workshop lint "$i"; done; for w in workshops/*/; do echo "== $w"; jupyter workshop lint "$w"; done'
+    docker run --rm --init -v "$PWD":/home/learner/tachyon-workshops {{image}} bash -c 'set -e; jupyter workshop lint catalog.json; for i in collections/*/collection.json; do jupyter workshop lint "$i"; done; for w in workshops/*/; do echo "== $w"; jupyter workshop lint "$w"; done'
 
 # Open a shell in the container, for trying the profiler by hand.
 container-shell:
-    docker run --rm -it -v "$PWD":/home/learner/tachyon-workshops {{image}} bash
+    docker run --rm --init -it -v "$PWD":/home/learner/tachyon-workshops {{image}} bash
 
 # A workshop's kernelspec is registered for the user, outside the
 # checkout, so removing the environment directory leaves a kernel in

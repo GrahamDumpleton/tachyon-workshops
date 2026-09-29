@@ -1,0 +1,8 @@
+$ python gazette/report.py > /dev/null & sleep 0.5; python -m profiling.sampling dump $!
+Stack dump for PID 16, thread 16 (main thread, has GIL, on CPU; most recent call last):
+  File "gazette/report.py", line 69, in <module>
+    main(*sys.argv[1:])
+  File "gazette/report.py", line 62, in main
+    counts = count_words(articles)
+  File "gazette/report.py", line 36, in count_words
+    return {word: words.count(word) for word in unique}

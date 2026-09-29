@@ -24,6 +24,10 @@ test-results/
 # from the collections; never referenced from committed files
 scratch/
 
+# Left in the checkout by a JupyterLab that deletes to a trash folder,
+# as one in a container with the checkout mounted does
+.Trash-*/
+
 # Editors and OS
 .DS_Store
 

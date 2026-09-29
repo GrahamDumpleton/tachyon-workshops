@@ -209,7 +209,7 @@ and prefer them over the underlying commands:
 
 - `just container-build` builds the Linux image from
   `container/Dockerfile`; `just container-lab` runs JupyterLab in it
-  with this checkout mounted, on `http://127.0.0.1:8888/lab?token=tachyon`;
+  with this checkout mounted, on `http://127.0.0.1:8888/?token=tachyon`;
   `just container-test <name>` self-tests a workshop in it;
   `just container-lint` lints in it; `just container-shell` opens a
   shell in it for trying the profiler by hand. Files a workshop writes

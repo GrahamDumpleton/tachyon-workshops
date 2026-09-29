@@ -1,0 +1,61 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: your-first-profile
+title: Your first profile
+version: 0.1.0
+description: Run Tachyon, the sampling profiler in Python 3.15, on a small report generator and read the table it prints. Learn what a sample is, why time is samples multiplied by an interval, why the same function can fill two rows, and which of the report's functions is eating the time.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/your-first-profile
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing: its requirements file is empty. It
+# is declared so that the Python first on this terminal's PATH, and
+# behind the checks, is the Python 3.15 JupyterLab runs on, which is
+# the one that has the profiler and the one the profiled program must
+# also be.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-your-first-profile
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: report
+layouts:
+  report:
+    main:
+      areas:
+        - { tabs: ["file:gazette/report.py"] }
+        - { size: 0.45, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have profiled a program with Tachyon and read what came back:
+  a sample is the call stack at one instant, a thousand of them a
+  second add up to the table, `nsamples` is direct over cumulative,
+  time is samples multiplied by the interval, a function busy on two
+  lines fills two rows, and the report's quadratic `count_words` was
+  found without the program running a line of profiler code.
+
+  Next in these workshops is **Sampling or tracing?**
+  (`sampling-or-tracing`), which runs the same report under the
+  deterministic profiler Python has always had and asks what each
+  kind is for.
+
+  The [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes the `run` command, the pstats output and every option
+  this workshop used; its "Understanding the output" section is the
+  table read again.
+pages:
+  - pages/01-welcome.md
+  - pages/02-run-the-report.md
+  - pages/03-profile-it.md
+  - pages/04-reading-the-table.md
+  - pages/05-two-rows-one-function.md
+  - pages/06-sorting-and-trimming.md
+  - pages/07-finish.md

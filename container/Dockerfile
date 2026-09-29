@@ -12,7 +12,7 @@
 # nothing is baked in: rebuild only when the requirements change.
 #
 #   just container-build          build the image
-#   just container-lab            JupyterLab on http://127.0.0.1:8888/lab?token=tachyon
+#   just container-lab            JupyterLab on http://127.0.0.1:8888/?token=tachyon
 #   just container-test <name>    self-test one workshop inside it
 #   just container-shell          a shell, for trying the profiler by hand
 #
@@ -41,12 +41,34 @@ RUN pip install --no-cache-dir --disable-pip-version-check --root-user-action=ig
     && playwright install --with-deps chromium \
     && rm -rf /var/lib/apt/lists/* /tmp/requirements.txt
 
+# The same JupyterLab overrides the Binder image writes, as far as they
+# apply here. JupyterLab starts in the workshop browser with the
+# checkout's collections listed, whichever URL is opened (the launch
+# link in jupyter_lab_config.py does the same only from the server
+# root); HTML files open trusted in the HTML viewer, so a flame graph's
+# scripts run without a click; and the Jupyter news prompt is off.
+# Trust and author mode are left alone: this is an authoring image as
+# much as a learner's, so nothing is forced and nothing is disabled.
+RUN mkdir -p /usr/local/share/jupyter/lab/settings \
+    && printf '%s\n' '{' \
+        '  "@jupyterlab-workshop/labextension:panel": {' \
+        '    "defaultWorkshop": "",' \
+        '    "browseOnStart": true,' \
+        '    "workshopsDirectory": "workshops",' \
+        '    "collections": ["collections/fundamentals/collection.json", "collections/applications/collection.json"]' \
+        '  },' \
+        '  "@jupyterlab/htmlviewer-extension:plugin": { "trustByDefault": true },' \
+        '  "@jupyterlab/apputils-extension:notification": { "fetchNews": "false" }' \
+        '}' > /usr/local/share/jupyter/lab/settings/overrides.json
+
 # A non-root user, as a learner is on Binder and in a codespace. uid
 # 1000 matches the first user on most Linux desktops; Docker Desktop on
 # macOS maps the mounted checkout's ownership either way.
 RUN useradd --create-home --uid 1000 --shell /bin/bash learner
 USER learner
-ENV HOME=/home/learner
+# SHELL is what JupyterLab's terminals start; without it they fall back
+# to /bin/sh, and the pages assume bash.
+ENV HOME=/home/learner SHELL=/bin/bash
 WORKDIR /home/learner/tachyon-workshops
 
 EXPOSE 8888
@@ -54,5 +76,11 @@ EXPOSE 8888
 # The same config the local `just lab` uses, listening on every
 # interface of the container so the published port reaches it. The
 # token comes from JUPYTER_TOKEN when set, which the Justfile sets to
-# a fixed word so the link is the same every start.
-CMD ["jupyter", "lab", "--config=jupyter_lab_config.py", "--ServerApp.ip=0.0.0.0", "--no-browser"]
+# a fixed word so the link is the same every start. Deleting goes
+# straight to deletion: the trash JupyterLab would otherwise use is a
+# `.Trash-1000` directory at the root of the mounted checkout, which a
+# workshop's Restart fills with a copy of everything it shipped.
+# Run the container with `--init`, as the Justfile does, so processes a
+# workshop leaves behind are reaped instead of lingering as zombies
+# under JupyterLab.
+CMD ["jupyter", "lab", "--config=jupyter_lab_config.py", "--ServerApp.ip=0.0.0.0", "--no-browser", "--FileContentsManager.delete_to_trash=False"]

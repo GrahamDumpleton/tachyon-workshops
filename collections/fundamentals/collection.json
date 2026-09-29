@@ -10,5 +10,148 @@
     "profiling"
   ],
   "ordered": true,
-  "workshops": []
+  "workshops": [
+    {
+      "name": "your-first-profile",
+      "title": "Your first profile",
+      "description": "Run Tachyon, the sampling profiler in Python 3.15, on a small report generator and read the table it prints. Learn what a sample is, why time is samples multiplied by an interval, why the same function can fill two rows, and which of the report's functions is eating the time.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/your-first-profile",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/your-first-profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "sampling-or-tracing",
+      "title": "Sampling or tracing?",
+      "description": "Run the same report under cProfile, now also called profiling.tracing, and under Tachyon. Exact call counts against estimates, the overhead each imposes and why it depends on how many calls a program makes, and which profiler to reach for when.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "cprofile"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/sampling-or-tracing",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/sampling-or-tracing"
+          }
+        }
+      ]
+    },
+    {
+      "name": "reading-a-process-from-outside",
+      "title": "Reading a process from the outside",
+      "description": "How Tachyon sees the call stack of another process without running any code in it, why that needs permission on most systems, why the profiler and the program must be the same Python, and what the error rate and the blocking option mean.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/reading-a-process-from-outside",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/reading-a-process-from-outside"
+          }
+        }
+      ]
+    },
+    {
+      "name": "reading-a-flame-graph",
+      "title": "Reading a flame graph",
+      "description": "Turn a Tachyon profile into the interactive flame graph the profiler writes and read it beside the instructions, on a page renderer whose hot function has several callers. What width and depth mean, zooming, search, the sidebar, and the collapsed stacks text the picture is drawn from.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "flamegraph"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/reading-a-flame-graph",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/reading-a-flame-graph"
+          }
+        }
+      ]
+    }
+  ]
 }

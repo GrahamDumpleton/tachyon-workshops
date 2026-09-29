@@ -23,6 +23,10 @@
 # progress events to the sink each collection index's analytics block
 # names, without asking; the events say they came from a codespace.
 # .devcontainer/welcome.md tells the learner that progress is reported.
+# The third block trusts HTML files opened in JupyterLab's HTML viewer,
+# which is how the workshops show the profiler's flame graphs and
+# heatmaps; untrusted, the viewer runs none of a file's scripts and the
+# graph stays blank until Trust HTML is clicked.
 # The second block is JupyterLab's own: it turns off the question about
 # fetching Jupyter news, which would otherwise come before the welcome
 # message the first time the codespace's JupyterLab opens.
@@ -100,6 +104,9 @@ cat > "$overrides" <<'JSON'
   },
   "@jupyterlab/apputils-extension:notification": {
     "fetchNews": "false"
+  },
+  "@jupyterlab/htmlviewer-extension:plugin": {
+    "trustByDefault": true
   }
 }
 JSON

@@ -21,6 +21,10 @@
 # events never carry file contents, cell output or form answers; the
 # welcome message tells the visitor that progress is reported. Until an
 # index carries an analytics block, this setting reports nothing.
+# The third block trusts HTML files opened in JupyterLab's HTML viewer,
+# which is how the workshops show the profiler's flame graphs and
+# heatmaps; untrusted, the viewer runs none of a file's scripts and the
+# graph stays blank until Trust HTML is clicked.
 # The second block is JupyterLab's own: it turns off the question about
 # fetching Jupyter news, which a fresh container would otherwise put in
 # front of every visitor before the welcome message.
@@ -80,6 +84,9 @@ cat > "$settings/overrides.json" <<'JSON'
   },
   "@jupyterlab/apputils-extension:notification": {
     "fetchNews": "false"
+  },
+  "@jupyterlab/htmlviewer-extension:plugin": {
+    "trustByDefault": true
   }
 }
 JSON

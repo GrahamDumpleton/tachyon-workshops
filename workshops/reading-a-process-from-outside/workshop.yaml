@@ -1,0 +1,63 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: reading-a-process-from-outside
+title: Reading a process from the outside
+version: 0.1.0
+description: How Tachyon sees the call stack of another process without running any code in it, why that needs permission on most systems, why the profiler and the program must be the same Python, and what the error rate and the blocking option mean.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/reading-a-process-from-outside
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the programs it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-reading-a-process-from-outside
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: report
+layouts:
+  report:
+    main:
+      areas:
+        - { tabs: ["file:gazette/report.py", "file:gazette/stream.py"] }
+        - { size: 0.45, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have seen how the profiler works: it finds the interpreter's
+  state in another process's memory and walks the frames itself,
+  without the program running a line of profiler code. From that
+  follow the three rules of this workshop. The profiler and the
+  program must be the same Python. The profiler may read a process it
+  started anywhere, and any other process only where the operating
+  system allows it, which on most Linux systems it does not without a
+  setting an administrator controls. And what it reads while the
+  program is changing its stack is sometimes inconsistent and thrown
+  away, which the error rate counts and `--blocking` prevents at a
+  cost.
+
+  Next in these workshops is **Reading a flame graph**
+  (`reading-a-flame-graph`), which turns the table into a picture and
+  answers the question the table cannot: which path led to the hot
+  function.
+
+  The "Platform requirements" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  lists what each operating system needs, and "Sampling efficiency"
+  and "Blocking mode" cover the rest of this workshop.
+pages:
+  - pages/01-welcome.md
+  - pages/02-the-same-python.md
+  - pages/03-a-snapshot-of-another-process.md
+  - pages/04-samples-that-do-not-count.md
+  - pages/05-keeping-up.md
+  - pages/06-finish.md

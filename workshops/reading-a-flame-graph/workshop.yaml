@@ -1,0 +1,61 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: reading-a-flame-graph
+title: Reading a flame graph
+version: 0.1.0
+description: Turn a Tachyon profile into the interactive flame graph the profiler writes and read it beside the instructions, on a page renderer whose hot function has several callers. What width and depth mean, zooming, search, the sidebar, and the collapsed stacks text the picture is drawn from.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/reading-a-flame-graph
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, flamegraph]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-reading-a-flame-graph
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: pages
+layouts:
+  pages:
+    main:
+      areas:
+        - { tabs: ["file:gazette/pages.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have drawn a profile as a flame graph and read it: every box a
+  function on the stack, its width the share of samples it was on,
+  the boxes beneath it what it called, and the root at the top the
+  whole program. The table could say that `format_date` had most of
+  the time and could not say which of its callers was responsible;
+  the flame graph showed one wide box beneath `render_archive` and
+  thin ones everywhere else, which is where the fix goes. The
+  collapsed stacks file is the same data as text, one line per stack,
+  for any flame graph tool.
+
+  Next in these workshops is **Down to the line** (`down-to-the-line`),
+  which paints the samples onto the source code itself, for when you
+  know the file and want the line.
+
+  The "Flame graph" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  lists the graph's features and links a live example, and Brendan
+  Gregg's [flame graph page](https://www.brendangregg.com/flamegraphs.html)
+  is where the picture came from.
+pages:
+  - pages/01-welcome.md
+  - pages/02-what-the-table-cannot-say.md
+  - pages/03-draw-it.md
+  - pages/04-reading-the-picture.md
+  - pages/05-the-text-behind-the-picture.md
+  - pages/06-finish.md

@@ -1,0 +1,66 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: sampling-or-tracing
+title: Sampling or tracing?
+version: 0.1.0
+description: Run the same report under cProfile, now also called profiling.tracing, and under Tachyon. Exact call counts against estimates, the overhead each imposes and why it depends on how many calls a program makes, and which profiler to reach for when.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/sampling-or-tracing
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, cprofile]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has both
+# profilers, and the same interpreter as the program they profile.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-sampling-or-tracing
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: report
+layouts:
+  report:
+    main:
+      areas:
+        - { tabs: ["file:gazette/report.py"] }
+        - { size: 0.45, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have run one program under both of Python's profilers. The
+  tracing profiler, `cProfile`, now also `profiling.tracing`, is told
+  about every call and return, so it knows exact call counts and exact
+  times, and the program pays for every one of the four million times
+  it is told: this report took four times as long under it. The
+  sampling profiler, Tachyon, glances at the stack from outside a
+  thousand times a second, so it estimates from counts, knows nothing
+  about how many calls there were, and the program runs at full speed.
+  The tracer is for short programs, for exact counts and for
+  programs whose cost is in a few calls; the sampler is for anything
+  that runs a while, for production, and for anything the tracer's
+  overhead would distort.
+
+  Next in these workshops is **Reading a process from the outside**
+  (`reading-a-process-from-outside`), which explains how the sampler
+  manages to read another process's stack at all, and what follows
+  from the mechanism.
+
+  The [profiling](https://docs.python.org/3.15/library/profiling.html)
+  page is the overview of both profilers,
+  [profiling.tracing](https://docs.python.org/3.15/library/profiling.tracing.html)
+  covers the tracer, and the "When to use alternatives" section of the
+  [profiling.sampling](https://docs.python.org/3.15/library/profiling.sampling.html)
+  page is the rule of thumb from this workshop, as the authors put it.
+pages:
+  - pages/01-welcome.md
+  - pages/02-run-it-plain.md
+  - pages/03-the-tracing-profiler.md
+  - pages/04-the-sampling-profiler.md
+  - pages/05-which-one-when.md
+  - pages/06-finish.md

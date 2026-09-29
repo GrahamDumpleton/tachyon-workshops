@@ -46,7 +46,8 @@ The repository holds two collections and is laid out for more. Each
 collection is a course: its workshops are numbered in the order to take
 them, and the Finish dialog of each offers the next. A
 [catalog](catalog.json) names every collection, so one URL offers them
-all. No workshop is written yet; the design of every one is in
+all. The first four workshops of the fundamentals collection are
+written and tested; the design of every one is in
 [OUTLINE.md](OUTLINE.md), and its status table records where each
 stands.
 
@@ -54,7 +55,8 @@ stands.
 
 Fourteen workshops, about three and a half hours in total, in the order
 to take them. Each is self-contained, so you can start anywhere, but
-they build.
+they build. The first four are written; the rest are designed in
+[OUTLINE.md](OUTLINE.md) and not yet written.
 
 **What a sampling profiler is**
 
@@ -63,23 +65,27 @@ they build.
    what a sample is, why time is samples multiplied by an interval, and
    which of the report's functions is eating it.
 
-2. **Sampling or tracing?** (`sampling-or-tracing`, 15 minutes). The
-   same program under cProfile, now `profiling.tracing`, and under
-   Tachyon: exact counts against estimates, the overhead each imposes,
-   and which to reach for when.
+2. **Sampling or tracing?** (`sampling-or-tracing`, 15 minutes). A
+   tidier version of the report, made of four million small calls,
+   under cProfile, now `profiling.tracing`, and under Tachyon: exact
+   counts against estimates, a program four times slower under the
+   tracer and unchanged under the sampler, and which to reach for when.
 
 3. **Reading a process from the outside** (`reading-a-process-from-outside`,
    15 minutes). How the profiler sees inside another process without
-   running any code in it, why that needs permission, why the profiler
-   and the program must be the same Python, and what the error rate
-   means.
+   running any code in it, why that needs permission and what this
+   machine allows, why the profiler and the program must be the same
+   Python, what the error rate and `--blocking` mean, and what the
+   rate and duration options do.
 
 **Reading the pictures**
 
 4. **Reading a flame graph** (`reading-a-flame-graph`, 15 minutes).
-   The interactive flame graph the profiler writes, open beside the
-   instructions: what width means, what depth means, zooming, search
-   and the sidebar, on a program whose hot function has two callers.
+   The interactive flame graph the profiler writes, open in a tab
+   beside the program: what width means, what depth means, zooming,
+   search and the sidebar, on a page renderer whose hot function has
+   several callers, and the collapsed stacks text the picture is drawn
+   from.
 
 5. **Down to the line** (`down-to-the-line`, 15 minutes). The heatmap:
    sample counts painted onto the source, self against total time, and
@@ -282,14 +288,17 @@ checkout. With Docker installed:
 git clone https://github.com/GrahamDumpleton/tachyon-workshops
 cd tachyon-workshops
 docker build -t tachyon-workshops -f container/Dockerfile .
-docker run --rm -it -p 127.0.0.1:8888:8888 -e JUPYTER_TOKEN=tachyon \
+docker run --rm --init -it -p 127.0.0.1:8888:8888 -e JUPYTER_TOKEN=tachyon \
     -v "$PWD":/home/learner/tachyon-workshops tachyon-workshops
 ```
 
-Then open `http://127.0.0.1:8888/lab?token=tachyon`. The workshop
-browser lists the workshops under their collections, in order, as it
-does locally, and the trust dialog appears when a workshop opens, since
-this is your container. Podman runs the same commands. With
+Then open `http://127.0.0.1:8888/?token=tachyon`. JupyterLab starts in
+the workshop browser with the workshops listed under their collections,
+in order, and the trust dialog appears when a workshop opens, since
+this is your container. The image's settings start the workshop
+browser whichever JupyterLab URL you open; the root URL also carries
+the catalog and collections into the session, as `just lab` does
+locally. Podman runs the same commands. With
 [just](https://just.systems) installed, `just container-build` and
 `just container-lab` are the same two steps.
 

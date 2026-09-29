@@ -232,59 +232,68 @@ goes", the wrapture title for `finding-slow-code`, is not reused.
 Where does my program spend its time?
 
 Start with the program, not the profiler. The learner has
-`gazette/report.py` open beside the terminal: it loads a few thousand
+`gazette/report.py` open above the terminal: it loads two thousand
 articles from a shipped JSON file, counts words, finds the most common
-ones, and prints a short report, and it takes a couple of seconds
+ones, and prints a short report, and it takes a second and a half,
 longer than seems right. The welcome page says what a profiler is for,
 and that there are two kinds: one that instruments the program and
 counts every call, and one that watches from outside and looks at the
 call stack many times a second. Tachyon is the second kind, and this
-page says in three sentences what a sample is (the call stack at one
-instant, every function that was on it), that the default is a thousand
-a second, and that a function that is running most of the time will be
-found on most of the samples. Then `python gazette/report.py` on its
-own, so the learner has a time to compare against.
+page says in a paragraph what a sample is (the call stack at one
+instant, every function that was on it), that the default is a
+thousand a second, and that a function that is running most of the
+time will be found on most of the samples. Then `python
+gazette/report.py` on its own, so the learner has a time to compare
+against, and a quiz predicting which of `load_articles`,
+`count_words`, `most_common` or `render` is hot.
 
 Then the command: `python -m profiling.sampling run gazette/report.py`.
-Before it runs, a quiz: which of `load_articles`, `count_words`,
-`most_common` or `render` do you expect to be hot? Then the table. The
-page reads it column by column: "Captured 2,300 samples in 2.3 seconds"
-is the sampling working; `nsamples` is direct over cumulative, and the
-page says what each means with the row for `main` (zero direct, all
-cumulative) as the example; `sample%` and `tottime` are the same fact
-twice, since time is samples multiplied by the interval; `cumul%` and
-`cumtime` are the time a function was anywhere on the stack. The hot
-row is `count_words`, on the line that does `words.count(w)` inside a
-loop, which is quadratic, and the page says so. Then the summary
-sections: hot spots, indirect calls, call magnification, each in a
-sentence.
+The page reads the header ("Captured 1582 samples in 1.58 seconds",
+the rate, the error rate, which it names and hands to workshop 3) and
+asks in a quiz which function is on the top row. Then the table column by column, with the rows for `count_words`
+(`1261/1261`) and `main` on line 62 (`2/1577`) as the examples, and a
+hint for the reader whose table has `main` on line 61 instead, or
+both: `main` has a row per sampled line too, and the default sort by
+direct samples can drop the line-62 row below the fifteen shown (a
+first reader found exactly this). Each page runs the profiler at most
+once, since three runs across two pages read as repetition: `nsamples` is direct over cumulative;
+`sample%` and `tottime` are the same fact twice, since time is samples
+multiplied by the interval, and the profiler never timed anything;
+`cumul%` and `cumtime` are the time a function was anywhere on the
+stack. Then the three summary lists (hot spots, indirect calls, call
+magnification) in a sentence each, and `-o profile.pstats` to keep the
+table in a file that `pstats` reads, which is how the checks work.
 
 Then the thing a cProfile user asks first: why does `count_words`
 appear on two rows? Because each row is a file, a line and a function,
 and the line is the one that was executing when the sample landed, so
-a function with two busy lines has two rows. The summary sections
-aggregate by function. The page says this was checked on 3.15.0rc2 and
-points at the heatmap workshop as the place the per-line view comes
-into its own.
+a function with two busy lines has two rows: line 36, the dictionary
+comprehension calling `words.count(word)` (four fifths), and line 34,
+`word not in unique` (a fifth), both quadratic. The summary sections
+aggregate by function. The page points at workshop 5 as where the
+per-line view comes into its own.
 
-Then `-l 5` and `--sort cumtime`, to show the table is sortable and
-trimmable, and the ordinary shape of a call tree read from the bottom.
-Then a second run, and the numbers are different: the page says why,
-in one paragraph that the whole collection leans on (a sample is a
-random glance; two sets of glances agree on the proportions and not on
-the counts; more samples agree better), and says that checks in these
-workshops look at which functions are where, never at counts.
+Then `--sort cumtime -l 6 --no-summary`, so the table reads from the
+root down with `main` line 62 near the top, and the learner sees it is
+sortable and trimmable; and, since this run's numbers differ from the
+first's, the page says
+why, in the paragraph the whole collection leans on (a sample is a
+random glance; two sets of glances agree on the proportions and not
+on the counts; more samples agree better), and says that checks in
+these workshops look at which functions are where, never at counts.
 
-The finish says what the learner can now do, names **Sampling or
-tracing?** as next, and points at the pstats section of the module
-docs.
+The finish quiz asks where "1.261 seconds" came from. The finish text
+names **Sampling or tracing?** as next and points at the pstats
+section of the module docs.
 
 - Format: terminal and files. Ships `gazette/report.py`,
-  `gazette/__init__.py` and `data/articles.json`. Checks: a `shell`
-  check that the run wrote nothing (the default prints to the
-  terminal), then a `kernel` check on a second run with
-  `-o profile.pstats`, loading it with `pstats.Stats` and asserting
-  that `count_words` has more total time than `render`.
+  `gazette/__init__.py` and `data/articles.json`. Seven pages. The
+  runs that print to the terminal are followed by quizzes; the runs
+  with `-o` are checked with `kernel` checks that load the file with
+  `pstats.Stats` and assert that `count_words` has most of the direct
+  time and appears on more than one line; the sorted run and the
+  variability lesson end in a quiz. Written and tested 2026-09-29: the report takes 1.6 seconds
+  and the checks read 99% of the direct time in `count_words`.
 
 - Requires: nothing beyond the standard library.
 
@@ -294,45 +303,50 @@ docs.
 
 When should I use this profiler and when the old one?
 
-The same report generator, first under `python -m cProfile -s cumtime
-gazette/report.py`, then under `python -m profiling.tracing`, which is
-the same module under the name PEP 799 gave it, and the page says that
-`cProfile` is now an alias and the old pure-Python `profile` module is
-going away in 3.17. The tracing table has exact call counts, `ncalls`,
-and the page dwells on that column for a moment: the deterministic
-profiler knows `words.count` was called 48,000 times because it was
-told about every one of them. Then the cost of being told: the run took
-noticeably longer under the tracer, and the page has the learner time
-both with `time` in front of the command. A quiz before the timing:
-how much slower will the traced run be, a few percent, half again, or
-several times? The honest answer on this program is measured and pasted
-in; the page explains that the overhead depends on how many calls a
-program makes, not how long it runs, so a program of many tiny calls
-suffers most, and that the overhead also distorts, since the cheap
-functions get proportionally more expensive.
+Not the first workshop's report but a tidier one, because the first
+workshop's report showed no tracer overhead at all when it was tried:
+its time was inside a thousand calls to `list.count`, and a tracer
+charges per call. So this workshop's `gazette/report.py` is the same
+report written the way a tidy program would be, with a function per
+word (`normalise`, `is_stop_word`, `stem`, `record`), phrase pairs,
+and a reading-ease score that counts syllables one letter at a time:
+four million small calls in a fifth of a second. The learner runs it
+plain twice, predicts the slowdown in a quiz, then runs
+`python -m cProfile -s tottime gazette/report.py`: the report's own
+last line says 0.7 seconds against 0.2, and the header says 4.2
+million calls. The page reads `ncalls` (`stem` 164,151, `normalise`
+415,316, `str.endswith` 1.3 million), says these are counts and not
+estimates, and notes the rows for C methods and the per-`def` keying.
+Then `python -m profiling.tracing`, the same profiler under the name
+PEP 799 gave it, with `cProfile` kept as an alias and `profile` going
+in 3.17; its `--help` still says `Usage: cProfile.py`, which the page
+shows. The page explains that the overhead depends on how many calls a
+program makes, not how long it runs, and that it distorts, since the
+cheap functions carry proportionally more of it.
 
-Then Tachyon on the same program with `time` in front, and the run is
-as fast as it was with no profiler at all, which is the point of the
-collection. The page explains why in terms the learner already has: the
-program never runs any profiler code; a second process reads its stack
-from outside. The trade: no call counts, estimates not measurements,
-and nothing at all from a program that runs for less time than a few
-samples take. The page gives the docs' rule of thumb: the tracing
-profiler for a short script, for exact counts, and for a unit test
-that asserts a function was called once; `timeit` for differences of a
-few percent; the sampling profiler for anything that runs for a while,
-for production, and for anything where the overhead would change the
-answer.
+Then Tachyon on the same program, and the report's last line is back
+to a fifth of a second, which is the point of the collection. The
+table has no `ncalls`, only two hundred samples, and an error rate
+higher than the first workshop's (a few percent to a fifth, by
+machine), which the page names and hands to workshop 3. A hint
+says why the first workshop's report would not have shown the
+overhead.
 
-Closes by naming the three tools and the question each answers, and
-sends the learner to **Reading a process from the outside** to see how
-the second process manages it.
+Then the docs' rule of thumb as a page: the tracer for a short
+program, for exact counts, for a program whose cost is in a few long
+calls, and for reproducibility; the sampler for anything that runs a
+while, for production, for call-heavy programs where the tracer's toll
+is highest and its distortion worst, and for a process you would
+rather not restart; `timeit` for differences of a few percent. A quiz
+on a slow web service closes it, and the finish quiz asks what only
+the tracer can report (call counts).
 
-- Format: terminal and files. Ships the same `gazette` package. Checks:
-  a `shell` check that a `-o tracing.prof` run under
-  `profiling.tracing` produced a file `pstats` can load with an
-  `ncalls` for `count_words`, and a `kernel` check on the sampling run's
-  `.pstats` that the same function is the hottest.
+- Format: terminal and files. Ships the tidy `gazette/report.py` and
+  the data. Six pages. Checks: a `kernel` check on `tracing.pstats`
+  that over a million calls were recorded and `stem` over 100,000
+  times, and a `kernel` check on `sampling.pstats` that the samples
+  cover under 0.6 seconds (no slowdown) and name the word functions.
+  Written and tested 2026-09-29.
 
 - Requires: nothing beyond the standard library.
 
@@ -343,60 +357,63 @@ the second process manages it.
 How can one process see the call stack of another, and what does that
 cost me?
 
-The mechanism, plainly. The profiler finds the target's interpreter
-state in its memory and walks the frames the way the interpreter would,
-reading the memory with `process_vm_readv` on Linux, `task_for_pid` on
-macOS and `ReadProcessMemory` on Windows, and the target is never
-paused and never runs a line of profiler code. That is why the version
-rule exists: the profiler knows the layout of a 3.15 interpreter and
+The mechanism, plainly. The profiler finds the interpreter's runtime
+structure in the target's memory and walks the frames the way the
+interpreter would to print a traceback, reading the memory with
+`process_vm_readv` on Linux, `task_for_pid` on macOS and
+`ReadProcessMemory` on Windows; the target is never paused and never
+runs a line of profiler code. That is why the overhead is nothing and
+why the workshops are Linux only. From the mechanism follows the
+version rule: the profiler knows the layout of a 3.15 interpreter and
 nothing else, so profiler and program must be the same minor version,
-and while 3.15 is a release candidate the same release exactly. The
-page shows the rule failing safely: `python3 -m profiling.sampling run`
-with the host's other Python where there is one, or the message the
-profiler gives, pasted in, where there is not.
+and the same release exactly while either is a pre-release. The page
+shows the rule failing safely by dumping a `sleep` process: "Failed
+to find the PyRuntime section", since no other Python is on the
+hosts. A quiz asks why the versions must match.
 
-Then `dump`, the one-shot form of the same read: start
-`gazette/report.py` in the background from the terminal with `&`, and
-run `python -m profiling.sampling dump $!` against it. Here the
-platform matters, and the page says so before the command: on Linux a
-process may read the memory of a process it started, and any other
-process of its own user only where the kernel's Yama `ptrace_scope` is
-0 or the profiler has `CAP_SYS_PTRACE`; the shell started the report,
-not the profiler, so this is the second case. An `execute-capture`
-before the command probes it (a `dump` of a throwaway child of the
-shell, exit status captured into `can_attach`), and a `when` on the
-result gives one of two pages: the dump's output, a traceback-style
-stack with "main thread, has GIL, on CPU" in its header, read line by
-line; or the same output shipped as a file and shown, with the
-explanation of why this host refused, what `ptrace_scope` 1 means
-(the Ubuntu default; parents only), and that `run` never hits this
-because the profiler is the parent. The page says outright that these
-workshops never change the kernel setting or use `sudo`, and that on
-macOS even `run` needs root or a debugger entitlement, which is why
-the workshops are Linux only.
+Then `dump`, the one-shot form of the same read, and the permission
+model in full: Yama's `ptrace_scope`, 1 by default (descendants
+only), 0 for any process of the user, `CAP_SYS_PTRACE` and root; why
+`run` never hits it (the profiler is the parent). An
+`execute-capture` probes the host by dumping a short-lived child of
+the shell and stores `yes` or `no` in `can_attach`, and a `when` block
+for each answer follows. On `yes` (Docker Desktop, or `ptrace_scope`
+0) the learner starts the report in the background and dumps its
+stack, and the page reads the header ("main thread, has GIL, on CPU;
+most recent call last") and the frames down to line 36 of
+`count_words`. On `no` the same output is shipped as
+`dump-example.txt` and read, with the explanation of what refused it
+and a pointer to applications workshop 6 for what an administrator
+can do. The page says outright that these workshops never change the
+setting or use `sudo`. A quiz asks who may read whom at the default
+setting.
 
 Then what the read costs the profiler rather than the program: the
-"Error rate" line. A stack read while the target is changing it can
-be inconsistent, and the profiler throws such a sample away; the rate
-is the share thrown away. `--blocking` pauses the target for each
-sample and drives it to zero at the cost of slowing the target, and
-the page runs both on a generator-heavy variant of the report to show
-the rate move, with the docs' advice to use blocking only at long
-intervals. `--realtime-stats` shows the achieved rate against the
-asked-for rate, and the page explains "missed samples" as the
-profiler falling behind, which is normal under load and does not
-invalidate the profile.
+error rate. `gazette/stream.py` counts pairs of adjacent words through
+three generators, so frames are entered and left tens of thousands of
+times a second, and its error rate is several times the report's
+under 1%, by how much depending on the host (see Known blockers), so
+the page has the learner compare the two lines and quotes no number. `--blocking` pauses the target for each sample and brings
+it to a percent or two at the program's expense, with the docs' advice
+to use it only at long intervals and only when the stacks change too
+fast. Then `-r 5khz -d 1` and `--realtime-stats`: the rate asked for,
+the rate achieved, and what missed samples mean.
 
-Closes with the three rules the mechanism gives: same Python, parent or
-permission, and estimates from whatever samples survived. Next is
+Closes with the three rules the mechanism gives: same Python, parent
+or permission, and estimates from whatever samples survived. The
+finish quiz diagnoses a colleague's permission error. Next is
 **Reading a flame graph**.
 
-- Format: terminal and files. Ships `gazette/report.py` and a
-  `gazette/stream.py` variant that drives the report through
-  generators, plus `dump-example.txt` for the branch where dump is
-  refused. Checks: `shell` checks that the probe ran and set the
-  variable, that the dump output (or the shipped example) was read,
-  and that the `--blocking` run's `.pstats` exists.
+- Format: terminal and files. Ships `gazette/report.py`,
+  `gazette/stream.py` and `dump-example.txt`, and the data. Six pages.
+  The checks that gate the probe page are a `shell` check that
+  `can_attach` is set and a quiz, so the page is checkable on either
+  track; the later pages load `stream.pstats`,
+  `stream-blocking.pstats` and `rate.pstats` with `pstats.Stats` and
+  assert the generator functions are present and the `-d 1` profile
+  covers about a second. Written and tested 2026-09-29, on the `yes`
+  track in the container; the `no` track is what CI on
+  `ubuntu-latest` will exercise.
 
 - Requires: nothing beyond the standard library.
 
@@ -408,45 +425,68 @@ The table says which function is hot; how do I see the path that got
 there?
 
 A program whose table is ambiguous on purpose: `gazette/pages.py`
-renders an index page and an archive page, and both call `format_date`
-through different paths, so the table shows `format_date` with a high
-cumulative time and cannot say which caller is responsible. The page
-says this is what flame graphs are for, and gives their history in two
-sentences (Brendan Gregg's `flamegraph.pl` over collapsed stacks, which
-`--collapsed` still writes for it) before running
-`python -m profiling.sampling run --flamegraph -o flamegraph.html
-gazette/pages.py`.
+renders an index of the hundred latest articles, an archive page per
+day (271 of them), a page per section and a page per author. Every
+page is built from `summary`, which calls `format_date`;
+`render_archive` also calls `format_date` for every article for every
+day, to find the day's articles, which is half a million calls against
+`summary`'s six thousand. The table shows `format_date` with three
+quarters of the samples and cannot say which caller is responsible,
+and a quiz asks the learner to predict. The page says the flame graph
+is what has that column, gives its history in two sentences (Brendan
+Gregg, 2011, drawn from stack samples), and runs
+`--flamegraph -o flamegraph.html`.
 
-The flame graph opens in the pane beside the terminal, with `url-open`
-on its `/files/` URL, so the page can walk it: every box is a function
-on the stack, its width is the share of samples it was on, the boxes
-above it are what it called, and the root at the bottom is the whole
-program. Read the widths for `render_index` against
-`render_archive`, then find `format_date` twice, once above each, and
-the answer to the question is which of the two boxes is wider. Then
-the interactions, each as a short step: hover for the tooltip with the
-source context, click a box to zoom into its subtree and the crumb
-trail to come back, the search field with a function name and with
-`pages.py:42`, and the sidebar: total samples, sampling efficiency, the
-thread statistics (GIL held, released, waiting, GC), the hot spots
-list. The theme toggle and the SVG export get a sentence.
+The flame graph opens in JupyterLab's HTML viewer, as a tab beside
+the terminal and below `pages.py`, through a `command` action running `docmanager:open` with
+the HTML Viewer factory (see Known blockers for why not `url-open`),
+and a hint says to click Trust HTML on a JupyterLab that does not
+trust files by default. Then the page walks it, as Tachyon draws it, which is
+root at the top with callees beneath (`.inverted(true)` in the
+graph's script; the first draft described the classic bottom-up
+layout from memory and a first reader caught it): every box is a
+function on the stack, its width is the share of samples it was on,
+and its colour is the same share on the heat scale shown in the
+sidebar's Heat Map section, from three fifths or more down to under
+one percent. Follow the hot colour down through `main` to
+`render_archive`, find `format_date` directly beneath it, as two
+boxes for its two lines, and again beneath the narrow `summary`, and
+the answer to the question is which is wider, which is where the fix
+goes: in the caller, not in `format_date`. Then the interactions as a
+short list: hover for the tooltip (total and self time, percentage,
+source), click to zoom and the house button to reset, search by
+function name or `pages.py:19`, the sidebar on the left (View Mode
+with module names or file paths and the inverted graph, Profile
+Summary, Hotspots, Runtime Stats, Heat Map), and the export,
+documentation and theme buttons. A
+quiz asks which `format_date` box is wider and what that means.
 
-Then `--collapsed`, the text form the flame graph is built from: one
-line per unique stack, `main;render_index;format_date 312`, read
-aloud, and the note that this is the format every flame graph tool
-accepts, so a profile from Tachyon can go into speedscope or
-`flamegraph.pl` unchanged.
+Then `--collapsed -o stacks.txt`, the text the graph is drawn from:
+one line per distinct stack, `tid:<n>;` then `file:function:line`
+frames from the root outwards, a space and the count; `sort -k 2 -n
+-r | head -n 3` shows the wide column as text, about half the samples
+kept, through `render_archive` to
+`format_date`. It is the format every flame graph tool accepts, and
+the smallest useful record of a profile.
 
 Closes with what the flame graph adds to the table (the path) and what
 it does not (the order in time, which the gecko format has, workshop
-6). Next is **Down to the line**.
+6). The finish quiz asks when the graph says something the table does
+not. Next is **Down to the line**.
 
-- Format: terminal and files, with a results pane. Ships
-  `gazette/pages.py`, `gazette/__init__.py`, `data/articles.json` and
-  `templates/`. Checks: a `shell` check that `flamegraph.html` exists
-  and contains both `render_index` and `format_date`; a `shell` check
-  that the collapsed file has a line beginning with the `main;` path
-  to `format_date`; a `ui` check that a pane named `results` is open.
+- Format: terminal and files, with the flame graph in an HTML viewer
+  tab. Ships `gazette/pages.py`, `gazette/__init__.py` and
+  `data/articles.json`; no templates, the HTML is built with f-strings
+  and `html.escape`. Six pages. Checks: `shell` checks that
+  `flamegraph.html` exists and names `format_date` and
+  `render_archive`, and that `stacks.txt` has a line with
+  `render_archive` before `format_date`; quizzes on the caller and the
+  wider box. Written and tested 2026-09-29; the graph was also opened
+  in a real JupyterLab in the container with Playwright and drew its
+  boxes in the trusted viewer. The program takes 1.6 seconds and its
+  error rate can reach 40% or more, since `strptime` builds and tears
+  down frames quickly, which the page names in a sentence without
+  promising a figure.
 
 - Requires: nothing beyond the standard library.
 
@@ -1328,10 +1368,11 @@ Binder requirements.
 The profiler is a command line tool and its output is text in a
 terminal or HTML in a file, so a workshop is a shipped program open in
 the editor, one or two terminals below it, and a named area beside
-them that `url-open` fills with the flame graph or heatmap at its
-`/files/` URL, so the page, the command and the picture are on screen
-together, which is what the user asked for in place of a separate
-browser tab. Two workshops end in a notebook (fundamentals 6 in
+them, and the flame graph or heatmap opened in JupyterLab's HTML
+viewer as a tab beside the terminal (not, as first planned, a
+`url-open` pane; see Known blockers), so the page, the command and the
+picture are in one window, which is what the user asked for in place
+of a separate browser tab. Two workshops end in a notebook (fundamentals 6 in
 spirit, applications 7 in fact), created by the page on the workshop's
 kernel, for the analysis that a notebook does better than a terminal:
 loading the JSONL and drawing a chart. No workshop is notebook-only,
@@ -1485,17 +1526,16 @@ paths resolve against `work/`. The manifest sets `PAGER: cat`,
 declares `curl` under `requires.tools` where a page uses it, and holds
 each port in a `number` variable.
 
-**The results pane.** The layout names an area `results` beside the
-terminals, empty at first, and `url-open` with `:pane: results` opens
-the flame graph or heatmap there at its `/files/` URL, which Jupyter
-serves with a `sandbox allow-scripts` policy, so the inlined D3 runs.
-The built-in `workspace` variable is the learner's `work/` directory
-relative to the JupyterLab root, so the URL is
-`files/{{ workspace }}/flamegraph.html` whatever the root is; whether
-it must be written relative or absolute to survive a base URL prefix
-(Binder serves JupyterLab under `/user/<name>/`) is an open question.
-A layout of a file on top and terminals below, with the results area
-as a column beside them, is the one every terminal workshop declares.
+**The pictures.** A flame graph or heatmap written into `work/` is
+opened with a `command` action, `docmanager:open` with the path
+`{{ workspace }}/flamegraph.html` (the built-in `workspace` variable is
+the learner's `work/` directory relative to the JupyterLab root) and
+`"factory": "HTML Viewer"`, which opens it as a tab in whichever area was last active, the
+terminal's, below the program. The images trust HTML files by default so the graph's
+inlined D3 runs; a `hint` beside the action tells a learner on their
+own JupyterLab to click Trust HTML. See Known blockers for why not a
+`url-open` pane. The layout every terminal workshop declares is the
+program on top and the `shell` terminal below, at two fifths.
 
 **Probes and tracks.** Where a page's outcome depends on the host
 (attach allowed or not), an `execute-capture` early on the page stores
@@ -1516,8 +1556,33 @@ name the cell assigned.
 
 ## Known blockers
 
-None found in the extension yet; this section records them as the
-first workshop is written. Outside the extension:
+In the extension, found writing the first four workshops:
+
+- **`url-open` takes only an http or https URL** (checked in the lint
+  rule and again at run time in `packages/labextension/src/actions/url.ts`),
+  and nothing tells a page the browser-facing base URL, so a flame
+  graph written into `work/` cannot be opened in a `url-open` pane at
+  its `/files/` URL. The workshops open it in JupyterLab's own HTML
+  viewer instead, with a `command` action running `docmanager:open`
+  and `{ "path": "{{ workspace }}/flamegraph.html", "factory": "HTML
+  Viewer" }`, which lands as a tab beside the terminal rather than in a
+  named area (the `command` action has no `area` option). The viewer
+  runs a file's scripts only when the file is trusted, so the Binder,
+  Codespaces and container images set
+  `@jupyterlab/htmlviewer-extension:plugin` `trustByDefault` to true
+  in their overrides, and the page tells a learner on their own
+  JupyterLab to click Trust HTML. Checked with Playwright in the
+  container on 2026-09-29: with the override the viewer's iframe has
+  `allow-same-origin allow-scripts allow-popups` and the graph draws
+  with no console errors. An extension release that let `url-open` (or
+  a new action) take a workspace path and resolve it against the base
+  URL, with an `area` option, would put the graph in a results pane as
+  the design first said; until then the HTML viewer is the format.
+  Workshop 5 (the heatmap, a directory of pages) needs the same check,
+  since the heatmap's index links to its per-file pages and the
+  viewer's iframe must follow them.
+
+Outside the extension:
 
 - pydantic-core has no wheels for Python 3.15 (checked 2026-09-29,
   release and pre-release), so FastAPI cannot be installed on Binder or
@@ -1527,20 +1592,34 @@ first workshop is written. Outside the extension:
   repo2docker `runtime.txt` support for 3.15 (checked 2026-09-29), hence
   the `environment.yml` and uv arrangements above.
 
+- **The error rate depends on the host, so pages never quote one.**
+  On 3.15.0rc2 call-heavy programs lose many samples, because a stack
+  that changes every few microseconds is often mid-change when read,
+  but how many varies more with where the program runs than with the
+  program. Measured on 2026-09-29 in the container on Docker Desktop,
+  five or six runs each: the generator pipeline of workshop 3 lost 33
+  to 39% under the image's own Python or an environment on the
+  container's filesystem, and 1 to 20% under an environment on the
+  checkout mounted from macOS, which is what a learner in
+  `just container-lab` gets; workshop 2's report 15 to 22% against 4
+  to 18%; workshop 4's renderer 45 to 48% against 1 to 42%. The
+  report of workshop 1 is under 1% everywhere, and `--blocking` is 1
+  to 2% everywhere. Why the filesystem under the environment matters
+  is not known; the first draft of workshop 3 quoted 40% from the
+  author's runs and a first reader saw 7%. So pages say "higher than
+  the report's", give a range, and have the learner compare two lines
+  they can see; Binder and Codespaces, with no mounted filesystem,
+  will probably show the higher figures. Worth checking again on
+  3.15.0 final.
+
 ## Open questions
 
-- **The `/files/` URL of a written flame graph.** The built-in
-  `workspace` variable is the learner's `work/` directory relative to
-  the JupyterLab root (`docs/platforms.md`), so the flame graph's URL
-  is `files/{{ workspace }}/flamegraph.html`. Still to check in the
-  first workshop: whether `url-open` resolves a relative URL against
-  the page or the base URL, since Binder serves JupyterLab under
-  `/user/<name>/` and an absolute `/files/...` would miss that prefix;
-  whether the flame graph's theme toggle, which uses local storage,
-  works inside the sandboxed iframe; and whether the heatmap's
-  per-file links resolve inside it. The fallback is JupyterLab's own
-  HTML viewer (`file:` in the layout or an `{open}` link, with a Trust
-  HTML click). Settled by the first workshop written.
+- **The heatmap in the HTML viewer.** Workshop 4 settled the flame
+  graph (see Known blockers): it opens in JupyterLab's HTML viewer,
+  trusted by the images' overrides. The heatmap is a directory whose
+  `index.html` links to per-file pages; whether those links work
+  inside the viewer's iframe, and whether opening a per-file page
+  directly is the better step, is settled by workshop 5.
 
 - **Binder and Codespaces builds.** Neither `binder/environment.yml`
   with `python=3.15` on conda-forge nor the uv-installed 3.15 in
@@ -1566,20 +1645,20 @@ first workshop is written. Outside the extension:
 ## Status
 
 The writing order is the fundamentals collection's order: the first
-workshop settles the manifest, the environment step, the terminal
-layout with the results pane, the `/files/` URL question and the
-`pstats`-reading checks, and each later one adds one idea to a format
-that already works. Workshops 3 and applications 6 share the probe and
-tracks pattern and are written with it in mind; 5 and 13 share the
-`count_words` fix; 7 and 10 share the slow server. Applications 1 and
-2 are written together, since 2 is 1 with a question.
+workshop settled the manifest (an environment with an empty
+`requirements.txt`, `terminal`, `kernel-exec` and `install-packages`,
+the program above a `shell` terminal at two fifths), the
+`environment-create` first step with a `shell` check that `python` is
+3.15, and the `pstats`-reading `kernel` checks; the fourth settled how
+a flame graph is shown. Each later one adds one idea to a format that
+already works.
 
 | # | Workshop | Status |
 |---|----------|--------|
-| 1 | `your-first-profile` | Planned |
-| 2 | `sampling-or-tracing` | Planned |
-| 3 | `reading-a-process-from-outside` | Planned |
-| 4 | `reading-a-flame-graph` | Planned |
+| 1 | `your-first-profile` | Done |
+| 2 | `sampling-or-tracing` | Done |
+| 3 | `reading-a-process-from-outside` | Done |
+| 4 | `reading-a-flame-graph` | Done |
 | 5 | `down-to-the-line` | Planned |
 | 6 | `record-now-look-later` | Planned |
 | 7 | `waiting-or-working` | Planned |
