@@ -152,6 +152,189 @@
           }
         }
       ]
+    },
+    {
+      "name": "down-to-the-line",
+      "title": "Down to the line",
+      "description": "Paint a Tachyon profile onto the source code with the heatmap, on a report whose slow function is twenty lines long and slow on one of them. The index of files, the page per file, self and total time, the hot-only filter, and the same file before and after the fix.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "heatmap"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/down-to-the-line",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/down-to-the-line"
+          }
+        }
+      ]
+    },
+    {
+      "name": "record-now-look-later",
+      "title": "Record now, look later",
+      "description": "Record a Tachyon profile once in the compact binary format and turn it into a table, a flame graph and a heatmap afterwards with replay. Then the formats for other tools, the gecko file the Firefox Profiler reads, JSONL for your own scripts and the pstats file, and what each output is for.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "formats"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/record-now-look-later",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/record-now-look-later"
+          }
+        }
+      ]
+    },
+    {
+      "name": "waiting-or-working",
+      "title": "Waiting or working?",
+      "description": "Find out whether a slow program is computing or waiting, with Tachyon's wall-clock and CPU modes, on a feed reader that fetches from a slow server and then merges what it fetched. What each mode keeps, why the two tables disagree, and what the disagreement says about the fix.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "modes"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/waiting-or-working",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/waiting-or-working"
+          }
+        }
+      ]
+    },
+    {
+      "name": "who-holds-the-gil",
+      "title": "Who holds the GIL?",
+      "description": "Profile a program with several threads using Tachyon. Why the default profile shows only a thread that is waiting, what -a adds, the flame graph's view of each thread, and GIL mode, on four threads of Python that take as long as one and four threads of hashing that do not.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "threads",
+        "gil"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "20m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/who-holds-the-gil",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/who-holds-the-gil"
+          }
+        }
+      ]
+    },
+    {
+      "name": "the-price-of-an-exception",
+      "title": "The price of an exception",
+      "description": "Measure the time a program spends under an exception with Tachyon's exception mode, on a date parser that tries one format after another. What the mode counts, why raising is cheap and the handler is not, and the profile before and after the fix.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "exceptions"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/the-price-of-an-exception",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/the-price-of-an-exception"
+          }
+        }
+      ]
     }
   ]
 }

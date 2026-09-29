@@ -1,0 +1,68 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: waiting-or-working
+title: Waiting or working?
+version: 0.1.0
+description: Find out whether a slow program is computing or waiting, with Tachyon's wall-clock and CPU modes, on a feed reader that fetches from a slow server and then merges what it fetched. What each mode keeps, why the two tables disagree, and what the disagreement says about the fix.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/waiting-or-working
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, modes]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminals and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-waiting-or-working
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8071
+    description: Port the feed server listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: feeds
+# The feed server runs in a terminal of its own, to the right of the
+# one the profiler is run in, so both are in view.
+layouts:
+  feeds:
+    main:
+      areas:
+        - { tabs: ["file:gazette/feeds.py", "file:slow_server.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:shell"] }
+            - { size: 0.3, tabs: ["terminal:server"] }
+gating: soft
+finish: |
+  You have profiled one program in two modes and read the difference.
+  Wall-clock mode keeps every sample and showed two thirds of the run
+  in a read from a socket; CPU mode keeps only the samples in which
+  the thread was on a processor, and the read vanished, leaving the
+  comparison that merges the feeds. High in wall and absent in CPU is
+  waiting, and the cure for waiting is to do something else meanwhile.
+  High in both is work, and the cure for work is less of it.
+
+  Next in these workshops is **Who holds the GIL?**
+  (`who-holds-the-gil`), which profiles a program with several threads
+  and asks which of them is running.
+
+  The "Profiling modes" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes the four modes.
+pages:
+  - pages/01-welcome.md
+  - pages/02-a-slow-server.md
+  - pages/03-all-the-time-that-passes.md
+  - pages/04-only-the-time-on-a-processor.md
+  - pages/05-the-diagnosis.md
+  - pages/06-finish.md

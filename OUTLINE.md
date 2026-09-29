@@ -496,43 +496,54 @@ not. Next is **Down to the line**.
 
 I know which function; which line?
 
-The report generator's `count_words` again, or rather a version in
-which the function is long enough that "it is `count_words`" is not an
-answer: it lowercases, strips punctuation, splits, filters stop words
-and counts, in twenty lines, and one of those lines is the problem.
-The page recalls that the table already keys rows by line, and that
-this is the view where that pays off, then runs
-`python -m profiling.sampling run --heatmap -o heatmap
-gazette/report.py` and opens `heatmap/index.html` in the pane.
+`gazette/report.py` in a version whose `count_words` is twenty lines
+long, so that "it is `count_words`" is not an answer: for every
+article it joins title and body, lowercases, strips punctuation,
+splits, skips stop words and numbers, and counts each word twice,
+once for the paper with a `Counter` and once for the article's
+section with a dictionary and a list, `seen`, that it searches to
+learn whether an entry is new. The search, `if entry not in seen:` on
+line 40, is nearly every sample of a run of about two seconds. A quiz
+asks which line before anything is run, then
+`run --heatmap -o heatmap gazette/report.py`.
 
-The index page first: files grouped as project, standard library and
-site-packages with aggregate counts, and the page says why the
-standard library is there (the profiler saw `json` and `collections`
-on the stack too) and why the learner's file is at the top. Click
-through to `report.py`: the source with each line coloured cool to
-hot, the minimap on the right, and the one line burning. A quiz before
-the click: which line? Then the two colouring modes, self time and
-total time, and why the `for` line is hot in total and cool in self.
-Then the callers and callees arrows on a line, to walk from the hot
-line to who called the function. Then the cold-code filter to see only
-lines that were ever sampled. The link icon on a line number gives a
-URL that names the line, for pasting into an issue.
+The index first, opened in the HTML viewer: the cards for the run,
+and the files grouped as Project Files and Standard Library, with
+why `json` is there, and why the count against a file is about three
+times the number of samples (it sums the file's lines, and a sample
+counts towards every line of the file on its stack). Then the page
+for `report.py`, opened by an action of its own as
+`heatmap/file_0000.html`, since pages are numbered from the file with
+the most samples: the Self and Total columns, the one red line and
+the minimap, that the colour is relative to the hottest line of the
+file, the Self Time and Total Time switch (line 77, the call in
+`main`, is cold in self and hot in total), the Hot Only switch, and
+the caller and callee arrows, which in the viewer can be read by
+hovering and not followed.
 
-Then the fix, as a `file-write` of the corrected `count_words` using a
-`Counter`, and a second heatmap into `heatmap-after`, and the same file
-without the hot line, which is the payoff: the picture of the problem
-and the picture of its absence, side by side in two tabs of the pane.
+Then the fix, as a `file-write` that copies `fixed/report.py` from
+the workshop directory (a `Counter` for the sections, the list and
+its three lines gone), a second heatmap into `heatmap-after`, and the
+same page in a second tab: the colour spread along the loop, a red
+line still there because some line is always the hottest, and its
+number a dozen or two where line 40 had well over a thousand.
 
-Closes by saying when to reach for the heatmap (you know the file) and
-when for the flame graph (you know the symptom), and that workshop 13
-shows how to compare two profiles properly. Next is **Record now, look
-later**.
+Closes by saying when to reach for the heatmap (you know the file)
+and when for the flame graph (you know the symptom), and that
+workshop 13 compares two profiles properly. Next is **Record now,
+look later**.
 
-- Format: terminal and files, with a results pane. Ships the `gazette`
-  package with the long `count_words`. Checks: `shell` checks that
-  `heatmap/index.html` and a `file_*.html` naming `report.py` exist,
-  and that after the fix `heatmap-after/` exists and the learner's
-  `report.py` contains `Counter`.
+- Format: terminal and files, with the heatmap pages in HTML viewer
+  tabs; the lower area is 0.55 of the height since the heatmap is
+  what is read. Ships `gazette/report.py`, `data/articles.json` and,
+  outside `files/`, `fixed/report.py`. Six pages, `write-files` added
+  to the capabilities. Checks: a `shell` check that the index exists
+  and `file_0000.html` is the page for `report.py`; a `shell` check
+  that the fix is in place; a `kernel` check that reads the `Self:`
+  counts from both pages and asserts that one line had more than
+  three fifths of the samples before and that the whole file has
+  under half as many after. Written and tested 2026-09-29, with both
+  heatmaps looked at in a real JupyterLab in the container.
 
 - Requires: nothing beyond the standard library.
 
@@ -543,43 +554,42 @@ later**.
 Can I keep a profile and decide later how to look at it?
 
 The situation: a run you cannot repeat, a colleague who wants the
-profile, a CI job that should keep one. The binary format is the
-answer, and the page runs `--binary -o report.bin` on the report
-generator and reads the output: samples written, bytes before and
-after zstd, and the size of the file, a few kilobytes for a couple of
-thousand samples. Then `replay` four times from the one file: to the
-table, to a flame graph, to a heatmap and to a gecko file, each
-opened or read as the earlier workshops taught, and the page makes the
-point that the profiler did the cheap part once and every picture came
-afterwards, which is also why recording is faster than rendering while
-sampling.
+profile, a CI job that should keep one. The page runs
+`--binary -o report.bin` on the report of workshop 1 and reads what
+the profiler says about the recording (a few dozen records for
+sixteen hundred samples, since a repeated stack is written as a
+repeat) and `ls -l` shows a file of under three kilobytes. Then
+`replay` three times from the one file, to the table, a flame graph
+and a heatmap, each opened in the viewer, with the point that nothing
+ran but the profiler and that the three views agree sample for
+sample. A quiz asks what the replays ran.
 
-Then the two formats not yet met. The gecko file, `profile.json`, is
-what the Firefox Profiler reads; the page opens the JSON in the editor
-and finds the threads, the markers (GIL, CPU, GC) and the samples, and
-says what the Firefox Profiler adds (a timeline, so the order of events
-in time, which no flame graph has) and how to load it there later,
-with the link but without opening the site, since the file never
-leaves the machine either way. Then `--jsonl`, the format for programs:
-`meta`, `string_table`, `frame_table` and sample records, one JSON
-object a line, and a twelve-line Python script, shipped, that reads it
-and prints the ten hottest frames, to show it is that simple.
+Then the formats for other tools. `--gecko`: `profile.json` opened in
+JupyterLab's JSON viewer (`docmanager:open` with the `JSON` factory),
+where the learner finds the thread's `samples` with a time for each,
+the `markers` for GIL, CPU, code type, exception and GC state, and
+the shared string table; the Firefox Profiler is linked, not opened.
+`--jsonl`: five lines on a profile this small, `meta`, `string_table`,
+`frame_table`, `agg` and `end`; the format holds counts per frame,
+self and cumulative, not samples or stacks, which the first design
+had wrong. The shipped `hottest.py` reads it in seventeen lines and
+prints the ten hottest frames. Then the pstats file, loaded with
+`pstats.Stats` and printed with `print_stats(5)`, with what to
+remember when an old tool reads it: the counts are samples, not
+calls.
 
-Then the pstats file from workshop 1 as the fifth output: `pstats.Stats`
-loads what `-o profile.pstats` wrote, `sort_stats('cumulative')` and
-`print_stats(5)` work, and the page notes this is the interface every
-existing pstats tool speaks.
+Closes with a list of the eight outputs, what each is for and what
+it cannot do. The finish quiz is the production job that cannot be
+repeated. Next is **Waiting or working?**.
 
-Closes with a table of the eight outputs, what each is for and what it
-cannot do. Next is **Waiting or working?**.
-
-- Format: terminal and files, with a results pane. Ships the `gazette`
-  package and `hottest.py`, the JSONL reader. Checks: `shell` checks
-  that `report.bin` exists and that the replayed `flamegraph.html`,
-  `heatmap/index.html` and `profile.json` exist, a `kernel` check that
-  `profile.json` parses as JSON with a `threads` key, and a `shell`
-  check that `hottest.py` prints `count_words` in its first three
-  lines.
+- Format: terminal and files, with viewer tabs. Ships the `gazette`
+  package with workshop 1's `report.py`, `data/articles.json` and
+  `hottest.py`. Seven pages. Checks: `shell` checks that `report.bin`
+  exists, that the replayed `flamegraph.html` and `heatmap/index.html`
+  exist, and that `hottest.py` prints `count_words` in its first
+  three lines; `kernel` checks that `profile.json` parses with a
+  thread of samples and that `profile.pstats` loads with
+  `count_words` dominant. Written and tested 2026-09-29.
 
 - Requires: nothing beyond the standard library.
 
@@ -589,37 +599,44 @@ cannot do. Next is **Waiting or working?**.
 
 My program is slow, but is it computing or waiting?
 
-The first workshop of the movement about choosing what to measure, and
-the one that introduces `--mode`. The program is `gazette/feeds.py`:
-it fetches twenty feed pages from a local web server that the page
-starts first in a second terminal (a shipped `http.server` handler that
-answers slowly, standing in for a slow upstream), parses each, and
-merges them. Wall-clock mode, the default, shows most of the time in
-`fetch` under `urllib`, in `socket.recv`; the page explains that wall
-mode counts every sample, whatever the thread was doing, so a thread
-blocked on a socket is sampled sitting there, and that is what
-end-to-end latency looks like.
+The first workshop of the movement about choosing what to measure,
+and the one that introduces `--mode`. `gazette/feeds.py` fetches
+twenty pages of RSS from a local server, parses each (ElementTree, a
+date and five keywords per item) and merges them, dropping an item
+that tells a story already in the list, which `same_story` decides by
+comparing keyword sets, item against every item kept. The server is
+the shipped `slow_server.py`, a `ThreadingHTTPServer` on `127.0.0.1`
+that sleeps a twentieth of a second before each answer; the page says
+the sleep is a stand-in for a distant server and that the program
+fetching cannot tell the difference. It is started in a terminal of
+its own, to the right of the one the profiler runs in, and stopped
+with `interrupt` on the finish page.
 
-A quiz: in CPU mode, what happens to `fetch`? Then `--mode=cpu`, and
-`fetch` all but vanishes while `parse` and `merge` fill the table. The
-page explains that CPU mode keeps only samples where the thread was
-running on a processor, so waiting disappears, and then states the
-rule the docs give: high in wall and low in CPU is I/O bound, and the
-fix is concurrency (threads, async, a pool), not a faster algorithm;
-high in both is CPU bound, and the fix is the algorithm. The learner
-now has a diagnosis for the feed program, and the finish page of
+Wall-clock mode, run with `--mode wall` spelt out: two thirds of the
+samples in `socket.py`, `SocketIO.readinto`, where `fetch` ends up,
+and a quarter in `same_story`. A quiz asks what CPU mode does to the
+first row. `--mode cpu`: the read from the socket is gone, the table
+holds a third as many samples, `same_story` has three quarters of
+them, and the page says that a percentage is always a share of what
+the mode kept. Then the rule the docs give: high in wall and absent
+in CPU is waiting, and the fix is concurrency or asking less; high
+in both is work, and the fix is the algorithm. The feed reader has
+one of each, the wall-clock table says which to fix first, and
 workshop 10 acts on it.
 
-Closes by listing the four modes and saying that GIL and exception
-modes are the next two workshops. The server is stopped with
-`interrupt` before the finish. Next is **Who holds the GIL?**.
+Closes by listing the four modes. Next is **Who holds the GIL?**.
 
-- Format: two terminals and files, with a results pane. Ships
-  `gazette/feeds.py` and `slow_server.py`. Variables: `server_port`,
-  a number defaulting to 8071, described as the port to change if it
-  is taken. Checks: a `shell` check that the server answers on the
-  port, and `kernel` checks on `wall.pstats` and `cpu.pstats` that
-  `fetch`'s share of samples is larger in wall than in cpu.
+- Format: two terminals side by side below the files, no pictures.
+  Ships `gazette/feeds.py`, `slow_server.py` and `data/articles.json`.
+  Variables: `server_port`, a number defaulting to 8071. Six pages.
+  Each profiler command ends in `| tee wall.txt` or `| tee cpu.txt`,
+  so one run gives the learner the table and the check a file; the
+  `kernel` checks strip the colour codes, read the rows, and assert
+  that the socket read has more than a third of the samples in wall
+  and under a third of that share in CPU, and that `same_story`'s
+  share rose. `shell` checks, in Python with `urllib`, that the
+  server answers and later that it has stopped. Written and tested
+  2026-09-29.
 
 - Requires: nothing beyond the standard library.
 
@@ -629,47 +646,51 @@ modes are the next two workshops. The server is stopped with
 
 I added threads and it got no faster; what are they doing?
 
-`gazette/digest.py` builds digests of the articles on four threads,
-each thread taking a quarter of the articles, and a fifth thread that
-writes progress to a log every few milliseconds. The page runs the
-profiler with defaults, and the table is almost empty: a few samples
-in `Thread.join`. A quiz first: what will the default run show? The
-answer is the lesson: the profiler samples the main thread only unless
-told otherwise, and the main thread here is waiting for the workers.
-Then `-a`, and the workers appear, and the flame graph with `-a` shows
-the per-thread dropdown, which the page uses to look at one worker,
-then all.
+`gazette/digest.py` builds a digest of every article for each of the
+gazette's twelve regional editions, twenty four thousand in all, on
+four threads, with a fifth writing progress to a log every five
+milliseconds. It takes the number of threads as an argument, and the
+welcome page runs it with one and with four: the same time. A quiz,
+then the default profile: nine tenths of the samples in
+`Thread.join`. The first design said the table would be almost
+empty; it is full, of a thread that is waiting, since wall-clock
+mode counts waiting, and the lesson is the same: the profiler samples
+the main thread unless told otherwise.
 
-Then the GIL. The page explains it in a paragraph a learner who has
-only heard of it can follow: one thread runs Python bytecode at a
-time; a thread waiting for the GIL is not running; C code and I/O
-release it. Then `--mode=gil`, which keeps only samples where the
-thread held the GIL, and the sidebar's thread statistics in the flame
-graph: GIL held, GIL released, waiting for the GIL. The four workers
-show as taking turns, and the page says that this is why four threads
-of pure-Python work took as long as one.
+Then `-a` with `--flamegraph`: two columns beneath the root, the main
+thread and, under `Thread._bootstrap`, the other five. The sidebar's
+Thread Filter picks a worker, and Runtime Stats says it held the GIL
+a quarter of the time and waited for it three quarters; the thread
+writing the log, with almost nothing to do, waited nine tenths of the
+time. Then the GIL in three paragraphs, and `-a --mode gil`: only
+the workers' code, and about one sample kept for each look, since
+one thread holds the GIL at a time.
 
-Then the counterexample, which is why this workshop is twenty minutes.
-`gazette/checksums.py` hashes the article bodies with `hashlib.sha256`
-on four threads; `hashlib` releases the GIL for large buffers, so in
-CPU mode the four threads are all busy and in GIL mode they are nearly
-absent. The page states the rule from the docs: low in GIL mode and
-high in CPU mode means the work is in C with the GIL released, and
-threads help; high in both means the work is Python and threads do not.
-A sentence points at the free-threaded build as where this changes,
-without going there.
+Then the counterexample. `gazette/checksums.py` stamps a copy of the
+archive for each of six thousand subscribers and hashes it with
+SHA-256 on four threads: three seconds on one thread, under one on
+four. Its flame graph's Runtime Stats say GIL released, nearly all of
+the time. A quiz, then `-a --mode cpu` and `-a --mode gil`: thousands
+of samples of `checksum` against a dozen. The rule from the docs:
+high in CPU and low in GIL is C with the GIL released, and threads
+help; high in both is Python, and they take turns. A sentence on the
+free-threaded build.
 
-Closes with the three questions (`-a` or not, which thread, who holds
-the GIL) and what each mode showed. Next is **The price of an
-exception**.
+Closes with the three questions (which threads, what was each doing,
+is the work Python or C) and a quiz on a pool of image resizers. Next
+is **The price of an exception**.
 
-- Format: terminal and files, with a results pane. Ships
-  `gazette/digest.py`, `gazette/checksums.py` and the data. Checks:
-  `kernel` checks that the default run's `.pstats` has fewer than a
-  tenth of the samples of the `-a` run's, that the `-a` GIL-mode
-  `.pstats` for `digest.py` names `build_digest`, and that for
-  `checksums.py` the CPU-mode file has several times the samples of
-  the GIL-mode file.
+- Format: terminal and files, with two flame graphs in viewer tabs.
+  Ships `gazette/digest.py`, `gazette/checksums.py` and
+  `data/articles.json`. Seven pages. Checks read files written with
+  `tee`: the two timings on each of the welcome and checksum pages,
+  that the default table has `Thread.join` and none of the workers'
+  functions, that the GIL-mode table has `build_digest` and next to
+  no `Thread.join`, and that `checksum` has more than five times the
+  samples in CPU mode that it has in GIL mode; `shell` checks that
+  each flame graph names the workers' function under
+  `Thread._bootstrap`. The checksum page's timing check needs a host
+  with more than one processor free. Written and tested 2026-09-29.
 
 - Requires: nothing beyond the standard library.
 
@@ -677,38 +698,53 @@ exception**.
 
 ### 9. `the-price-of-an-exception`: The price of an exception
 
-Exceptions are cheap in Python now, aren't they?
+My code asks forgiveness, not permission; what does that cost when
+most of the input needs forgiving?
 
-`gazette/dates.py` parses the dates in the article metadata, which
-come in three formats, by trying each `strptime` in turn and catching
-`ValueError`, which is idiomatic and fine when most dates are in the
-first format, and here two thirds of them are in the third. The page
-sets out what exception mode measures, exactly as the docs do: samples
-taken while the thread has an active exception, which means while one
-is propagating and while an `except` block runs, and not a `finally`
-on the normal path. Then `--mode=exception`, and the table shows the
-`strptime` calls inside the `try` and the `except` line as where the
-program spends the time it spends in a raised state, and how many
-samples that was against the wall-mode run before it: the share is the
-price.
+`gazette/dates.py` reads fifty thousand filings, each with four
+dates written the way of the desk that filed it: `2026-03-14` from
+the newsroom, `14/03/2026` from the archive, `14 March 2026` from the
+wire agencies, who file two thirds of them. `parse_date` tries the
+first format, and in the `except ValueError` tries the second, and in
+that one's `except` uses the third, which was fine when nearly every
+filing was the newsroom's. The data is `data/filings.csv.gz`,
+generated once from the articles with a fixed seed, half a megabyte
+compressed.
 
-A quiz before the run: a tenth, a third or two thirds of the samples?
-Then the fix, as a `file-write`: check the format with a cheap test
-before calling `strptime`, or try the common format first, and the
-exception-mode run again with a small fraction of the samples. The
-page is careful to say what the docs say: this mode is for finding
-exception-based control flow that has become hot, in parsers, in
-`StopIteration`-driven iteration in older code, in "ask forgiveness"
-lookups on a miss-heavy path, and not an argument against exceptions.
+The wall-clock profile, sorted by cumulative time: nothing looks
+wrong, a program that parses dates spends its time parsing dates.
+Then what exception mode measures, as the docs say it: samples taken
+while an exception is propagating or an `except` block is running,
+and everything that block calls, and not a `finally` on the normal
+path. A quiz (none, a tenth, a half, all), then `--mode exception`:
+about half the samples, and among `parse_date`'s lines the second and
+third attempts, which are inside the handlers, lead on direct
+samples.
 
-Closes with the mode's rule (it counts time under an exception, not
-exceptions) and hands on to **Following the awaits**.
+The finding is not the one the first design expected. Raising and
+catching is a small part of the cost: measured on its own, a failing
+attempt spends under a tenth of its time with the exception raised.
+The cost is the failed attempts, which show in the ordinary profile
+as `strptime`, and the work done inside handlers, which is what the
+mode finds. So the page says the mode detects a path meant to be
+rare that has become common, and lists where the docs suggest
+looking. The fix, a `file-write` from `fixed/dates.py`, chooses the
+format from the text (a hyphen, a slash or neither); the report takes
+a little over half the time, and the exception-mode run says "No
+samples were collected".
 
-- Format: terminal and files. Ships `gazette/dates.py` and a data file
-  with dates in three formats. Checks: `kernel` checks that the
-  exception-mode `.pstats` names `parse_date` and has more than a
-  quarter of the samples of the wall-mode file before the fix, and
-  less than a tenth after.
+Closes with the mode's rule (it measures time under an exception,
+and does not count exceptions), that none of this is an argument
+against exceptions, and a quiz on a cache whose handler has most of
+the samples. Next is **Following the awaits**.
+
+- Format: terminal and files. Ships `gazette/dates.py`,
+  `data/filings.csv.gz` and, outside `files/`, `fixed/dates.py`. Five
+  pages, with `write-files`. Checks read the three tables kept with
+  `tee` and compare the cumulative count of the `<module>` row, which
+  is the number of samples in a table: more than a quarter as many
+  under an exception as in wall-clock time before the fix, and under
+  a tenth after. Written and tested 2026-09-29.
 
 - Requires: nothing beyond the standard library.
 
@@ -1578,9 +1614,24 @@ In the extension, found writing the first four workshops:
   a new action) take a workspace path and resolve it against the base
   URL, with an `area` option, would put the graph in a results pane as
   the design first said; until then the HTML viewer is the format.
-  Workshop 5 (the heatmap, a directory of pages) needs the same check,
-  since the heatmap's index links to its per-file pages and the
-  viewer's iframe must follow them.
+  Workshop 5 made the same check for the heatmap, a directory of
+  pages, and found the next item.
+
+- **Links inside an HTML file do not work in the HTML viewer.** The
+  viewer shows a file from a blob URL in a sandboxed frame, so a
+  relative link has nothing to be relative to. Checked with
+  Playwright in the container on 2026-09-29: following a file name
+  in the heatmap's index ends in the server's "403 Forbidden,
+  blocking request from unknown origin" inside the tab, and the
+  caller and callee arrows on a heatmap page do nothing, because the
+  script that handles them fails to build a URL. Everything else in
+  the heatmap works: the switches, the tooltips on the arrows, the
+  folders of the index. So workshop 5 opens each heatmap page with
+  an action of its own (`heatmap/index.html`, then
+  `heatmap/file_0000.html`, which is the file with the most samples)
+  and tells the learner the arrows can be read and not followed.
+  The extension change asked for above, an action that opens a
+  workspace file at its `/files/` URL in a pane, would fix this too.
 
 Outside the extension:
 
@@ -1612,14 +1663,32 @@ Outside the extension:
   will probably show the higher figures. Worth checking again on
   3.15.0 final.
 
-## Open questions
+- **Exception mode misses handlers that run inside a generator**, on
+  3.15.0rc2. `parse_date`, with its second and third attempts inside
+  `except` blocks, had about half the samples in exception mode when
+  called from a plain loop and under 2% when called from a generator
+  expression in the same loop, the first draft of workshop 9's
+  program. A generator has an exception state of its own, and the
+  profiler reads the thread's (`Modules/_remote_debugging/threads.c`
+  checks the embedded `exc_state` and does not follow `exc_info`). A
+  script of six cases confirmed it and showed that coroutines are
+  missed the same way, so the mode sees next to nothing in an asyncio
+  program, which workshop 10 should keep in mind. The shipped program
+  calls `parse_date` from a plain loop. Not yet reported to CPython;
+  to be checked again on 3.15.0 final.
 
-- **The heatmap in the HTML viewer.** Workshop 4 settled the flame
-  graph (see Known blockers): it opens in JupyterLab's HTML viewer,
-  trusted by the images' overrides. The heatmap is a directory whose
-  `index.html` links to per-file pages; whether those links work
-  inside the viewer's iframe, and whether opening a per-file page
-  directly is the better step, is settled by workshop 5.
+- **The profiler colours its table whether or not it is writing to a
+  terminal**, so a table kept with `tee` has the escape codes in it
+  and checks that read one strip them first.
+
+- **`-o` with the default format writes the file and prints no
+  table**, so a page that wants the learner to read the table and
+  the check to read a file would have to run the program twice.
+  Workshops 7, 8 and 9 end the command in `| tee name.txt` and have
+  the check read the text, one run for both. Workshops 1, 2 and 6
+  keep their `.pstats` checks, where the file is the subject.
+
+## Open questions
 
 - **Binder and Codespaces builds.** Neither `binder/environment.yml`
   with `python=3.15` on conda-forge nor the uv-installed 3.15 in
@@ -1659,11 +1728,11 @@ already works.
 | 2 | `sampling-or-tracing` | Done |
 | 3 | `reading-a-process-from-outside` | Done |
 | 4 | `reading-a-flame-graph` | Done |
-| 5 | `down-to-the-line` | Planned |
-| 6 | `record-now-look-later` | Planned |
-| 7 | `waiting-or-working` | Planned |
-| 8 | `who-holds-the-gil` | Planned |
-| 9 | `the-price-of-an-exception` | Planned |
+| 5 | `down-to-the-line` | Done |
+| 6 | `record-now-look-later` | Done |
+| 7 | `waiting-or-working` | Done |
+| 8 | `who-holds-the-gil` | Done |
+| 9 | `the-price-of-an-exception` | Done |
 | 10 | `following-the-awaits` | Planned |
 | 11 | `native-code-and-the-collector` | Planned |
 | 12 | `down-to-the-bytecode` | Planned |

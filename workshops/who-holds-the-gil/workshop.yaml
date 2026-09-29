@@ -1,0 +1,60 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: who-holds-the-gil
+title: Who holds the GIL?
+version: 0.1.0
+description: Profile a program with several threads using Tachyon. Why the default profile shows only a thread that is waiting, what -a adds, the flame graph's view of each thread, and GIL mode, on four threads of Python that take as long as one and four threads of hashing that do not.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/who-holds-the-gil
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, threads, gil]
+duration: 20m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-who-holds-the-gil
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: threads
+layouts:
+  threads:
+    main:
+      areas:
+        - { tabs: ["file:gazette/digest.py", "file:gazette/checksums.py"] }
+        - { size: 0.55, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have profiled two programs with threads and found out what the
+  threads were doing. By default the profiler samples the main thread,
+  which here was waiting for the others; `-a` samples them all; the
+  flame graph shows each thread on its own and how much of its time it
+  held the GIL, had released it, or was waiting for it; and GIL mode
+  keeps only the samples of the thread that holds it. Four threads of
+  Python took turns and finished no sooner than one. Four threads of
+  hashing ran at once, because the hashing is C that lets the GIL go.
+
+  Next in these workshops is **The price of an exception**
+  (`the-price-of-an-exception`), on the last of the four modes.
+
+  The "Thread selection" and "GIL mode" sections of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  are the reference, and the Python documentation's
+  [free threading HOWTO](https://docs.python.org/3.15/howto/free-threading-python.html)
+  describes the build of Python that has no GIL.
+pages:
+  - pages/01-welcome.md
+  - pages/02-the-thread-you-get.md
+  - pages/03-all-the-threads.md
+  - pages/04-one-at-a-time.md
+  - pages/05-threads-that-help.md
+  - pages/06-on-a-processor-without-the-gil.md
+  - pages/07-finish.md

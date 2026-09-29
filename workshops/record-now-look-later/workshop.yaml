@@ -1,0 +1,61 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: record-now-look-later
+title: Record now, look later
+version: 0.1.0
+description: Record a Tachyon profile once in the compact binary format and turn it into a table, a flame graph and a heatmap afterwards with replay. Then the formats for other tools, the gecko file the Firefox Profiler reads, JSONL for your own scripts and the pstats file, and what each output is for.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/record-now-look-later
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, formats]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-record-now-look-later
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: report
+layouts:
+  report:
+    main:
+      areas:
+        - { tabs: ["file:gazette/report.py", "file:hottest.py"] }
+        - { size: 0.5, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have recorded a profile once and looked at it six ways without
+  running the program again: the binary file, a few kilobytes, replayed
+  as the table, a flame graph, a heatmap, a gecko file for the Firefox
+  Profiler, JSONL for a script of your own and a pstats file for the
+  tools that already read one. Record in binary when the run cannot be
+  repeated or the profile is for someone else, and choose the view
+  when you know the question.
+
+  Next in these workshops is **Waiting or working?**
+  (`waiting-or-working`), the first of four on choosing what the
+  profiler measures: all the time that passes, or only the time a
+  thread is on a processor.
+
+  The "Output formats" and "Record and replay workflow" sections of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describe every format, and the
+  [Firefox Profiler](https://profiler.firefox.com) reads the gecko
+  file.
+pages:
+  - pages/01-welcome.md
+  - pages/02-record.md
+  - pages/03-replay.md
+  - pages/04-for-the-firefox-profiler.md
+  - pages/05-for-your-own-scripts.md
+  - pages/06-for-the-tools-you-have.md
+  - pages/07-finish.md

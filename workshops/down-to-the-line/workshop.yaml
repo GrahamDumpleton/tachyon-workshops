@@ -1,0 +1,60 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: down-to-the-line
+title: Down to the line
+version: 0.1.0
+description: Paint a Tachyon profile onto the source code with the heatmap, on a report whose slow function is twenty lines long and slow on one of them. The index of files, the page per file, self and total time, the hot-only filter, and the same file before and after the fix.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/down-to-the-line
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, heatmap]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-down-to-the-line
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: report
+# The lower area is the larger here: the heatmap pages open in it, as
+# tabs beside the terminal, and they are what the pages read.
+layouts:
+  report:
+    main:
+      areas:
+        - { tabs: ["file:gazette/report.py"] }
+        - { size: 0.55, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have painted a profile onto the source it came from and read it:
+  the heatmap's index of files, the page for one file with the samples
+  beside every line, self time for the line that does the work and
+  total time for the lines that call it, and the hot-only filter for
+  the lines that were ever seen running. One line of a twenty line
+  function had nearly every sample, and after the fix the same page
+  showed a program with nothing left to find.
+
+  Next in these workshops is **Record now, look later**
+  (`record-now-look-later`), which records a profile once and turns it
+  into a table, a flame graph and a heatmap afterwards.
+
+  The "Heatmap" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes the format and links a live example.
+pages:
+  - pages/01-welcome.md
+  - pages/02-which-line.md
+  - pages/03-the-files.md
+  - pages/04-the-hot-line.md
+  - pages/05-the-fix.md
+  - pages/06-finish.md

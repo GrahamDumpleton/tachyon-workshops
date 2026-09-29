@@ -46,7 +46,7 @@ The repository holds two collections and is laid out for more. Each
 collection is a course: its workshops are numbered in the order to take
 them, and the Finish dialog of each offers the next. A
 [catalog](catalog.json) names every collection, so one URL offers them
-all. The first four workshops of the fundamentals collection are
+all. The first nine workshops of the fundamentals collection are
 written and tested; the design of every one is in
 [OUTLINE.md](OUTLINE.md), and its status table records where each
 stands.
@@ -55,7 +55,7 @@ stands.
 
 Fourteen workshops, about three and a half hours in total, in the order
 to take them. Each is self-contained, so you can start anywhere, but
-they build. The first four are written; the rest are designed in
+they build. The first nine are written; the rest are designed in
 [OUTLINE.md](OUTLINE.md) and not yet written.
 
 **What a sampling profiler is**
@@ -88,29 +88,32 @@ they build. The first four are written; the rest are designed in
    from.
 
 5. **Down to the line** (`down-to-the-line`, 15 minutes). The heatmap:
-   sample counts painted onto the source, self against total time, and
-   the one line that costs more than the rest of the file.
+   sample counts painted onto the source, self against total time,
+   the one line that costs more than the rest of the file, and the
+   same file after the fix.
 
 6. **Record now, look later** (`record-now-look-later`, 15 minutes).
    Capture a profile once in the binary format and replay it as a
-   table, a flame graph, a heatmap, a Firefox Profiler file and JSON
-   lines, and read what each file holds.
+   table, a flame graph, a heatmap, a Firefox Profiler file, JSON
+   lines and a pstats file, and read what each holds and is for.
 
 **Choosing what to measure**
 
 7. **Waiting or working?** (`waiting-or-working`, 15 minutes). A
-   program that fetches and computes, in wall-clock and in CPU mode:
-   how the two views disagree, and what the disagreement tells you.
+   feed reader that fetches from a slow local server and then
+   computes, in wall-clock and in CPU mode: how the two views
+   disagree, and what the disagreement says about the fix.
 
 8. **Who holds the GIL?** (`who-holds-the-gil`, 20 minutes). Threads:
-   why the default view shows almost nothing, what `-a` shows, the
-   per-thread view of the flame graph, GIL mode, and hashing threads
-   that release the GIL.
+   why the default view shows only a thread that is waiting, what
+   `-a` shows, the per-thread view of the flame graph, GIL mode, and
+   hashing threads that release the GIL and do run at once.
 
 9. **The price of an exception** (`the-price-of-an-exception`,
-   15 minutes). Exception mode on a parser that uses exceptions for
-   control flow, and how much of its time is spent under a raised
-   exception.
+   15 minutes). Exception mode on a date parser that tries one format
+   after another: how much of its time is spent under an exception,
+   why raising is the small part of it, and the profile after the
+   fix.
 
 10. **Following the awaits** (`following-the-awaits`, 15 minutes). An
     asyncio crawler, first as raw frames full of event loop, then with
