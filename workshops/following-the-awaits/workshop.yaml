@@ -1,0 +1,72 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: following-the-awaits
+title: Following the awaits
+version: 0.1.0
+description: Profile a program written with asyncio, a crawler that fetches twenty feeds at once, first as the event loop's stack and then with Tachyon's async-aware profiling, which follows the tasks. What each view shows, what the tasks that are not running are waiting for, and which options cannot be combined with it.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/following-the-awaits
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, asyncio]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminals and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-following-the-awaits
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+variables:
+  - name: server_port
+    type: number
+    default: 8072
+    description: Port the feed server listens on, on 127.0.0.1. Change it if the port is taken.
+instructions: { side: right, width: 0.3 }
+layout: crawl
+# The feed server runs in a terminal of its own, to the right of the
+# one the profiler is run in, so both are in view.
+layouts:
+  crawl:
+    main:
+      areas:
+        - { tabs: ["file:gazette/crawl.py", "file:gazette/feeds.py", "file:slow_server.py"] }
+        - size: 0.5
+          split: columns
+          areas:
+            - { tabs: ["terminal:shell"] }
+            - { size: 0.3, tabs: ["terminal:server"] }
+gating: soft
+finish: |
+  You have profiled an asyncio program three ways. The profiler's
+  usual view is the thread's stack, which in an asyncio program is
+  the event loop's: the work is there, under the loop, and all the
+  waiting is one anonymous box, the loop's `select`. `--async-aware`
+  follows the tasks instead, so each sample belongs to a task and the
+  chain of awaits that led to it. Its default keeps the task that was
+  running, and `--async-mode all` adds the tasks that were not, each
+  on the line where it is waiting, which for the crawler was mostly
+  the queue for a connection and not the server.
+
+  Next in these workshops is **Native code and the collector**
+  (`native-code-and-the-collector`), which shows two things the
+  Python stack cannot: time inside C code, and time in the garbage
+  collector.
+
+  The "Async-aware profiling" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes the task markers and the restrictions.
+pages:
+  - pages/01-welcome.md
+  - pages/02-twenty-at-once.md
+  - pages/03-the-loops-view.md
+  - pages/04-the-tasks-view.md
+  - pages/05-what-the-tasks-wait-for.md
+  - pages/06-what-it-cannot-be-combined-with.md
+  - pages/07-finish.md

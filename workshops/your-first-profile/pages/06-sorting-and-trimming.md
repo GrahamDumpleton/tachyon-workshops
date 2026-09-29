@@ -57,3 +57,4 @@ options:
   - { text: "The profiler is unreliable and the tracing profiler should be used instead", explanation: "The tracer would give the same call counts each time, but it would also slow the program four-fold, as the next workshop shows. Sampling is reliable about proportions, not counts." }
   - { text: "The first run missed 27 samples because of its error rate", explanation: "Discarded samples are not the reason; the runs took slightly different times and the glances fell at different instants. The error rate is a separate matter, for the third workshop." }
 explanation: "Sampling profiles agree on shapes and ranks, not on counts. Read the proportion and the ranking, and treat a few percent of difference between runs as the noise it is."
+```

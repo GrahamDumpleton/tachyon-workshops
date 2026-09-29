@@ -46,17 +46,17 @@ The repository holds two collections and is laid out for more. Each
 collection is a course: its workshops are numbered in the order to take
 them, and the Finish dialog of each offers the next. A
 [catalog](catalog.json) names every collection, so one URL offers them
-all. The first nine workshops of the fundamentals collection are
-written and tested; the design of every one is in
+all. The fourteen workshops of the fundamentals collection are
+written and tested, and those of the applications collection are
+designed and not yet written; the design of every one is in
 [OUTLINE.md](OUTLINE.md), and its status table records where each
 stands.
 
 ### Profiling with Tachyon
 
-Fourteen workshops, about three and a half hours in total, in the order
+Fourteen workshops, a little under four hours in total, in the order
 to take them. Each is self-contained, so you can start anywhere, but
-they build. The first nine are written; the rest are designed in
-[OUTLINE.md](OUTLINE.md) and not yet written.
+they build.
 
 **What a sampling profiler is**
 
@@ -116,30 +116,37 @@ they build. The first nine are written; the rest are designed in
    fix.
 
 10. **Following the awaits** (`following-the-awaits`, 15 minutes). An
-    asyncio crawler, first as raw frames full of event loop, then with
-    async-aware profiling as tasks and awaits, running tasks against
-    all tasks.
+    asyncio crawler profiled as the event loop's stack and then with
+    async-aware profiling as tasks and awaits: which task is running,
+    what the tasks that are not running are waiting for, and the
+    options that cannot be combined with it.
 
 **Looking closer**
 
 11. **Native code and the collector** (`native-code-and-the-collector`,
-    15 minutes). The `<native>` frames that mark where Python calls
-    into C, and the `<GC>` frames that mark the garbage collector at
-    work, on a program that does both.
+    20 minutes). The `<native>` marker, which shows where C code
+    stands between two Python functions, on a search index whose sort
+    calls back into Python, and the `<GC>` marker for the garbage
+    collector, on a graph full of cycles: what each marks and what it
+    leaves out.
 
 12. **Down to the bytecode** (`down-to-the-bytecode`, 15 minutes).
-    Opcode-level profiling in the flame graph and heatmap: which
-    bytecode instructions run, and what the specialising interpreter
-    did with them.
+    Opcode-level profiling in the heatmap: which bytecode instructions
+    run under a line, what the specialising interpreter made of them,
+    and what changes when one function is given objects of eight
+    classes.
 
-13. **Did the fix work?** (`did-the-fix-work`, 15 minutes). A baseline
-    profile, a change to the code, and a differential flame graph that
-    colours what got slower, what got faster and what disappeared.
+13. **Did the fix work?** (`did-the-fix-work`, 20 minutes). A baseline
+    recording, a fix, a second change, and the differential flame
+    graph of each: what the colours mean, why they compare shares and
+    not times, what noise looks like, and which profile to compare
+    with.
 
 14. **Watching it live** (`watching-it-live`, 15 minutes). The
-    terminal interface, `top` for one process: sorting, filtering,
-    threads, and what sampling rate and duration do to how much you
-    can trust the numbers.
+    terminal interface, `top` for one process, driven from the
+    keyboard, and then how many samples are enough: the rate and
+    duration options and the statistics that say whether the profiler
+    kept up.
 
 ### Tachyon on real applications
 

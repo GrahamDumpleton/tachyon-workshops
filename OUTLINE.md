@@ -752,43 +752,58 @@ the samples. Next is **Following the awaits**.
 
 ### 10. `following-the-awaits`: Following the awaits
 
-My async program's profile is all event loop; where is my code?
+My async program's waiting is all in the event loop; whose is it?
 
-The feed fetcher from workshop 7 rewritten with `asyncio` and a
-gather of twenty fetches against the same slow local server,
-`gazette/crawl.py`, and the profiler run on it with defaults. The
-table and the flame graph are `_run_once`, `select`, `Handle._run`
-and `Task.__step`, with `fetch` a thin slice, because the raw frames
-of an asyncio program are the loop's, and a coroutine is only on the
-stack while it runs between two awaits. The page explains that in a
-paragraph before showing the fix.
+The feed fetcher from workshop 7 rewritten with `asyncio`,
+`gazette/crawl.py`: a task for each of twenty feeds, started with
+`gather`, with a semaphore that allows four connections to the server
+at a time, since a crawler that opens twenty at once is not a polite
+one. The server is workshop 7's with a delay of a fifth of a second.
+The page first runs the synchronous `feeds.py` and then the crawler,
+unprofiled, four and a half seconds against one and a half.
 
-Then `--async-aware`, and the page explains what the profiler does
-differently: instead of the C stack of frames it walks the task graph,
-so each sample is attributed to the task that was running and the
-chain of awaits that led there, with a synthetic `<task>` frame naming
-each task where a function frame would be. The flame graph now has
-`Task-1` at the root with `main` above it, twenty `Task-N` boxes with
-`fetch` above each, and the loop nowhere. The page names the default
-`--async-mode=running`, which keeps only the task on the CPU, and runs
-`--async-mode=all` to include the tasks parked on an await, so the
-picture becomes what the program is waiting on, which for a crawler
-is the whole story. Then the restrictions, listed as the docs list
-them: no `--native`, no `--no-gc`, no `-a`, no cpu or gil mode with
-async-aware profiling, and the requirement that `asyncio` be imported
-in the target before sampling starts, which `run` satisfies.
+The default profile is not, as first designed, all event loop. The
+coroutines that run are in it, beneath six frames of `asyncio`, and
+`same_story` has its quarter as it did in workshop 7. What the loop
+has is the waiting: two thirds of the samples in
+`EpollSelector.select`, one row for the waits of every task, with
+nothing to say whose or for what. The page asks for that prediction
+in a quiz first.
 
-Closes by returning to workshop 7's diagnosis: the async fetcher is
-the concurrency fix, and the wall-mode run shows the twenty fetches
-overlapping in a fraction of the time. The server is stopped before
-the finish. Next is **Native code and the collector**.
+Then `--async-aware` as a flame graph, and the page explains what the
+profiler does differently: it reads asyncio's record of its tasks and
+builds the stack from the chain of awaits, with a `<task>` marker
+naming each task. The root is `Task-1`, `main` is beneath it twice
+(a box carries its line), and the tasks `gather` started are beneath
+the line that awaits them. The loop is gone and so is the waiting: a
+third of the samples remain, since `--async-mode running`, the
+default, records only the task that was running.
 
-- Format: two terminals and files, with a results pane. Ships
-  `gazette/crawl.py` and `slow_server.py`. Variables: `server_port`,
-  default 8072. Checks: a `shell` check that the server answers,
-  `kernel` checks that the default run's `.pstats` names `_run_once`
-  and the async-aware run's does not, and a `shell` check that the
-  async-aware flame graph contains `<task>`.
+Then `--async-mode all`, as a table and as a flame graph. Every
+suspended task is recorded at the await where it stopped, a sample
+counts once for each task in it, so the table adds up to eight times
+the samples and its times are task-seconds. Two thirds of the tasks'
+time is in `Semaphore.acquire`, the queue for a connection, and three
+tenths in `StreamReader._wait_for_data`, the server: the crawler
+waits mostly for a turn. In this mode a running task is shown by its
+coroutines alone, so `merge` is counted on the line of `main` that
+called it.
+
+Then the restrictions, with one tried (`--mode cpu`, refused with the
+message quoted): no `--mode` but wall, no `-a`, no `--native`, no
+`--no-gc`. Exception mode is refused too, which the docs' list of
+restrictions leaves out and the option's own entry includes. The
+server is stopped on the finish page. Next is **Native code and the
+collector**.
+
+- Format: two terminals and files, the flame graphs in the HTML
+  viewer. Ships `gazette/crawl.py`, `gazette/feeds.py`,
+  `slow_server.py` and the data. Variables: `server_port`, default
+  8072. Checks: a `shell` check that the server answers, `kernel`
+  checks that read the tables kept with `tee` (the loop's `select`
+  leads the default run, the semaphore leads the all-tasks run), and
+  `shell` checks that the async-aware flame graph holds `Task-1` and
+  not the loop's `select`.
 
 - Requires: nothing beyond the standard library.
 
@@ -800,83 +815,114 @@ Some of my time is in C and some is in the garbage collector; can the
 profiler show either?
 
 Two questions, one workshop, because the two special frames are
-introduced together in the docs and are the same idea: a synthetic
-frame the profiler inserts to mark something the Python stack cannot
-show. First native code. `gazette/index.py` builds a search index:
-`json.loads` on a large document, `re.finditer` over article bodies,
-`sorted` with a key function, and a `zlib.compress` of the result.
-With defaults, the time in each C function is attributed to the Python
-line that called it, and the page says that is often what you want.
-Then `--native`, and `<native>` frames appear above `json.loads` and
-`zlib.compress` in the flame graph, so the learner can see how much of
-`build_index`'s time was inside C rather than in the Python around it,
-and the `sorted` key function shows as Python called from `<native>`
-called from Python, which the page walks. The page is careful that
-`<native>` is a marker, not a C stack: the profiler does not unwind C
-frames.
+introduced together in the docs and are the same idea: a marker the
+profiler adds to a stack for something that has no Python frame.
 
-Then the collector. `gazette/graph.py` builds a graph of article
-cross-references with cycles, in bulk, and the profiler's default run
-already shows `<GC>` frames, because GC frames are on by default; the
-page explains what a `<GC>` frame means (a sample taken while the
-cyclic collector was running, attributed to whatever line the
-collector interrupted), why the collector runs (allocations of
-container objects since the last collection), and how much of the
-graph build it took. Then `--no-gc` to hide them and see the program's
-own shape, and `gc.freeze()` at the top of the build as a `file-write`
-to show the `<GC>` frames shrink, with the page saying plainly that
-this is a demonstration of what the frames measure and not advice.
+First native code. `gazette/index.py` builds search indexes, for the
+whole paper and for each section, author and month: `count_words`
+with a regular expression whose `sub` calls `singular` for every
+word, `rank` with `sorted` and a key function, `relevance`, that
+parses a date with `datetime.strptime`, and `write` with `json.dumps`
+and `zlib.compress`. With defaults, time in a C function is counted
+on the Python line that called it, and the page shows that on the
+line that compresses and says it is usually what you want.
 
-Closes with the two markers, when each is on by default, and what each
-attributes to. Next is **Down to the bytecode**.
+Then `--native` as a flame graph. On rc2 the marker is not what the
+design assumed (see Known blockers): a `<native>` frame is added
+where the stack passes through C code to reach a Python function, and
+nowhere else. So it appears between `rank` and `relevance` (that is
+`sorted`), between `relevance` and the standard library's
+`_strptime` (`datetime.strptime` is C and calls Python), and between
+`count_words` and `singular`, and not beneath `write`, whose time in
+`zlib.compress` stays on the line. The page asks for that prediction
+in a quiz and is plain that the marker names no C function and
+measures no C time. What it is good for is a function that is
+running with no call to it in sight.
 
-- Format: terminal and files, with a results pane. Ships
-  `gazette/index.py`, `gazette/graph.py` and the data. Checks: `shell`
-  checks that the `--native` flame graph contains `&lt;native&gt;` or
-  `<native>` (whichever the HTML holds, to be verified) and the
-  default `graph.py` flame graph contains `<GC>`, and a `kernel` check
-  that the `--no-gc` `.pstats` names no `<GC>` frame.
+Then the collector. `gazette/graph.py` builds the graph behind the
+"related stories" box, a `Story` for each article and a `Link` for
+each pair that share three keywords, eight times over for the paper
+as it stood on each of the last eight days, letting each graph go as
+the next is built. The graphs are cycles, so only the collector frees
+them, and the program reports how many times it ran (about eighteen
+hundred). The default table has a `<GC>` row with a tenth to a
+quarter of the samples. `--no-gc` removes the marker and the samples
+move to the lines the collector interrupted, mostly
+`Link.__init__`.
+
+The demonstration is not `gc.freeze()`, which made no difference
+here, but a `file-write` that turns the collector off while the
+graphs are built and runs it by hand once for each: twenty
+collections, and half a second saved in two and a bit. The page says
+it is a demonstration and what the better fix would be. It also
+shows, on the line that is `gc.collect()` and nothing else, that many
+of the collector's samples do not get the marker on this release (see
+Known blockers), so `<GC>` is to be read as the least the collector
+took.
+
+Next is **Down to the bytecode**.
+
+- Format: terminal and files, the flame graph in the HTML viewer.
+  Ships `gazette/index.py`, `gazette/graph.py` and the data, with the
+  changed `graph.py` under `fixed/`. Checks: `kernel` checks on the
+  tables kept with `tee` (rows for `write` and `relevance`; a `<GC>`
+  row with the marker and none without; the collector's count in the
+  changed program's output), and a `shell` check that the `--native`
+  flame graph holds `"<native>"`, which is how the HTML stores it.
 
 - Requires: nothing beyond the standard library.
 
-- Length: 15 minutes.
+- Length: 20 minutes.
 
 ### 12. `down-to-the-bytecode`: Down to the bytecode
 
 The interpreter specialises my code as it runs; can I see what it did?
 
-Background first, since most readers will not know it: since 3.11 the
-interpreter rewrites hot bytecode instructions into specialised
-versions on the evidence of what it has seen, `LOAD_ATTR` becoming
-`LOAD_ATTR_INSTANCE_VALUE` when the attribute has always been an
-instance attribute, `BINARY_OP` becoming `BINARY_OP_ADD_INT`, and
-falls back when the evidence changes. `--opcodes` records which
-instruction was executing at each sample, and the page says up front
-that it is only meaningful with the flame graph, the heatmap, gecko,
-binary and live outputs, since the table has no room for it (the
-profiler refuses the combination, with the message pasted in).
+Background first, since most readers will not know it: the
+interpreter rewrites instructions that have run a few times into
+specialised forms on the evidence of what it met, `LOAD_ATTR`
+becoming `LOAD_ATTR_INSTANCE_VALUE`, `BINARY_OP` becoming
+`BINARY_OP_ADD_INT`, each with a check that falls back to the general
+way when it fails. `--opcodes` records the instruction executing at
+each sample. The page tries it with the table first and quotes the
+refusal, which lists the outputs it is accepted with.
 
-`gazette/scores.py` computes a relevance score for each article with
-a small `Article` class, in two versions: one where every article is
-an `Article`, and one where a tenth are `dict`s handled by the same
-function, so the attribute access cannot specialise. `--opcodes
---flamegraph` on the first, hovering the hot box shows the bytecode
-breakdown tooltip with specialised names; on the second, the same
-function's tooltip shows the generic `LOAD_ATTR` and a lower
-specialisation share. `--opcodes --heatmap` on the same line opens the
-expandable bytecode panel under the hot line with each instruction's
-share and its specialisation percentage, which is the clearest view.
+`gazette/scores.py` scores every article for each of 2,500 readers
+in a small function, `score`, and makes its articles in one of two
+ways, chosen on the command line: `one-class`, every article an
+`Article`, or `by-section`, each an instance of one of eight
+subclasses that differ in a class attribute. One file and not the
+two first planned, so that both heatmaps are of the same source and
+the same lines.
 
-The page keeps the lesson modest, as the docs do: this is for people
-tuning a hot loop, and for understanding why two similar functions
-differ; for most programs the algorithm matters and the bytecode does
-not. Closes by naming the specialising interpreter's docs. Next is
-**Did the fix work?**.
+`--opcodes --heatmap` on the first, and the page reads the panel
+under the hot line: `CONTAINS_OP_SET`, `LOAD_ATTR_INSTANCE_VALUE`,
+and the superinstruction that has no badge. The `for` over a
+frozenset is plain `FOR_ITER`, which has specialised forms for lists,
+tuples, ranges and generators only, and floor division is plain
+`BINARY_OP`, and the page says neither is a fault.
 
-- Format: terminal and files, with a results pane. Ships
-  `gazette/scores.py` and `gazette/scores_mixed.py`. Checks: `shell`
-  checks that the two flame graphs exist and that the heatmap's file
-  page for `scores.py` contains `LOAD_ATTR`.
+Then the second form. Unprofiled it takes a third longer. The design
+expected the instructions to lose their specialisation. They do not:
+the names, the badges and the share specialised are the same, and
+the samples on `LOAD_ATTR_INSTANCE_VALUE` are several times what
+they were, because the profiler reads the instruction that is in the
+bytecode and cannot see its check fail. So the lesson is that the
+name says what the interpreter chose and the samples say whether the
+choice is paying.
+
+The flame graph's tooltip is named on the finish page and not
+driven. The lesson is kept modest, as the docs keep it: work from
+the top, and the instruction is the last view to need. Next is **Did
+the fix work?**.
+
+- Format: terminal and files, the heatmap pages in the HTML viewer.
+  Ships `gazette/scores.py` and the data. Checks: a `shell` check on
+  the refusal, a `shell` check that the heatmap's page for
+  `scores.py` holds `LOAD_ATTR`, and a `kernel` check that reads the
+  `data-bytecode` attributes of both heatmaps and expects the
+  attribute loads to have more samples, for every hundred on the
+  membership test, with eight classes than with one.
 
 - Requires: nothing beyond the standard library.
 
@@ -886,85 +932,93 @@ not. Closes by naming the specialising interpreter's docs. Next is
 
 I changed the code; how do I show it got faster, and where?
 
-Workshops 5 and 9 each showed a before and an after by eye. This one
-does it properly. Record a baseline of the report generator in the
-binary format, `--binary -o baseline.bin`, then apply the `Counter`
-fix to `count_words` as a `file-write`, then
-`--diff-flamegraph baseline.bin -o diff.html` on the changed program,
-and open it. The page reads the colours as the docs define them: red
-for functions that took more direct time than in the baseline, blue
-for less, darker for a bigger change, grey for unchanged, purple for
-functions that are new. `count_words` is deep blue, `Counter.update`
-and the C code behind it are purple, and everything else is grey. Then
-the elided stacks toggle: call paths that disappeared entirely, which
-here is the quadratic inner loop, shown on their own.
+The report generator of workshops 1 and 5 with a second stage,
+`hardest`, which scores every article for how hard it is to read
+(`reading_ease`, `syllables`), so that the program has something
+left to profile when `count_words` is fixed. Everything is recorded
+at `-r 10khz`, because the fixed program runs for a tenth of a
+second, and the page says why the rate is chosen for the shortest
+run and used for all.
 
-A second change makes a regression on purpose, an accidental `sorted`
-inside the loop in `render`, and a second diff against the same
-baseline shows `render` red while `count_words` stays blue, which is
-the case the tool exists for: one change fixed one thing and broke
-another, and the diff says both.
+A baseline in the binary format, replayed as a table. Then the
+program compared with itself, `run --diff-flamegraph baseline.bin`,
+so the learner sees noise before trusting a signal: the wide box
+grey, and `main` and the frames above it in strong colours from a
+sample or two, which gives the two rules the page states (the colour
+is about direct time, and colour without width means nothing).
 
-The page then gives the discipline in a paragraph: record a baseline
-before changing anything, keep it, compare after every change, and
-compare like with like (same data, same duration, same mode). Since
-samples vary, the page shows two baselines diffed against each other,
-mostly grey with faint colour, so the learner knows what noise looks
-like before trusting a signal.
+Then the fix as a `file-write`, a recording of the fixed program,
+and `replay --diff-flamegraph baseline.bin -o diff.html fixed.bin`.
+`count_words` is blue. Everything the fix did not touch is red, and
+the tooltip says `syllables` took three milliseconds before and forty
+now, when it took forty both times. The profiler scales the baseline
+to the length of the new run before it compares (see Known
+blockers), so the colours compare shares of a run. The page asks for
+that prediction in a quiz, explains it, says when it is the right
+comparison, and prints the two tables for the times themselves.
 
-Closes with the record, change, compare loop. Next is **Watching it
+The second change makes a regression on purpose: `hardest` sorts its
+scores each time one is added. It is compared with the recording
+made just before it, `fixed.bin`, where it shows as one red function
+among grey ones, with the functions beside it pale blue from the
+same scaling in the other direction. Against the first baseline it
+would have been one more red box, which is the case for the
+discipline the page closes on: compare each change with the profile
+made just before it, recorded the same way.
+
+The elided switch is named on the finish page and not driven, since
+these programs lose no stacks worth showing. Next is **Watching it
 live**.
 
-- Format: terminal and files, with a results pane. Ships the `gazette`
-  package with the slow `count_words`, plus `count_words_fixed.py` and
-  `render_regressed.py` as the two `file-write` bodies. Checks: `shell`
-  checks that `baseline.bin`, `diff.html` and `diff2.html` exist and
-  that the learner's `report.py` has the fix.
+- Format: terminal and files, the flame graphs in the HTML viewer.
+  Ships `gazette/report.py` and the data, with the two later
+  versions under `fixed/` and `regressed/`. Checks: `kernel` checks
+  on the replayed tables (`count_words` leads the baseline and loses
+  its lead), `shell` checks that the learner's `report.py` has each
+  change, that the recordings exist and that each HTML file is a
+  differential flame graph.
 
 - Requires: nothing beyond the standard library.
 
-- Length: 15 minutes.
+- Length: 20 minutes.
 
 ### 14. `watching-it-live`: Watching it live
 
 Can I watch where a program is spending its time while it runs?
 
-`--live` is `top` for one Python process, and the page starts it on a
-long-running variant of the report generator that loops over the
-articles for thirty seconds: `python -m profiling.sampling run --live
-gazette/loop.py` in the terminal. The interface fills the terminal:
-the header with the three hottest functions, the sampling efficiency
-and the thread status line, and the table below with the sort column
-marked. The page walks the keys with `send-key` actions: `s` to cycle
-the sort, `/` to filter to `count`, `c` to clear, `t` to toggle the
-per-thread view, `p` to pause the display while sampling continues,
-`x` for the trend arrows, `h` for help, and `q` to leave, with the
-final frozen display still navigable. The page notes that live mode
-takes no output format and needs a terminal of at least sixty
-columns, and that on Windows there is no live mode.
+`--live` is `top` for one Python process. `gazette/loop.py` rebuilds
+the report of workshop 13 over and over for as many seconds as it is
+told, and the page starts it for two minutes under `run --live`. It
+is one file, because under `run` a script's own directory is not on
+the import path (see Known blockers). The page walks the header
+(samples and achieved rate, efficiency, what the threads were doing,
+the top three) and the table.
 
-Then the second subject, which fits here because live mode makes it
-visible: how many samples are enough. `-r` sets the rate, `-d` the
-duration, and the page gives the docs' arithmetic: ten seconds at ten
-kilohertz is a hundred thousand samples, and a function at five
-percent of them is known to within half a percent; a thousand samples
-and the same function could be anywhere from three to seven. Then
-`--realtime-stats` alongside a high rate to watch the achieved rate
-fall short of the asked-for rate on a busy machine, and the page says
-what to do about it (a longer duration, not a higher rate). A quiz on
-the arithmetic before the numbers are shown.
+The keys are pressed with `send-key` actions, one each: `s` for the
+sort, `/` with `count` and Enter to filter, `c` to clear, `x` for
+the trend colours (which are on to begin with), `t` for one thread,
+`p` to pause and again to resume, `h` for the list of keys, and `q`
+to leave, which stops the program too. The page notes that live mode
+takes no output format and needs sixty columns and `curses`.
 
-Closes the collection: the profiler's every mode and output has been
-seen, the learner knows what a sample is, what the pictures mean and
-how far to trust them, and **Tachyon on real applications** is where
-to go next, starting with **A Flask application under load**. The
-finish names the module docs as the reference.
+Then how many samples are enough. The arithmetic for a function with
+5% of the samples, worked properly (a percent and a half either way
+at a thousand samples, a seventh of a percent at a hundred
+thousand), with the docs' rounder figures named. `-r 5khz -d 5 -o
+rate.pstats`, and then `--realtime-stats` at twenty kilohertz, with
+the line it keeps up to date explained. The container keeps up at a
+hundred kilohertz, so the page does not promise a shortfall: it says
+what to compare and what to do when the rate achieved falls short,
+which is to sample for longer.
 
-- Format: terminal and files. Ships `gazette/loop.py` and the data.
-  Checks: a `ui` or `shell` check that the live session ran (the
-  terminal's scrollback holds the header text, or the process exited
-  on `q`), and a `kernel` check on a `-r 5khz -d 5 -o rate.pstats` run
-  that its sample count is within a plausible band of 25,000.
+Closes the collection and points at **Tachyon on real applications**.
+
+- Format: terminal and files, the terminal with most of the height.
+  Ships `gazette/loop.py` and the data. Checks: `shell` checks that
+  a profiler is running in live mode after the start and is not
+  after `q`, by reading `/proc`, a `kernel` check that `rate.pstats`
+  holds between 12,000 and 27,000 samples, and a `kernel` check on
+  the statistics run's output kept with `tee`.
 
 - Requires: nothing beyond the standard library.
 
@@ -1688,6 +1742,66 @@ Outside the extension:
   the check read the text, one run for both. Workshops 1, 2 and 6
   keep their `.pstats` checks, where the file is the subject.
 
+Found writing workshops 10 to 14, all on 3.15.0rc2 and all to be
+checked again on 3.15.0 final:
+
+- **`--native` marks only C code that stands between two Python
+  frames.** The docs say the frames "indicate when Python has called
+  into C code". The profiler adds one where the frame chain holds an
+  entry frame, which is where C code has called back into the
+  interpreter (`Modules/_remote_debugging/frames.c`), so a key
+  function under `sorted` gets a marker and `zlib.compress`, which
+  calls no Python, gets none, and its time stays on the calling
+  line. Workshop 11 teaches the marker as it is.
+
+- **The `<GC>` marker misses some of the collector's samples** unless
+  `--blocking` is given. In a program that called `gc.collect()` on a
+  line of its own, 52 of 213 samples on that line had the marker
+  without `--blocking` and 154 of 218 with it. A first reader's run
+  of workshop 11 marked none of 418, and had no `<GC>` row at all,
+  so the page describes that case first. A collection that
+  follows samples of a different stack is marked in full. The
+  profiler's frame cache is the likely cause, since a sample whose
+  stack has not changed is served from the cache, and not confirmed.
+  Workshop 11 shows it and tells the learner to read `<GC>` as the
+  least the collector took. `gc.freeze()`, which the design used for
+  its demonstration, made no difference to the graph builder.
+
+- **The differential flame graph compares shares, and labels them as
+  times.** The baseline's counts are multiplied by the new profile's
+  total time over the baseline's before anything is compared
+  (`stack_collector.py`, `_convert_to_flamegraph_format`), so after a
+  fix that makes a program fourteen times quicker every function the
+  fix left alone is red, and its tooltip gives a "Baseline Self" a
+  fourteenth of what it was. Workshop 13 is built around this: it
+  compares each change with the recording made just before it, and
+  prints tables for the times.
+
+- **A fixed program can be too quick to profile at the usual rate.**
+  The report takes a tenth of a second once fixed, a hundred samples
+  at a thousand a second. Workshop 13 records everything at
+  `-r 10khz`, which the container sustains (it sustains a hundred
+  kilohertz on this program).
+
+- **A specialised instruction keeps its name when its check fails.**
+  With objects of eight classes the attribute loads in workshop 12
+  are still sampled as `LOAD_ATTR_INSTANCE_VALUE`, with several times
+  the samples, so the share specialised that the heatmap reports does
+  not fall. The design had expected plain `LOAD_ATTR`.
+
+- **Under `run`, a script's own directory is not on the import
+  path.** `python sub/script.py` has `sub` as `sys.path[0]`; under
+  `python -m profiling.sampling run sub/script.py` it is the working
+  directory, and `sys.argv[0]` is absolute. A script that imports a
+  module beside it fails under the profiler and not without it.
+  Workshop 14's program is one file for that reason, and the
+  applications collection, whose programs are packages, should run
+  them from the package's parent or with `-m`.
+
+- **`--mode exception` is refused with `--async-aware`**, with the
+  other two modes. The docs' section on restrictions names only cpu
+  and gil; the entry for `--mode` names all three.
+
 ## Open questions
 
 - **Binder and Codespaces builds.** Neither `binder/environment.yml`
@@ -1702,11 +1816,10 @@ Outside the extension:
   as the wrapt workshops now do with one token for every collection
   and deployment.
 
-- **Live mode in the self-test.** Workshop 14 drives a curses interface
-  with `send-key`; whether the self-test's terminal is wide enough and
-  the keys land reliably is to be found out when it is written. If
-  not, the page keeps the key walk as prose over a shipped screenshot
-  and the checks cover the rate and duration run.
+- **Live mode in the self-test.** Settled by workshop 14: `send-key`
+  reaches the curses interface in the self-test's terminal, and `q`
+  ends it, which the check confirms by finding no profiler in
+  `/proc`. What the self-test cannot see is the display itself.
 
 - **The per-line rows of the pstats table.** Checked on rc2; to be
   checked again on 3.15.0 final before workshop 1's text is trusted.
@@ -1720,7 +1833,8 @@ the program above a `shell` terminal at two fifths), the
 `environment-create` first step with a `shell` check that `python` is
 3.15, and the `pstats`-reading `kernel` checks; the fourth settled how
 a flame graph is shown. Each later one adds one idea to a format that
-already works.
+already works. The fundamentals collection is complete; the
+applications collection is next.
 
 | # | Workshop | Status |
 |---|----------|--------|
@@ -1733,11 +1847,11 @@ already works.
 | 7 | `waiting-or-working` | Done |
 | 8 | `who-holds-the-gil` | Done |
 | 9 | `the-price-of-an-exception` | Done |
-| 10 | `following-the-awaits` | Planned |
-| 11 | `native-code-and-the-collector` | Planned |
-| 12 | `down-to-the-bytecode` | Planned |
-| 13 | `did-the-fix-work` | Planned |
-| 14 | `watching-it-live` | Planned |
+| 10 | `following-the-awaits` | Done |
+| 11 | `native-code-and-the-collector` | Done |
+| 12 | `down-to-the-bytecode` | Done |
+| 13 | `did-the-fix-work` | Done |
+| 14 | `watching-it-live` | Done |
 
 | # | Workshop | Status |
 |---|----------|--------|

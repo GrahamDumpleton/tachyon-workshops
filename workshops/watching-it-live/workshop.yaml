@@ -1,0 +1,61 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: watching-it-live
+title: Watching it live
+version: 0.1.0
+description: Watch where a program spends its time while it runs, with Tachyon's live mode, on a report that is rebuilt over and over. How to read the display and drive it from the keyboard, and then how many samples are enough, with the rate and duration options and the statistics that say whether the profiler kept up.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/watching-it-live
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, live]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-watching-it-live
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: live
+# Live mode fills the terminal, so the terminal has most of the height.
+layouts:
+  live:
+    main:
+      areas:
+        - { tabs: ["file:gazette/loop.py"] }
+        - { size: 0.7, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have watched a program's profile as it ran. Live mode is the
+  profiler's table kept up to date ten times a second, with a header
+  that says how the sampling is going and keys to sort, filter,
+  pause and look at one thread. And you have seen what the
+  confidence in any profile rests on: the number of samples, which
+  is the rate times the duration, and which is better raised by
+  profiling for longer than by sampling faster.
+
+  That is the last of the **Profiling with Tachyon** workshops. You
+  know what a sample is, how to read the table, the flame graph and
+  the heatmap, what each mode keeps, and how far to trust what you
+  see. **Tachyon on real applications** is where to go next: it
+  points the profiler at a Flask application, an ASGI service, a
+  pool of workers and a test suite, starting with **A Flask
+  application under load**.
+
+  The [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  is the reference for everything these workshops have used.
+pages:
+  - pages/01-welcome.md
+  - pages/02-the-display.md
+  - pages/03-the-keys.md
+  - pages/04-how-many-samples.md
+  - pages/05-keeping-up.md
+  - pages/06-finish.md

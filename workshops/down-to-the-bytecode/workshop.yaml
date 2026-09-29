@@ -1,0 +1,60 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: down-to-the-bytecode
+title: Down to the bytecode
+version: 0.1.0
+description: Record the bytecode instruction the interpreter was executing at each sample, with Tachyon's opcodes option, on a program that scores articles for readers. What the specialising interpreter does to a hot loop, how to read the instructions under a line of the heatmap, and what changes when one function is given objects of eight classes.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/down-to-the-bytecode
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, bytecode]
+duration: 15m
+platforms: [linux]
+capabilities:
+  - terminal
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-down-to-the-bytecode
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: scores
+layouts:
+  scores:
+    main:
+      areas:
+        - { tabs: ["file:gazette/scores.py"] }
+        - { size: 0.55, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have taken a profile down to the instruction. `--opcodes`
+  records which bytecode instruction was executing at each sample,
+  and the heatmap shows them under each line, the specialised ones
+  named for what the interpreter made of them. In the scoring loop
+  nearly every instruction had been specialised. Given articles of
+  eight classes the same instructions were there, under the same
+  names, and the attribute loads took several times the samples,
+  because an instruction specialised for one class has to do the
+  work the long way for the other seven.
+
+  Next in these workshops is **Did the fix work?**
+  (`did-the-fix-work`), which compares two profiles of one program,
+  before a change and after.
+
+  The "Opcode-aware profiling" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  lists where the instructions are shown, and
+  [PEP 659](https://peps.python.org/pep-0659/) describes the
+  specialising interpreter.
+pages:
+  - pages/01-welcome.md
+  - pages/02-recording-the-instruction.md
+  - pages/03-reading-the-instructions.md
+  - pages/04-eight-classes.md
+  - pages/05-finish.md

@@ -335,6 +335,189 @@
           }
         }
       ]
+    },
+    {
+      "name": "following-the-awaits",
+      "title": "Following the awaits",
+      "description": "Profile a program written with asyncio, a crawler that fetches twenty feeds at once, first as the event loop's stack and then with Tachyon's async-aware profiling, which follows the tasks. What each view shows, what the tasks that are not running are waiting for, and which options cannot be combined with it.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "asyncio"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/following-the-awaits",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/following-the-awaits"
+          }
+        }
+      ]
+    },
+    {
+      "name": "native-code-and-the-collector",
+      "title": "Native code and the collector",
+      "description": "See two things the Python stack cannot show, with the markers Tachyon adds to it. The native marker, on a search index whose sort calls back into Python from C, and the collector's marker, on a graph of cross-references that gives the garbage collector work to do. What each marks, what it leaves out, and how far to trust the counts.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "native",
+        "gc"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "20m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/native-code-and-the-collector",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/native-code-and-the-collector"
+          }
+        }
+      ]
+    },
+    {
+      "name": "down-to-the-bytecode",
+      "title": "Down to the bytecode",
+      "description": "Record the bytecode instruction the interpreter was executing at each sample, with Tachyon's opcodes option, on a program that scores articles for readers. What the specialising interpreter does to a hot loop, how to read the instructions under a line of the heatmap, and what changes when one function is given objects of eight classes.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "bytecode"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/down-to-the-bytecode",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/down-to-the-bytecode"
+          }
+        }
+      ]
+    },
+    {
+      "name": "did-the-fix-work",
+      "title": "Did the fix work?",
+      "description": "Compare two profiles of one program with Tachyon's differential flame graph, on a report generator that is fixed and then changed again. How to record a baseline, what the colours mean and what they are measured against, what noise looks like, and why each change is compared with the profile made just before it.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "flamegraph"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "write-files",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "20m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/did-the-fix-work",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/did-the-fix-work"
+          }
+        }
+      ]
+    },
+    {
+      "name": "watching-it-live",
+      "title": "Watching it live",
+      "description": "Watch where a program spends its time while it runs, with Tachyon's live mode, on a report that is rebuilt over and over. How to read the display and drive it from the keyboard, and then how many samples are enough, with the rate and duration options and the statistics that say whether the profiler kept up.",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "live"
+      ],
+      "platforms": [
+        "linux"
+      ],
+      "frontends": [],
+      "capabilities": [
+        "terminal",
+        "kernel-exec",
+        "install-packages"
+      ],
+      "duration": "15m",
+      "authors": [
+        "Graham Dumpleton"
+      ],
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/watching-it-live",
+      "issues": "https://github.com/GrahamDumpleton/tachyon-workshops/issues",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": {
+            "git": "https://github.com/GrahamDumpleton/tachyon-workshops",
+            "ref": "main",
+            "subdir": "workshops/watching-it-live"
+          }
+        }
+      ]
     }
   ]
 }

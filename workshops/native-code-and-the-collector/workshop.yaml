@@ -1,0 +1,62 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: native-code-and-the-collector
+title: Native code and the collector
+version: 0.1.0
+description: See two things the Python stack cannot show, with the markers Tachyon adds to it. The native marker, on a search index whose sort calls back into Python from C, and the collector's marker, on a graph of cross-references that gives the garbage collector work to do. What each marks, what it leaves out, and how far to trust the counts.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/native-code-and-the-collector
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, native, gc]
+duration: 20m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-native-code-and-the-collector
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: markers
+layouts:
+  markers:
+    main:
+      areas:
+        - { tabs: ["file:gazette/index.py", "file:gazette/graph.py"] }
+        - { size: 0.5, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have seen the two markers the profiler adds to a stack. The
+  profiler reads Python's frames, and C code has none, so time in a C
+  function is counted on the Python line that called it. `--native`
+  adds a `<native>` box wherever C code stands between two Python
+  functions, which is how the sort's key function came to be running
+  with no call to it in sight. `<GC>`, which is there unless
+  `--no-gc` takes it away, marks samples taken while the garbage
+  collector was running, on whichever line it interrupted. On this
+  release the marker misses many of them, so its count is the least
+  the collector took.
+
+  Next in these workshops is **Down to the bytecode**
+  (`down-to-the-bytecode`), which records the instruction the
+  interpreter was executing at each sample.
+
+  The "Special frames" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes both markers.
+pages:
+  - pages/01-welcome.md
+  - pages/02-time-inside-c.md
+  - pages/03-where-c-stands.md
+  - pages/04-the-collector.md
+  - pages/05-without-the-marker.md
+  - pages/06-collecting-less-often.md
+  - pages/07-finish.md

@@ -1,0 +1,61 @@
+apiVersion: jupyterlab-workshop/v1alpha1
+name: did-the-fix-work
+title: Did the fix work?
+version: 0.1.0
+description: Compare two profiles of one program with Tachyon's differential flame graph, on a report generator that is fixed and then changed again. How to record a baseline, what the colours mean and what they are measured against, what noise looks like, and why each change is compared with the profile made just before it.
+authors: [Graham Dumpleton]
+homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/did-the-fix-work
+issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
+tags: [python, tachyon, profiling, flamegraph]
+duration: 20m
+platforms: [linux]
+capabilities:
+  - terminal
+  - write-files
+  - kernel-exec
+  - install-packages
+# The environment installs nothing; it is declared so that `python` in
+# the terminal and behind the checks is the Python 3.15 that has the
+# profiler, and the same interpreter as the program it profiles.
+environment:
+  requirements: requirements.txt
+  kernel: workshop-did-the-fix-work
+env:
+  PAGER: cat
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+instructions: { side: right, width: 0.3 }
+layout: report
+layouts:
+  report:
+    main:
+      areas:
+        - { tabs: ["file:gazette/report.py"] }
+        - { size: 0.55, tabs: ["terminal:shell"] }
+gating: soft
+finish: |
+  You have compared profiles of a program before and after two
+  changes. A differential flame graph draws the newer profile and
+  colours each box by how its direct time compares with the
+  baseline's: blue for less, red for more, grey for much the same,
+  purple for new. The baseline is scaled to the length of the newer
+  run first, so the colours compare shares of a run and not
+  milliseconds, and after a fix that made the program over ten times
+  quicker everything it left alone was red. Compared with the
+  profile made just before it, the second change showed as one red
+  function among grey ones, which is what the tool is for.
+
+  Next in these workshops is **Watching it live**
+  (`watching-it-live`), the last of them, which profiles a program
+  while it runs and asks how many samples are enough.
+
+  The "Differential flame graphs" section of the
+  [profiling.sampling documentation](https://docs.python.org/3.15/library/profiling.sampling.html)
+  describes the colours.
+pages:
+  - pages/01-welcome.md
+  - pages/02-a-baseline.md
+  - pages/03-what-noise-looks-like.md
+  - pages/04-the-fix.md
+  - pages/05-a-second-change.md
+  - pages/06-finish.md
