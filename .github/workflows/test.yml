@@ -1,0 +1,64 @@
+# Lint the catalog, every collection index and every workshop, and
+# self-test every workshop, which is what `just lint` and `just test-all`
+# do locally. The commands are spelled out rather than run through the
+# Justfile so the job needs nothing but uv, which also installs the
+# Python 3.15 the project requires.
+#
+# Linux only, and so are the workshops: the profiler reads another
+# process's memory, which macOS refuses without root or a debugger
+# entitlement and Windows without administrator rights, so every
+# manifest declares linux alone and the runner is the platform the
+# learners get. A workshop that profiles a program it launches works on
+# any Linux; the ones that attach to a process they did not launch
+# depend on the kernel's ptrace scope and say so on their pages. Each
+# workshop builds an environment of its own during the self-test,
+# installing from PyPI, so the job needs network access.
+name: test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install the locked environment and the self-test browser
+        run: |
+          uv sync
+          uv run playwright install --with-deps chromium
+
+      - name: Lint the catalog, every collection and every workshop
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          uv run jupyter workshop lint catalog.json
+          for index in collections/*/collection.json; do
+            uv run jupyter workshop lint "$index"
+          done
+          for workshop in workshops/*/; do
+            uv run jupyter workshop lint "$workshop"
+          done
+
+      - name: Self-test every workshop
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for workshop in workshops/*/; do
+            name=$(basename "$workshop")
+            uv run jupyter workshop test "$workshop" --junit "results-$name.xml"
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results
+          path: results-*.xml
+          if-no-files-found: ignore

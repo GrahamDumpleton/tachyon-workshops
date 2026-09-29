@@ -1,0 +1,36 @@
+# Python environment managed by uv
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# The authoring skill is a symlink into the installed package, made by
+# `just install`, so it always matches the pinned release
+.claude/skills/jupyterlab-workshop-authoring
+
+# Claude Code's per-checkout permissions, written as they are granted.
+# The project's .mcp.json and AGENTS.md are committed; this is local.
+.claude/settings.local.json
+
+# State and outputs left behind by opening, running or publishing a workshop
+workshops/*/_workshop/
+workshops/*/work/
+workshops/*/dist/
+workshops/*/scratch/
+results-*.xml
+test-results/
+
+# Temporary working files for agents, and the record of topics held back
+# from the collections; never referenced from committed files
+scratch/
+
+# Editors and OS
+.DS_Store
+
+# Profiles and HTML written while trying the profiler by hand at the root
+*.pstats
+*.bin
+flamegraph_*.html
+heatmap_*/
+profile_*.json
+collapsed_*.txt

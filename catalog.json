@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "title": "Tachyon workshops",
+  "description": "Guided JupyterLab workshops for Tachyon, the sampling profiler in Python 3.15: what a sampling profiler is and how to read one, then profiling real applications with it.",
+  "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops",
+  "collections": [
+    {
+      "url": "collections/fundamentals/collection.json",
+      "id": "grahamdumpleton.me/tachyon/fundamentals",
+      "title": "Profiling with Tachyon",
+      "description": "Guided JupyterLab workshops on Tachyon, the sampling profiler in Python 3.15: what a sample is and why sampling costs nothing, reading the table, the flame graph and the heatmap, choosing wall, CPU, GIL or exception time, threads, async code, native code and the garbage collector, bytecode, comparing two profiles, and watching a program live.",
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling"
+      ]
+    },
+    {
+      "url": "collections/applications/collection.json",
+      "id": "grahamdumpleton.me/tachyon/applications",
+      "title": "Tachyon on real applications",
+      "description": "Guided JupyterLab workshops that point Tachyon at the programs people run: a Flask application under load, a slow endpoint found and fixed, an async service that stalls, worker processes, a test suite, attaching to a process that is already running, and a profile carried from production to your desk.",
+      "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops",
+      "tags": [
+        "python",
+        "tachyon",
+        "profiling",
+        "web"
+      ]
+    }
+  ]
+}

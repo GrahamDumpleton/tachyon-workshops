@@ -1,0 +1,37 @@
+// Dev container for GitHub Codespaces: the same JupyterLab and pinned
+// extension as the Binder image (binder/requirements.txt), started in the
+// background once the codespace is up. Codespaces always opens VS Code in
+// the browser first, and when JupyterLab's port is forwarded VS Code shows
+// a notification with a button that opens it in a new tab. The port does
+// not open the tab by itself: browsers block a tab nobody clicked for, and
+// Safari can only allow pop-ups per host name, which changes with every
+// codespace. The welcome file is opened in VS Code to explain where to
+// click.
+//
+// The image is the plain Ubuntu dev container rather than a Python one,
+// because no devcontainers/python image for 3.15 exists yet and these
+// workshops need 3.15, the release the profiler ships in. setup.sh
+// installs that interpreter with uv's Python installer and builds the
+// JupyterLab environment from it; once mcr.microsoft.com/devcontainers/python:3.15
+// is published, the image can change to it and setup.sh lose that step.
+//
+// The workshops run commands in JupyterLab terminals and start small
+// servers on localhost inside the codespace, which the pages reach from a
+// second terminal; port 8888 is still the only one a learner ever opens.
+{
+  "name": "Tachyon workshops",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "portsAttributes": {
+    "8888": {
+      "label": "JupyterLab",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": [".devcontainer/welcome.md"]
+    }
+  }
+}

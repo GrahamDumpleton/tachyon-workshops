@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "id": "grahamdumpleton.me/tachyon/applications",
+  "title": "Tachyon on real applications",
+  "description": "Guided JupyterLab workshops that point Tachyon at the programs people run: a Flask application under load, a slow endpoint found and fixed, an async service that stalls, worker processes, a test suite, attaching to a process that is already running, and a profile carried from production to your desk.",
+  "homepage": "https://github.com/GrahamDumpleton/tachyon-workshops",
+  "tags": [
+    "python",
+    "tachyon",
+    "profiling",
+    "web"
+  ],
+  "ordered": true,
+  "workshops": []
+}

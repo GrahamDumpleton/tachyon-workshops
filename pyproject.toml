@@ -1,0 +1,33 @@
+# This repository is a collection of workshops, not a Python package: uv
+# manages the environment the workshops are written, checked and run in.
+# The runtime dependencies are what a learner needs, JupyterLab and the
+# extension, and are exported to binder/requirements.txt for mybinder.org;
+# the dev group adds the MCP server and the self-test used while writing.
+# jupyterlab-workshop is pinned once, here, and the dev group's extras
+# resolve to the same release.
+#
+# Python 3.15 is required, not preferred: the subject is the sampling
+# profiler that ships in its standard library as profiling.sampling, and
+# every workshop's environment is built from the Python JupyterLab runs
+# on, so JupyterLab itself has to run on 3.15. Nothing else is pinned to
+# the subject; the packages a workshop profiles (Flask, Starlette and so
+# on) are named in that workshop's own requirements.txt and installed
+# into its own environment.
+[project]
+name = "tachyon-workshops"
+version = "0.1.0"
+description = "Guided JupyterLab workshops for Tachyon, the sampling profiler in Python 3.15"
+readme = "README.md"
+requires-python = ">=3.15"
+dependencies = [
+    "jupyterlab>=4.6,<5",
+    "jupyterlab-workshop==0.13.0",
+]
+
+[dependency-groups]
+dev = [
+    "jupyterlab-workshop[mcp,test]",
+]
+
+[tool.uv]
+package = false
