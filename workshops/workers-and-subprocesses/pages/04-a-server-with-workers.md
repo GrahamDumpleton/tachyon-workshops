@@ -1,6 +1,6 @@
 ---
 title: A server with workers
-requires: [verify:server-up, verify:site-profiled, verify:site-copied, quiz:threads-or-processes]
+requires: [verify:server-up, verify:site-profiled, verify:site-to-read, quiz:threads-or-processes]
 ---
 
 # A server with workers
@@ -25,7 +25,9 @@ application, `app` in `gazette/web.py`. `--no-control-socket` keeps
 gunicorn from making a socket for its own management in your home
 directory, outside the workshop. **`-d 20`** samples for twenty
 seconds and then stops the server. **`--subprocesses`** follows the
-workers.
+workers, where the machine allows it; where it does not, the
+arbiter's file is still written, since the arbiter is the process
+the profiler started.
 
 There is no `-a`. A gunicorn worker of the ordinary kind serves its
 requests on its main thread, one at a time.
@@ -81,23 +83,34 @@ mkdir -p site && mv flamegraph_*.html site/ && ls -l site
 
 ```{verify}
 :id: site-profiled
-:label: There is a flame graph for the arbiter and for each worker
+:label: The flame graphs in site/ are what this machine allows
 :trigger: after:move-site
+import os
 from pathlib import Path
 
+answer = os.environ.get("CAN_ATTACH", "")
+assert answer in ("yes", "no"), "The machine has not been asked yet: go back to the last page and run the action under 'Who may read the children'"
 files = sorted(Path("site").glob("flamegraph_*.html"))
 assert files, "There are no flame graphs in site/ yet: start gunicorn, send the requests, and when the server has stopped run the action above"
 texts = [file.read_text(encoding="utf-8", errors="replace") for file in files]
 workers = [text for text in texts if "dispatch_request" in text]
 arbiters = [text for text in texts if "dispatch_request" not in text and "Arbiter" in text]
-assert len(workers) >= 3, (
-    f"{len(workers)} of the {len(files)} flame graphs in site/ have requests in them; expected the three workers' to. "
-    "Were the requests sent while the server was being profiled? Run the actions above again, in order"
-)
 assert arbiters, "None of the flame graphs in site/ is the arbiter's. Run the actions above again, in order"
-print(f"{len(files)} flame graphs in site/: the arbiter's, and {len(workers)} of workers serving requests")
+if answer == "yes":
+    assert len(workers) >= 3, (
+        f"{len(workers)} of the {len(files)} flame graphs in site/ have requests in them; expected the three workers' to. "
+        "Were the requests sent while the server was being profiled? Run the actions above again, in order"
+    )
+    print(f"{len(files)} flame graphs in site/: the arbiter's, and {len(workers)} of workers serving requests")
+else:
+    assert not workers, (
+        f"{len(workers)} of the flame graphs in site/ have requests in them, so a worker was followed after all; "
+        "the machine answered no on the last page, so run the action under 'Who may read the children' again"
+    )
+    print(f"{len(files)} flame graph in site/, the arbiter's: this machine refused the workers, as it did the pool's")
 ```
 
+````{when} can_attach == "yes"
 Four files: the arbiter and three workers. Copy the arbiter's and
 one worker's to names of their own. The arbiter's is the one with
 no request in it.
@@ -108,14 +121,6 @@ no request in it.
 :title: Copy the arbiter's flame graph and one worker's
 :wait: prompt
 cp "$(grep -L dispatch_request site/flamegraph_*.html | head -1)" arbiter.html && cp "$(grep -l dispatch_request site/flamegraph_*.html | head -1)" web-worker.html
-```
-
-```{verify}
-:id: site-copied
-:label: arbiter.html and web-worker.html are the arbiter's and a worker's
-:trigger: after:copy-site
-:substrate: shell
-python -c "from pathlib import Path; a, w = Path('arbiter.html'), Path('web-worker.html'); assert a.exists() and w.exists(), 'No arbiter.html or web-worker.html yet: run the copy command above'; assert 'dispatch_request' in w.read_text(encoding='utf-8', errors='replace'), 'web-worker.html has no requests in it; run the copy command above again'; assert 'dispatch_request' not in a.read_text(encoding='utf-8', errors='replace'), 'arbiter.html has requests in it, so it is a worker; run the copy command above again'; print('arbiter.html is the arbiter and web-worker.html is a worker')"
 ```
 
 ```{file-open}
@@ -136,6 +141,69 @@ that a worker had died or that it was time to stop.
 :path: web-worker.html
 :factory: HTML Viewer
 :area: desk
+```
+````
+
+````{when} can_attach == "no"
+One file, the arbiter's, and it is a true profile of the arbiter:
+copy it to a name of its own and open it.
+
+```{execute}
+:id: copy-arbiter
+:session: server
+:title: Copy the arbiter's flame graph
+:wait: prompt
+cp "$(ls site/flamegraph_*.html | head -1)" arbiter.html
+```
+
+```{file-open}
+:id: open-arbiter-only
+:title: Open arbiter.html in the HTML viewer
+:path: arbiter.html
+:factory: HTML Viewer
+:area: desk
+```
+
+The arbiter is one column with no branches, ending in
+`Arbiter.wait_for_signals`. For twenty seconds it waited to be told
+that a worker had died or that it was time to stop. Every request
+was served by a worker, and the workers were refused, so this is
+all the profiler could write here. A worker's flame graph, made on
+a machine that allowed it, under the same load, is shipped with the
+workshop. Open it.
+
+```{file-open}
+:id: open-web-worker-example
+:title: Open web-worker-example.html in the HTML viewer
+:path: web-worker-example.html
+:factory: HTML Viewer
+:area: desk
+```
+````
+
+```{verify}
+:id: site-to-read
+:label: There is the arbiter's flame graph and a worker's to read
+:trigger: action
+import os
+from pathlib import Path
+
+answer = os.environ.get("CAN_ATTACH", "")
+assert answer in ("yes", "no"), "The machine has not been asked yet: go back to the last page and run the action under 'Who may read the children'"
+arbiter = Path("arbiter.html")
+assert arbiter.exists(), "No arbiter.html yet: run the copy command above"
+assert "dispatch_request" not in arbiter.read_text(encoding="utf-8", errors="replace"), "arbiter.html has requests in it, so it is a worker; run the copy command above again"
+name = "web-worker.html" if answer == "yes" else "web-worker-example.html"
+worker = Path(name)
+if answer == "yes":
+    assert worker.exists(), "No web-worker.html yet: run the copy command above"
+else:
+    assert worker.exists(), "web-worker-example.html is missing; restart the workshop to get it back"
+assert "dispatch_request" in worker.read_text(encoding="utf-8", errors="replace"), f"{name} has no requests in it" + ("; run the copy command above again" if answer == "yes" else "; restart the workshop to get it back")
+if answer == "yes":
+    print("arbiter.html is the arbiter and web-worker.html is one of its workers")
+else:
+    print("arbiter.html is the arbiter; this machine refused the workers, and web-worker-example.html is one made where they were allowed")
 ```
 
 The worker is where the site is. Three things to see.
@@ -159,7 +227,7 @@ The worker is where the site is. Three things to see.
 
 ```{quiz}
 :id: threads-or-processes
-question: "The development server needed `-a` and gave one flame graph. gunicorn needed `--subprocesses` and gave four. Why the difference?"
+question: "The development server needed `-a` and gave one flame graph. gunicorn needed `--subprocesses` and, where the machine allows it, gives four. Why the difference?"
 options:
   - { text: "gunicorn is faster, so there is more to draw", explanation: "How much there is to draw depends on the samples. The number of files depends on the number of processes." }
   - { text: "The development server serves requests on threads of one process, and gunicorn on processes of their own, and the profiler writes a profile for each process", correct: true }

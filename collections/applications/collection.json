@@ -132,7 +132,7 @@
     {
       "name": "workers-and-subprocesses",
       "title": "Workers and subprocesses",
-      "description": "Profile a program that does its work in other processes, with Tachyon's --subprocesses option. A job runner on a pool of four processes, whose own profile is all waiting, and a web site under gunicorn with three workers. What the profiler follows, the file it writes for each process, and how to tell the files apart.",
+      "description": "Profile a program that does its work in other processes, with Tachyon's --subprocesses option. A job runner on a pool of four processes, whose own profile is all waiting, and a web site under gunicorn with three workers. What the profiler follows, the file it writes for each process, how to tell the files apart, and why a machine may refuse the children.",
       "tags": [
         "python",
         "tachyon",

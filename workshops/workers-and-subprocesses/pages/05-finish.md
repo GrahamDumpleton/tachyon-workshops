@@ -52,6 +52,15 @@ waiting, of a program that is plainly busy.
   running, started by something else, is another matter, and the
   subject of a later workshop.
 
+- **Only where attaching is allowed.** Each child is read by a
+  profiler that did not start it, which the kernel's usual setting
+  refuses, silently. Fewer files than the program had processes
+  means the children were refused, and the parent's file on its own
+  is not a profile of the program. On such a machine the answer is
+  the one the next workshop but one gives for attaching: a machine
+  where it is allowed, and never a change to the security of one
+  that is not yours to decide for.
+
 ```{quiz}
 :id: what-it-follows
 question: "A nightly job is a Python script that runs `pg_dump` to copy a database, then starts three Python scripts with `subprocess` to process the copy. It is profiled with `--subprocesses`. How many profiles are written?"

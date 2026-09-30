@@ -175,8 +175,8 @@ it from a second, with the profiler between them.
 4. **Workers and subprocesses** (`workers-and-subprocesses`,
    15 minutes). A job runner on a process pool, whose own profile is
    all waiting, and gunicorn with three workers, profiled with
-   `--subprocesses`: a file for each process, and how to tell them
-   apart.
+   `--subprocesses`: a file for each process, how to tell them
+   apart, and why a machine may refuse to follow the children.
 
 5. **Profiling a test suite** (`profiling-a-test-suite`, 15 minutes).
    The profiler around `python -m pytest`: the tests and the fixtures

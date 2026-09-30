@@ -1244,16 +1244,27 @@ waiting for its children, which a quiz predicts. Then
 notices each Python child as it appears, starts a profiler for it
 with the same options, and writes one output per process,
 `flamegraph_<pid>.html`, up to a hundred at once, through
-grandchildren. The run writes seven files for a pool of four: the
-parent, the four workers, and the two processes `multiprocessing`
-starts for itself on Linux, which a quiz asks about. The files are
-told apart by what is in them, so the page finds a worker's by a
-function only a worker runs and copies it to `worker.html`.
+grandchildren. Then the catch: each child is read by a profiler that
+did not start it, a sibling of the program that attaches from
+outside, which the kernel's usual ptrace scope refuses, and the
+refused profiler says nothing. So the page probes first, as the
+attaching workshop does, with `dump` against a background process,
+and branches on `can_attach`. Where it is allowed, the run writes
+seven files for a pool of four: the parent, the four workers, and
+the two processes `multiprocessing` starts for itself on Linux,
+which a quiz asks about. The files are told apart by what is in
+them, so the page finds a worker's by a function only a worker runs
+and copies it to `worker.html`. Where it is refused, the same
+command is run and writes the parent's file alone, which the page
+names as the sign of a refusal, and a worker's graph made in the
+container is shipped as `worker-example.html`.
 
 Then gunicorn: the Flask newsroom under `gunicorn -w 3` for twenty
 seconds, with `--subprocesses`, under load, and four flame graphs,
 the arbiter asleep in `wait_for_signals` and three workers each
-serving a share of the requests on its main thread. The top of a
+serving a share of the requests on its main thread (on the refused
+track the arbiter's alone, which is real, and a shipped
+`web-worker-example.html`). The top of a
 worker's tower is the arbiter's frames, since the worker was forked
 from it. The page uses this to say what a production WSGI server
 looks like to the profiler compared with the development server of
@@ -1261,16 +1272,21 @@ workshop 1 (processes and not threads, so `--subprocesses` and not
 `-a`), and that no total over the processes is made for you.
 
 Closes with when to reach for `--subprocesses` and what to expect of
-it, that `--live` is refused with it, and that it follows descendants
-only. Next is **Profiling a test suite**.
+it, that `--live` is refused with it, that it follows descendants
+only, and that it follows them only where attaching is allowed. Next
+is **Profiling a test suite**.
 
 - Format: two terminals and files, with the flame graphs in the HTML
   viewer. Ships `gazette/jobs.py`, `gazette/web.py` and its
-  templates, `load.py` and the data. Variables: `server_port`, default
-  8085. Checks: a `kernel` check on the parent's table; `kernel`
-  checks that the flame graphs moved to `jobs/` and `site/` are one
-  for each process, with the workers' having `build_digest` or
-  requests in them; `shell` checks on the copies.
+  templates, `load.py`, the data, and `worker-example.html` and
+  `web-worker-example.html` for the refused track. Variables:
+  `server_port`, default 8085; `can_attach`, captured by the probe.
+  Checks: a `kernel` check on the parent's table; `kernel` checks
+  that the flame graphs moved to `jobs/` and `site/` are what the
+  answer allows, one per process with the workers' having
+  `build_digest` or requests in them where attaching is allowed, and
+  the parent's or arbiter's alone where it is not; `kernel` checks
+  that there is a worker's graph to read on either track.
 
 - Requires: `flask`, `gunicorn` (26.2.0 on 2026-09-29).
 
@@ -1869,6 +1885,22 @@ checked again on 3.15.0 final:
 - **`--mode exception` is refused with `--async-aware`**, with the
   other two modes. The docs' section on restrictions names only cpu
   and gil; the entry for `--mode` names all three.
+
+- **`--subprocesses` follows children only where `attach` is
+  allowed, and is silent where it is not.** The child monitor
+  (`_child_monitor.py`) profiles each new child by spawning
+  `python -m profiling.sampling attach <pid>` as a separate process,
+  with its stderr sent to `/dev/null`. That profiler is a sibling of
+  the program, not an ancestor of the child, so under Yama's
+  `ptrace_scope` 1, the usual Linux setting and the GitHub runner's,
+  the kernel refuses it as it refuses any attach, and only the
+  parent's file is written, with nothing said. Found on 2026-09-30
+  when the first CI run of the repository failed the workers
+  workshop, which had passed in the container, whose kernel has no
+  Yama. The workshop now probes with `dump` first and branches, as
+  the attaching workshop does. Worth reporting upstream: the docs do
+  not say the option needs attach permission, and the refusal could
+  be reported rather than swallowed.
 
 Found writing the applications collection, on 3.15.0rc2 and
 jupyterlab-workshop 0.13.0:

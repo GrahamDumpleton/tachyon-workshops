@@ -2,7 +2,7 @@ apiVersion: jupyterlab-workshop/v1alpha1
 name: workers-and-subprocesses
 title: Workers and subprocesses
 version: 0.1.0
-description: Profile a program that does its work in other processes, with Tachyon's --subprocesses option. A job runner on a pool of four processes, whose own profile is all waiting, and a web site under gunicorn with three workers. What the profiler follows, the file it writes for each process, and how to tell the files apart.
+description: Profile a program that does its work in other processes, with Tachyon's --subprocesses option. A job runner on a pool of four processes, whose own profile is all waiting, and a web site under gunicorn with three workers. What the profiler follows, the file it writes for each process, how to tell the files apart, and why a machine may refuse the children.
 authors: [Graham Dumpleton]
 homepage: https://github.com/GrahamDumpleton/tachyon-workshops/tree/main/workshops/workers-and-subprocesses
 issues: https://github.com/GrahamDumpleton/tachyon-workshops/issues
@@ -47,13 +47,16 @@ finish: |
   You have profiled two programs that do their work in other
   processes. The profiler samples the process it started, and the
   job runner's own profile was all waiting, for workers it could not
-  see into. With `--subprocesses` it started a profiler for every
-  Python process the program started, and wrote a file for each,
+  see into. With `--subprocesses` it starts a profiler for every
+  Python process the program starts and writes a file for each,
   named by the number of the process: the four workers with
   `build_digest` in them, and the helpers that `multiprocessing`
-  starts for itself. Under gunicorn the same option gave a file for
+  starts for itself. Under gunicorn the same option gives a file for
   the arbiter, asleep, and one for each of three workers, each
-  serving its share of the requests on its main thread.
+  serving its share of the requests on its main thread. Each child
+  is read by a profiler that did not start it, so the children are
+  followed only where the machine allows attaching, and refused in
+  silence where it does not: fewer files than processes is the sign.
 
   Next in these workshops is **Profiling a test suite**
   (`profiling-a-test-suite`), which points the profiler at pytest.
