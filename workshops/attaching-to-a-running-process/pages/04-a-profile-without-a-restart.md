@@ -39,11 +39,12 @@ python load.py {{ server_port }} 20
 python -m profiling.sampling attach -a -d 15 --flamegraph -o attached.html $(cat gazette.pid)
 ```
 
-```{command}
+```{file-open}
 :id: open-attached
 :title: Open attached.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/attached.html", "factory": "HTML Viewer" }
+:path: attached.html
+:factory: HTML Viewer
+:area: desk
 ```
 ````
 
@@ -63,11 +64,12 @@ is about making that decision properly.
 A flame graph made by this command, of this web site under the same
 load, on a machine that allowed it, is shipped with the workshop.
 
-```{command}
+```{file-open}
 :id: open-example
 :title: Open attached-example.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/attached-example.html", "factory": "HTML Viewer" }
+:path: attached-example.html
+:factory: HTML Viewer
+:area: desk
 ```
 ````
 

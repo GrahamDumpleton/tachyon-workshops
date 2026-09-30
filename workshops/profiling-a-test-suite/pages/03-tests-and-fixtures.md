@@ -23,11 +23,12 @@ python -m profiling.sampling replay --flamegraph -o before.html before.bin
 python -c "from pathlib import Path; f = Path('before.html'); assert f.exists(), 'No before.html yet: run the replay command above'; t = f.read_text(encoding='utf-8', errors='replace'); missing = [n for n in ('pytest_runtest_call', 'pytest_runtest_setup', 'test_a_refresh_of_nothing', 'conftest') if n not in t]; assert not missing, 'before.html has no ' + ', '.join(missing) + ' in it; record the test run again, on the page before'; print('before.html is written, with the tests and the fixtures in it')"
 ```
 
-```{command}
+```{file-open}
 :id: open-flame
 :title: Open before.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/before.html", "factory": "HTML Viewer" }
+:path: before.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

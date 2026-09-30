@@ -113,11 +113,29 @@ assert Path("after.html").exists(), "No after.html yet: run the replay command a
 print(f"{count} tests passed in {after:.1f} seconds, where they took {before:.1f}")
 ```
 
-```{command}
+Put the first flame graph and this one one above the other, to see
+what changed. The first action makes room by shrinking the terminal.
+
+```{layout}
+:id: make-room
+:title: Make room for two graphs
+:name: compare
+```
+
+```{file-open}
+:id: open-before-again
+:title: Bring back before.html
+:path: before.html
+:factory: HTML Viewer
+:area: desk
+```
+
+```{file-open}
 :id: open-after
-:title: Open after.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/after.html", "factory": "HTML Viewer" }
+:title: Open after.html below it
+:path: after.html
+:factory: HTML Viewer
+:area: bottom
 ```
 
 In the run this page was written from, the 118 tests took a fifth

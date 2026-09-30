@@ -63,11 +63,12 @@ need to run the program again.
 python -m profiling.sampling replay --diff-flamegraph baseline.bin -o diff.html fixed.bin
 ```
 
-```{command}
+```{file-open}
 :id: open-diff
 :title: Open diff.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/diff.html", "factory": "HTML Viewer" }
+:path: diff.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 `count_words` is blue, as it should be. Everything else that has any

@@ -25,11 +25,12 @@ python -m profiling.sampling replay --gecko -o profile.json report.bin
 The file is JSON, written as one long line. JupyterLab can show it
 as a tree.
 
-```{command}
+```{file-open}
 :id: open-gecko
 :title: Open profile.json as a tree
-:command: docmanager:open
-{ "path": "{{ workspace }}/profile.json", "factory": "JSON" }
+:path: profile.json
+:factory: JSON
+:area: desk
 ```
 
 Click the arrows to open a branch. Three things are worth finding.

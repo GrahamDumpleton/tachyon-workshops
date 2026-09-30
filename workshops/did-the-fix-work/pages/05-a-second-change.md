@@ -45,11 +45,12 @@ python -m profiling.sampling run -r 10khz --binary -o second.bin gazette/report.
 python -m profiling.sampling replay --diff-flamegraph fixed.bin -o diff2.html second.bin
 ```
 
-```{command}
+```{file-open}
 :id: open-diff2
 :title: Open diff2.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/diff2.html", "factory": "HTML Viewer" }
+:path: diff2.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 This is the picture the tool is for. `hardest` is red, and it is

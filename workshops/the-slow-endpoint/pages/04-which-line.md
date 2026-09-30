@@ -39,11 +39,12 @@ cp "$(grep -l 'gazette/web.py - Heatmap' heatmap/file_*.html)" heatmap-web.html
 python -c "from pathlib import Path; f = Path('heatmap-web.html'); assert f.exists(), 'No heatmap-web.html yet: run the two commands above, in order'; t = f.read_text(encoding='utf-8', errors='replace'); assert 'gazette/web.py' in t and 'def search' in t, 'heatmap-web.html is not the page for gazette/web.py; run the two commands above again'; print('heatmap-web.html is the heatmap of gazette/web.py')"
 ```
 
-```{command}
+```{file-open}
 :id: open-heatmap
 :title: Open heatmap-web.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap-web.html", "factory": "HTML Viewer" }
+:path: heatmap-web.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 Scroll down to `search`, near line 95. Each line has two numbers.

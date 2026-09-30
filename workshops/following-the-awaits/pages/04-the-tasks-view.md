@@ -23,11 +23,12 @@ Draw the result as a flame graph, where the shape is easiest to see.
 python -m profiling.sampling run --async-aware --flamegraph -o tasks.html gazette/crawl.py {{ server_port }}
 ```
 
-```{command}
+```{file-open}
 :id: open-tasks
 :title: Open tasks.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/tasks.html", "factory": "HTML Viewer" }
+:path: tasks.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

@@ -29,8 +29,8 @@ layouts:
   threads:
     main:
       areas:
-        - { tabs: ["file:gazette/digest.py", "file:gazette/checksums.py"] }
-        - { size: 0.55, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:gazette/digest.py", "file:gazette/checksums.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have profiled two programs with threads and found out what the

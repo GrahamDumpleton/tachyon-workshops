@@ -37,11 +37,12 @@ explanation: "The profiler reads Python's frames, and finds C code by the gap it
 python -m profiling.sampling run --native --flamegraph -o native.html gazette/index.py
 ```
 
-```{command}
+```{file-open}
 :id: open-native
 :title: Open native.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/native.html", "factory": "HTML Viewer" }
+:path: native.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

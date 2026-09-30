@@ -30,8 +30,9 @@ like to understand, and have never profiled anything, or have only
 used cProfile. Each workshop takes one question and has the learner
 answer it by doing it, mostly by running the profiler against a small
 program shipped with the workshop in a JupyterLab terminal, reading
-what comes back, and opening the flame graph or heatmap it wrote in a
-pane beside the instructions, with checks confirming each step. Each
+what comes back, and opening the flame graph or heatmap it wrote in
+JupyterLab's HTML viewer beside the program, with checks confirming
+each step. Each
 gives the background first: what the profiler is doing and why anyone
 would want that, before the command that does it. Ten to twenty
 minutes each.
@@ -168,12 +169,15 @@ The rest of the environment rules:
   every server a page starts is stopped by a later page or by the
   finish page.
 
-- Flame graphs and heatmaps are opened in a pane beside the
-  instructions with `url-open` and its `pane` option, at the file's
-  `/files/` URL under the workspace, never in a new browser tab, so the
-  learner sees the picture and the page that explains it together.
-  Gecko profiles are described and inspected as JSON; the Firefox
-  Profiler site is linked for the learner to try later, not opened.
+- Flame graphs and heatmaps are opened in JupyterLab's HTML viewer
+  with `file-open`, `:factory: HTML Viewer` and `:area: desk`, the
+  named area of the layout that holds the program, never in a new
+  browser tab, so the learner sees the picture and the page that
+  explains it together. `url-open` takes only http and https URLs, so
+  it cannot open a file the profiler wrote. Gecko profiles are
+  described and inspected as JSON, opened the same way with
+  `:factory: JSON`; the Firefox Profiler site is linked for the
+  learner to try later, not opened.
 
 - Programs a workshop profiles run for a few seconds, never longer than
   the page needs, and finish on their own or are stopped by an action.
@@ -332,12 +336,23 @@ Conventions for the workshops here:
   `PYTHONUNBUFFERED: "1"` and `PYTHONDONTWRITEBYTECODE: "1"` in the
   manifest's `env`.
 
-- Pictures in a pane. A flame graph or heatmap is opened with
-  `url-open` into a named pane at its `/files/` URL, with the layout
-  giving that pane an area beside the terminal, so the page, the
-  command and the picture are visible together. The page then walks
-  the picture: what the width means, where to click, what the sidebar
-  says. It never says "open it in your browser".
+- Pictures beside the program. A flame graph or heatmap is opened
+  with `file-open`, `:factory: HTML Viewer` and `:area: desk` into the
+  top row of the layout, the full width of the main area, with the
+  terminals below it, so the page, the command and the picture are
+  visible together. Every layout names that row `desk`, and the
+  terminal row is two fifths so the picture has the larger share. The
+  page then walks the picture: what the width means, where to click,
+  what the sidebar says. It never says "open it in your browser".
+
+- Two pictures the learner compares are stacked, never tabs: the HTML
+  viewer loads its file again whenever its tab comes to the front, so
+  a learner switching between two loses their place and any panel
+  they opened. The page applies a `compare` layout whose terminal row
+  is a quarter, brings the first picture back with `file-open` into
+  `desk`, and opens the second with `:area: bottom`, which splits it
+  off beneath the first. The prose says which is above and which
+  below.
 
 - Never use the built-in `default` or `terminal-only` layouts without
   meaning to: they open a terminal named `workshop`. Declare a layout

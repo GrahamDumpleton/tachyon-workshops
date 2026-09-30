@@ -6,15 +6,16 @@ requires: [quiz:why-three-files]
 # The files
 
 A heatmap is a page per source file and an index that lists them.
-Open the index in JupyterLab's HTML viewer. It opens as a tab beside
-the terminal, and the terminal is the tab next to it when you need it
-again.
+Open the index in JupyterLab's HTML viewer. It opens beside
+`gazette/report.py`, above the terminal, so the program, the page
+and these instructions are all in view.
 
-```{command}
+```{file-open}
 :id: open-index
 :title: Open heatmap/index.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap/index.html", "factory": "HTML Viewer" }
+:path: heatmap/index.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ```{hint}

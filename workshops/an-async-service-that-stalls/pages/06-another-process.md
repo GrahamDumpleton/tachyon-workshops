@@ -124,11 +124,12 @@ where it had taken 35. The site also served more than twice as many
 requests in the same time, since `load.py` sends the next request
 when the last is answered.
 
-```{command}
+```{file-open}
 :id: open-pooled
 :title: Open pooled.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/pooled.html", "factory": "HTML Viewer" }
+:path: pooled.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 The loop is a loop again. The box above `select` is the wide one,

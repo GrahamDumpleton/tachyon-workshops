@@ -35,17 +35,18 @@ path with the width of each box its share of the samples.
 python -m profiling.sampling replay --flamegraph -o flamegraph.html report.bin
 ```
 
-```{command}
+```{file-open}
 :id: open-flamegraph
 :title: Open flamegraph.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/flamegraph.html", "factory": "HTML Viewer" }
+:path: flamegraph.html
+:factory: HTML Viewer
+:area: desk
 ```
 
-It opens as a tab beside the terminal. The graph has the root at the
-top and one column beneath it, through `main` to `count_words`, which
-is split into two boxes for its two busy lines. The fourth of these
-workshops reads a flame graph in full.
+It opens beside `gazette/report.py`, above the terminal. The graph
+has the root at the top and one column beneath it, through `main` to
+`count_words`, which is split into two boxes for its two busy lines.
+The fourth of these workshops reads a flame graph in full.
 
 And as a heatmap, the source code with the samples painted on each
 line.
@@ -58,11 +59,12 @@ line.
 python -m profiling.sampling replay --heatmap -o heatmap report.bin
 ```
 
-```{command}
+```{file-open}
 :id: open-heatmap
 :title: Open the heatmap page for report.py
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap/file_0000.html", "factory": "HTML Viewer" }
+:path: heatmap/file_0000.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 Scroll to `count_words`: line 36 is red and line 34 is orange, and

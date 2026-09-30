@@ -42,8 +42,8 @@ layouts:
   service:
     main:
       areas:
-        - { tabs: ["file:gazette/asgi.py", "file:load.py", "file:index_server.py"] }
-        - size: 0.5
+        - { name: desk, tabs: ["file:gazette/asgi.py", "file:load.py", "file:index_server.py"] }
+        - size: 0.4
           split: columns
           areas:
             - { tabs: ["terminal:server"] }

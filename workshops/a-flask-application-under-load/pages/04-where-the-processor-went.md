@@ -59,14 +59,34 @@ print("cpu.html is written, with the request threads, Flask and the views in it"
 CHECK
 ```
 
-```{command}
-:id: open-cpu
-:title: Open cpu.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/cpu.html", "factory": "HTML Viewer" }
+Put the two graphs one above the other, the wall-clock graph from
+the last page and the new one beneath it, so that both are in view
+while you compare them. The first action makes room by shrinking the
+terminals.
+
+```{layout}
+:id: make-room
+:title: Make room for two graphs
+:name: compare
 ```
 
-The tower of the main thread has all but gone. It is a sliver at
+```{file-open}
+:id: open-wall-again
+:title: Bring back wall.html
+:path: wall.html
+:factory: HTML Viewer
+:area: desk
+```
+
+```{file-open}
+:id: open-cpu
+:title: Open cpu.html below it
+:path: cpu.html
+:factory: HTML Viewer
+:area: bottom
+```
+
+In the lower graph, the tower of the main thread has all but gone. It is a sliver at
 one edge, the little computing the main thread does to start a
 thread for each connection. The requests have the graph to
 themselves.

@@ -29,7 +29,7 @@ layouts:
   pages:
     main:
       areas:
-        - { tabs: ["file:gazette/pages.py"] }
+        - { name: desk, tabs: ["file:gazette/pages.py"] }
         - { size: 0.4, tabs: ["terminal:shell"] }
 gating: soft
 finish: |

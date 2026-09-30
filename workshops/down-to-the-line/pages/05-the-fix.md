@@ -40,23 +40,39 @@ python -m profiling.sampling run --heatmap -o heatmap-after gazette/report.py
 ```
 
 The report is the same, word for word, and was built in about a
-tenth of a second where it took nearly two. Open the page for
-`report.py` from the new heatmap.
+tenth of a second where it took nearly two. Put the two heatmap
+pages for `report.py` one above the other: the first action makes
+room by shrinking the terminal, the second brings back the page from
+before, and the third opens the page from the new heatmap beneath
+it. Two pages in one place would not do, since the viewer loads a
+page again each time its tab is brought to the front, and you would
+lose your place with every switch.
 
-```{command}
-:id: open-after-page
-:title: Open the heatmap page for the fixed report.py
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap-after/file_0000.html", "factory": "HTML Viewer" }
+```{layout}
+:id: make-room
+:title: Make room for two pages
+:name: compare
 ```
 
-There are two tabs called `file_0000.html` now. The one in front is
-the one just opened, the fixed program. Where JupyterLab put it
-among the tabs depends on which tab you were last using, so tell the
-two apart by what they hold: hold the mouse over a tab to see the
-directory it came from, `heatmap` or `heatmap-after`, or look at
-`count_words`, where only the program as it was has the `seen` list.
-Switch between them with `count_words` in view.
+```{file-open}
+:id: open-before-page
+:title: Bring back the heatmap page for report.py as it was
+:path: heatmap/file_0000.html
+:factory: HTML Viewer
+:area: desk
+```
+
+```{file-open}
+:id: open-after-page
+:title: Open the heatmap page for the fixed report.py below it
+:path: heatmap-after/file_0000.html
+:factory: HTML Viewer
+:area: bottom
+```
+
+Both pages are called `file_0000.html`. The one above is the program
+as it was, with the `seen` list in `count_words`; the one below is
+the fixed program. Scroll each to `count_words`.
 
 Before, one red line had nearly every sample and the rest were pale.
 After, the colour is spread along the loop, with the lines that

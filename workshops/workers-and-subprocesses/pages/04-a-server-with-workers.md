@@ -118,22 +118,24 @@ cp "$(grep -L dispatch_request site/flamegraph_*.html | head -1)" arbiter.html &
 python -c "from pathlib import Path; a, w = Path('arbiter.html'), Path('web-worker.html'); assert a.exists() and w.exists(), 'No arbiter.html or web-worker.html yet: run the copy command above'; assert 'dispatch_request' in w.read_text(encoding='utf-8', errors='replace'), 'web-worker.html has no requests in it; run the copy command above again'; assert 'dispatch_request' not in a.read_text(encoding='utf-8', errors='replace'), 'arbiter.html has requests in it, so it is a worker; run the copy command above again'; print('arbiter.html is the arbiter and web-worker.html is a worker')"
 ```
 
-```{command}
+```{file-open}
 :id: open-arbiter
 :title: Open arbiter.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/arbiter.html", "factory": "HTML Viewer" }
+:path: arbiter.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 The arbiter is one column with no branches, ending in
 `Arbiter.wait_for_signals`. For twenty seconds it waited to be told
 that a worker had died or that it was time to stop.
 
-```{command}
+```{file-open}
 :id: open-web-worker
 :title: Open web-worker.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/web-worker.html", "factory": "HTML Viewer" }
+:path: web-worker.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 The worker is where the site is. Three things to see.

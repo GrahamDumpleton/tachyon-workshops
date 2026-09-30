@@ -5,13 +5,16 @@ requires: [quiz:read-the-server]
 
 # The shape of a server
 
-Open the flame graph. It opens as a tab beside the terminals.
+Open the flame graph. It opens beside `gazette/web.py`, above the
+terminals, so the program, the picture and this page are all in
+view.
 
-```{command}
+```{file-open}
 :id: open-wall
 :title: Open wall.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/wall.html", "factory": "HTML Viewer" }
+:path: wall.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

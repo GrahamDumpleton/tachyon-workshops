@@ -30,8 +30,8 @@ layouts:
   report:
     main:
       areas:
-        - { tabs: ["file:gazette/report.py"] }
-        - { size: 0.55, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:gazette/report.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have compared profiles of a program before and after two

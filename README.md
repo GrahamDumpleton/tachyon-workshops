@@ -37,7 +37,7 @@ a JupyterLab extension that shows the instructions in a side panel with
 clickable actions that drive the session, and checks what you have done
 as you go. Each workshop is a directory of a `workshop.yaml` manifest
 and Markdown pages, and ships the program it profiles; the profiler's
-flame graphs and heatmaps open in a pane beside the instructions. See
+flame graphs and heatmaps open in JupyterLab beside the program. See
 [OUTLINE.md](OUTLINE.md) for the design of the collections.
 
 ## The collections

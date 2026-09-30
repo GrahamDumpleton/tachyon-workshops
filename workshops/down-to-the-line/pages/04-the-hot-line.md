@@ -8,11 +8,12 @@ requires: [quiz:total-not-self]
 The profiler numbers the pages from the file with the most samples,
 so `file_0000.html` is `report.py`. Open it.
 
-```{command}
+```{file-open}
 :id: open-report-page
 :title: Open the heatmap page for report.py
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap/file_0000.html", "factory": "HTML Viewer" }
+:path: heatmap/file_0000.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 This is your program, with two columns of numbers in front of the

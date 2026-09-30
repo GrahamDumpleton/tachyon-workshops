@@ -26,14 +26,19 @@ env:
   PYTHONDONTWRITEBYTECODE: "1"
 instructions: { side: right, width: 0.3 }
 layout: report
-# The lower area is the larger here: the heatmap pages open in it, as
-# tabs beside the terminal, and they are what the pages read.
+# The heatmap pages open in the desk area beside the program. The
+# compare layout makes room for two of them, one above the other.
 layouts:
   report:
     main:
       areas:
-        - { tabs: ["file:gazette/report.py"] }
-        - { size: 0.55, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:gazette/report.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
+  compare:
+    main:
+      areas:
+        - { name: desk, tabs: ["file:gazette/report.py"] }
+        - { size: 0.25, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have painted a profile onto the source it came from and read it:

@@ -19,11 +19,12 @@ show the threads apart.
 python -m profiling.sampling run -a --flamegraph -o digest.html gazette/digest.py
 ```
 
-```{command}
+```{file-open}
 :id: open-digest-graph
 :title: Open digest.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/digest.html", "factory": "HTML Viewer" }
+:path: digest.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ```{hint}

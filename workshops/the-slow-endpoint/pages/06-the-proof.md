@@ -107,11 +107,12 @@ python -m profiling.sampling replay --diff-flamegraph baseline.bin -o diff.html 
 python -c "from pathlib import Path; f = Path('diff.html'); assert f.exists(), 'No diff.html yet: run the replay command above'; t = f.read_text(encoding='utf-8', errors='replace'); assert 'baseline' in t and 'search' in t, 'diff.html is not a comparison of the two recordings; run the replay command above again'; print('diff.html is written, fixed.bin compared with baseline.bin')"
 ```
 
-```{command}
+```{file-open}
 :id: open-diff
 :title: Open diff.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/diff.html", "factory": "HTML Viewer" }
+:path: diff.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 The shape is the fixed server's: `search` is a narrow box among

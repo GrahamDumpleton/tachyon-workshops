@@ -19,16 +19,16 @@ python -m profiling.sampling run --flamegraph -o flamegraph.html gazette/pages.p
 ```
 
 The profiler's last lines say how many samples the graph holds and
-where it was saved. Open it in JupyterLab's HTML viewer. It opens as
-a tab beside the terminal, below `pages.py`, so the program, the
-picture and this page are all in view; the terminal is the tab next
-to it when you need it again.
+where it was saved. Open it in JupyterLab's HTML viewer. It opens
+beside `pages.py`, above the terminal, so the program, the picture
+and this page are all in view.
 
-```{command}
+```{file-open}
 :id: open-flamegraph
 :title: Open flamegraph.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/flamegraph.html", "factory": "HTML Viewer" }
+:path: flamegraph.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ```{hint}

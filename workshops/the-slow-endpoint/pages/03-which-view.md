@@ -25,11 +25,12 @@ python -m profiling.sampling replay --flamegraph -o before.html baseline.bin
 python -c "from pathlib import Path; f = Path('before.html'); assert f.exists(), 'No before.html yet: run the replay command above'; t = f.read_text(encoding='utf-8', errors='replace'); missing = [n for n in ('dispatch_request', 'search', 'front_page') if n not in t]; assert not missing, 'before.html has no ' + ', '.join(missing) + ' in it; record the baseline again, on the page before'; print('before.html is written, with Flask and the views in it')"
 ```
 
-```{command}
+```{file-open}
 :id: open-flame
 :title: Open before.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/before.html", "factory": "HTML Viewer" }
+:path: before.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

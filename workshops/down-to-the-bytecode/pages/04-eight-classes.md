@@ -72,19 +72,38 @@ explanation: "A specialised `LOAD_ATTR` checks the object's class before anythin
 python -m profiling.sampling run --opcodes --heatmap -o heatmap-by-section gazette/scores.py by-section
 ```
 
-```{command}
-:id: open-by-section
-:title: Open the second heatmap of scores.py in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap-by-section/file_0000.html", "factory": "HTML Viewer" }
+Put the two heatmap pages one above the other: the first action
+makes room by shrinking the terminal, the second brings back the
+page from the first heatmap, and the third opens the new one beneath
+it. They cannot be tabs in one place, because the viewer loads a
+page again each time its tab comes to the front, and a panel you
+opened in one would be closed by looking at the other.
+
+```{layout}
+:id: make-room
+:title: Make room for two pages
+:name: compare
 ```
 
-There are two tabs called `file_0000.html` now, and the one in front
-is the one just opened. To tell them apart, hold the mouse over a
-tab to see the directory it came from, `heatmap` or
-`heatmap-by-section`.
+```{file-open}
+:id: open-one-class
+:title: Bring back the heatmap of scores.py with one class
+:path: heatmap/file_0000.html
+:factory: HTML Viewer
+:area: desk
+```
 
-Open the panel on line 91 in each and compare them. The instructions
+```{file-open}
+:id: open-by-section
+:title: Open the heatmap with eight classes below it
+:path: heatmap-by-section/file_0000.html
+:factory: HTML Viewer
+:area: bottom
+```
+
+Both pages are called `file_0000.html`: the one above is from
+`heatmap`, one class, and the one below from `heatmap-by-section`,
+eight. Open the panel on line 91 in each and compare them. The instructions
 are the same, under the same names, with the same badges, and the
 heading still says nine tenths specialised. What differs is the
 samples. `CONTAINS_OP_SET` has about as many as before.

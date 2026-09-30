@@ -74,11 +74,12 @@ print("loop.html is written, with the event loop and the article view in it")
 CHECK
 ```
 
-```{command}
+```{file-open}
 :id: open-loop
 :title: Open loop.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/loop.html", "factory": "HTML Viewer" }
+:path: loop.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

@@ -31,11 +31,12 @@ explanation: "A box is coloured by the change in its direct samples in proportio
 python -m profiling.sampling run -r 10khz --diff-flamegraph baseline.bin -o noise.html gazette/report.py
 ```
 
-```{command}
+```{file-open}
 :id: open-noise
 :title: Open noise.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/noise.html", "factory": "HTML Viewer" }
+:path: noise.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

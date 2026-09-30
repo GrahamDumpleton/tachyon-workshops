@@ -38,8 +38,8 @@ layouts:
   attach:
     main:
       areas:
-        - { tabs: ["file:gazette/web.py", "file:load.py"] }
-        - size: 0.5
+        - { name: desk, tabs: ["file:gazette/web.py", "file:load.py"] }
+        - size: 0.4
           split: columns
           areas:
             - { tabs: ["terminal:server"] }

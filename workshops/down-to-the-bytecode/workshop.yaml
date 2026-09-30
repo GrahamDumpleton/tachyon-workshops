@@ -25,12 +25,19 @@ env:
   PYTHONDONTWRITEBYTECODE: "1"
 instructions: { side: right, width: 0.3 }
 layout: scores
+# The heatmap pages open in the desk area beside the program. The
+# compare layout makes room for two of them, one above the other.
 layouts:
   scores:
     main:
       areas:
-        - { tabs: ["file:gazette/scores.py"] }
-        - { size: 0.55, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:gazette/scores.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
+  compare:
+    main:
+      areas:
+        - { name: desk, tabs: ["file:gazette/scores.py"] }
+        - { size: 0.25, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have taken a profile down to the instruction. `--opcodes`

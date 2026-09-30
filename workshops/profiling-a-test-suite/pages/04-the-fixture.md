@@ -39,11 +39,12 @@ cp "$(grep -l 'tests/conftest.py - Heatmap' heatmap/file_*.html)" heatmap-confte
 python -c "from pathlib import Path; f = Path('heatmap-conftest.html'); assert f.exists(), 'No heatmap-conftest.html yet: run the two commands above, in order'; t = f.read_text(encoding='utf-8', errors='replace'); assert 'tests/conftest.py' in t and 'def db' in t, 'heatmap-conftest.html is not the page for tests/conftest.py; run the two commands above again'; print('heatmap-conftest.html is the heatmap of tests/conftest.py')"
 ```
 
-```{command}
+```{file-open}
 :id: open-heatmap
 :title: Open heatmap-conftest.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap-conftest.html", "factory": "HTML Viewer" }
+:path: heatmap-conftest.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 Two lines have the samples. Line 18, `store.build(path, articles)`,

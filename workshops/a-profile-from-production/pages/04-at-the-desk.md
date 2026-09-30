@@ -29,11 +29,12 @@ python -m profiling.sampling replay --flamegraph -o monday.html monday.bin
 python -c "from pathlib import Path; f = Path('monday.html'); assert f.exists(), 'No monday.html yet: run the replay command above'; t = f.read_text(encoding='utf-8', errors='replace'); missing = [n for n in ('dispatch_request', 'search', 'front_page') if n not in t]; assert not missing, 'monday.html has no ' + ', '.join(missing) + ' in it; record Monday again, on the second page'; print('monday.html is written, with Flask and the views in it')"
 ```
 
-```{command}
+```{file-open}
 :id: open-flame
 :title: Open monday.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/monday.html", "factory": "HTML Viewer" }
+:path: monday.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

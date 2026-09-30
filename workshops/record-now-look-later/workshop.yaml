@@ -29,8 +29,8 @@ layouts:
   report:
     main:
       areas:
-        - { tabs: ["file:gazette/report.py", "file:hottest.py"] }
-        - { size: 0.5, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:gazette/report.py", "file:hottest.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have recorded a profile once and looked at it six ways without

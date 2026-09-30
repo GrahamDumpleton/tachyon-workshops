@@ -30,8 +30,8 @@ layouts:
   markers:
     main:
       areas:
-        - { tabs: ["file:gazette/index.py", "file:gazette/graph.py"] }
-        - { size: 0.5, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:gazette/index.py", "file:gazette/graph.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have seen the two markers the profiler adds to a stack. The

@@ -45,11 +45,12 @@ The heatmap is a directory of pages, one for each source file, and
 `file_0000.html` is the file with the most samples, which is
 `scores.py`.
 
-```{command}
+```{file-open}
 :id: open-heatmap
 :title: Open the heatmap of scores.py in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/heatmap/file_0000.html", "factory": "HTML Viewer" }
+:path: heatmap/file_0000.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

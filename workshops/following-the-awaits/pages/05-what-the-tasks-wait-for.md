@@ -72,11 +72,12 @@ Now the same as a picture.
 python -m profiling.sampling run --async-aware --async-mode all --flamegraph -o waiting.html gazette/crawl.py {{ server_port }}
 ```
 
-```{command}
+```{file-open}
 :id: open-waiting
 :title: Open waiting.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/waiting.html", "factory": "HTML Viewer" }
+:path: waiting.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 Beneath `main` on line 85 there is a box for each of the twenty

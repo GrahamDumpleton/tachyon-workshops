@@ -81,11 +81,12 @@ cp "$(grep -l syllables jobs/flamegraph_*.html | head -1)" worker.html
 python -c "from pathlib import Path; f = Path('worker.html'); assert f.exists(), 'No worker.html yet: run the copy command above'; t = f.read_text(encoding='utf-8', errors='replace'); assert 'build_digest' in t and '_process_worker' in t, 'worker.html is not the flame graph of a worker; run the copy command above again'; print('worker.html is the flame graph of one of the pool\'s workers')"
 ```
 
-```{command}
+```{file-open}
 :id: open-worker
 :title: Open worker.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/worker.html", "factory": "HTML Viewer" }
+:path: worker.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 ````{hint}

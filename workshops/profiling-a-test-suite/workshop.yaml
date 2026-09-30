@@ -26,12 +26,20 @@ env:
   PYTHONDONTWRITEBYTECODE: "1"
 instructions: { side: right, width: 0.3 }
 layout: suite
+# The flame graphs and the heatmap page open in the desk area beside
+# the tests. The compare layout makes room for two flame graphs, one
+# above the other.
 layouts:
   suite:
     main:
       areas:
-        - { tabs: ["file:tests/conftest.py", "file:tests/test_store.py", "file:tests/test_refresh.py", "file:tests/test_dates.py"] }
-        - { size: 0.5, tabs: ["terminal:shell"] }
+        - { name: desk, tabs: ["file:tests/conftest.py", "file:tests/test_store.py", "file:tests/test_refresh.py", "file:tests/test_dates.py"] }
+        - { size: 0.4, tabs: ["terminal:shell"] }
+  compare:
+    main:
+      areas:
+        - { name: desk, tabs: ["file:tests/conftest.py", "file:tests/test_store.py", "file:tests/test_refresh.py", "file:tests/test_dates.py"] }
+        - { size: 0.25, tabs: ["terminal:shell"] }
 gating: soft
 finish: |
   You have profiled a test suite and made it several times quicker.

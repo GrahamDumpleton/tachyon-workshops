@@ -66,11 +66,12 @@ Draw every thread, as you did for the digest builder.
 python -m profiling.sampling run -a --flamegraph -o checksums.html gazette/checksums.py
 ```
 
-```{command}
+```{file-open}
 :id: open-checksums-graph
 :title: Open checksums.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/checksums.html", "factory": "HTML Viewer" }
+:path: checksums.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 The same two columns: the main thread in `Thread.join` on the right,

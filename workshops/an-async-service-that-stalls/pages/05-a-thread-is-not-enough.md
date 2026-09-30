@@ -105,11 +105,12 @@ written from a search took 100 milliseconds, against 111 before the
 change and 55 with no articles at all. The fix has done next to
 nothing for the readers.
 
-```{command}
+```{file-open}
 :id: open-threads
 :title: Open threads.html in the HTML viewer
-:command: docmanager:open
-{ "path": "{{ workspace }}/threads.html", "factory": "HTML Viewer" }
+:path: threads.html
+:factory: HTML Viewer
+:area: desk
 ```
 
 The graph has two towers now.

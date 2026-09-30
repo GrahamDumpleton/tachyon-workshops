@@ -161,7 +161,7 @@ below:
 - Every output the docs describe was produced without error except
   `--live`, which needs a terminal and was not tried headless.
 
-- On Python 3.15.0rc2: JupyterLab 4.6.4 and jupyterlab-workshop 0.13.0
+- On Python 3.15.0rc2: JupyterLab 4.6.4 and jupyterlab-workshop 0.15.0
   install and run; Flask 3.1.3, Starlette 1.7.0, uvicorn 0.54.0, httpx,
   requests, gunicorn, waitress, pytest's dependencies, numpy 2.5.3,
   sqlalchemy 2.1.1, matplotlib 3.11.2, pandas 3.0.6 and playwright
@@ -437,11 +437,11 @@ is what has that column, gives its history in two sentences (Brendan
 Gregg, 2011, drawn from stack samples), and runs
 `--flamegraph -o flamegraph.html`.
 
-The flame graph opens in JupyterLab's HTML viewer, as a tab beside
-the terminal and below `pages.py`, through a `command` action running `docmanager:open` with
-the HTML Viewer factory (see Known blockers for why not `url-open`),
-and a hint says to click Trust HTML on a JupyterLab that does not
-trust files by default. Then the page walks it, as Tachyon draws it, which is
+The flame graph opens in JupyterLab's HTML viewer, beside `pages.py`
+and above the terminal, through a `file-open` action with the HTML
+Viewer factory and the `desk` area (see Known blockers for why not
+`url-open`), and a hint says to click Trust HTML on a JupyterLab that
+does not trust files by default. Then the page walks it, as Tachyon draws it, which is
 root at the top with callees beneath (`.inverted(true)` in the
 graph's script; the first draft described the classic bottom-up
 layout from memory and a first reader caught it): every box is a
@@ -565,7 +565,7 @@ ran but the profiler and that the three views agree sample for
 sample. A quiz asks what the replays ran.
 
 Then the formats for other tools. `--gecko`: `profile.json` opened in
-JupyterLab's JSON viewer (`docmanager:open` with the `JSON` factory),
+JupyterLab's JSON viewer (`file-open` with the `JSON` factory),
 where the learner finds the thread's `samples` with a time for each,
 the `markers` for GIL, CPU, code type, exception and GC state, and
 the shared string table; the Firefox Profiler is linked, not opened.
@@ -1470,7 +1470,7 @@ it. On 2026-09-29 the newest release is 3.15.0rc2, and the profiler
 requires that profiler and target be the same release exactly while
 either is a pre-release, which they always are here because both are
 the environment's interpreter. JupyterLab 4.6.4 and jupyterlab-workshop
-0.13.0 were checked to install and run on it. When 3.15.0 is published,
+0.15.0 were checked to install and run on it. When 3.15.0 is published,
 uv, conda-forge and the `python:3.15` image move to it, and every page
 whose output was pasted from rc2 is checked again.
 
@@ -1501,15 +1501,15 @@ Starlette, uvicorn, httpx, gunicorn, pytest or matplotlib for the
 others. Nothing the workshops profile is in `pyproject.toml` or the
 Binder requirements.
 
-**Terminal and files is the format, with a pane for the pictures.**
-The profiler is a command line tool and its output is text in a
-terminal or HTML in a file, so a workshop is a shipped program open in
-the editor, one or two terminals below it, and a named area beside
-them, and the flame graph or heatmap opened in JupyterLab's HTML
-viewer as a tab beside the terminal (not, as first planned, a
-`url-open` pane; see Known blockers), so the page, the command and the
-picture are in one window, which is what the user asked for in place
-of a separate browser tab. Two workshops end in a notebook (fundamentals 6 in
+**Terminal and files is the format, with the pictures beside the
+program.** The profiler is a command line tool and its output is text
+in a terminal or HTML in a file, so a workshop is a shipped program
+open in the editor, one or two terminals below it, and the flame graph
+or heatmap opened in JupyterLab's HTML viewer beside the program, in
+the top row of the layout (not, as first planned, a `url-open` pane;
+see Known blockers), so the page, the command and the picture are in
+one window, which is what the user asked for in place of a separate
+browser tab. Two workshops end in a notebook (fundamentals 6 in
 spirit, applications 7 in fact), created by the page on the workshop's
 kernel, for the analysis that a notebook does better than a terminal:
 loading the JSONL and drawing a chart. No workshop is notebook-only,
@@ -1665,15 +1665,21 @@ declares `curl` under `requires.tools` where a page uses it, and holds
 each port in a `number` variable.
 
 **The pictures.** A flame graph or heatmap written into `work/` is
-opened with a `command` action, `docmanager:open` with the path
-`{{ workspace }}/flamegraph.html` (the built-in `workspace` variable is
-the learner's `work/` directory relative to the JupyterLab root) and
-`"factory": "HTML Viewer"`, which opens it as a tab in whichever area was last active, the
-terminal's, below the program. The images trust HTML files by default so the graph's
-inlined D3 runs; a `hint` beside the action tells a learner on their
-own JupyterLab to click Trust HTML. See Known blockers for why not a
-`url-open` pane. The layout every terminal workshop declares is the
-program on top and the `shell` terminal below, at two fifths.
+opened with a `file-open` action, `:factory: HTML Viewer` and
+`:area: desk`, which puts it in the top row of the layout beside the
+program, at the full width of the main area, with the terminals
+below. Every layout names its top row `desk` and gives the terminal
+row two fifths, so the picture has the larger share. Two pictures a
+learner compares are stacked, not tabs, because the viewer loads its
+file again whenever its tab comes to the front: the page applies a
+`compare` layout whose terminal row is a quarter, brings the first
+picture back into `desk`, and opens the second with `:area: bottom`
+(down-to-the-line page 5, down-to-the-bytecode page 4,
+a-flask-application-under-load page 4, profiling-a-test-suite page
+5). The images trust HTML files by default so the graph's inlined D3
+runs; a `hint` beside the action tells a learner on their own
+JupyterLab to click Trust HTML. See Known blockers for why not a
+`url-open` pane.
 
 **Probes and tracks.** Where a page's outcome depends on the host
 (attach allowed or not), an `execute-capture` early on the page stores
@@ -1701,10 +1707,13 @@ In the extension, found writing the first four workshops:
   and nothing tells a page the browser-facing base URL, so a flame
   graph written into `work/` cannot be opened in a `url-open` pane at
   its `/files/` URL. The workshops open it in JupyterLab's own HTML
-  viewer instead, with a `command` action running `docmanager:open`
-  and `{ "path": "{{ workspace }}/flamegraph.html", "factory": "HTML
-  Viewer" }`, which lands as a tab beside the terminal rather than in a
-  named area (the `command` action has no `area` option). The viewer
+  viewer instead. Until jupyterlab-workshop 0.15.0 that took a
+  `command` action running `docmanager:open` with the HTML Viewer
+  factory, which landed as a tab beside whichever widget was last
+  active, a terminal, and in a layout of terminal columns was too
+  narrow to read; since 0.15.0 `file-open` takes `:factory:`, and the
+  workshops open every picture with `file-open`, `:factory: HTML
+  Viewer` and `:area: desk`, into the named top row. The viewer
   runs a file's scripts only when the file is trusted, so the Binder,
   Codespaces and container images set
   `@jupyterlab/htmlviewer-extension:plugin` `trustByDefault` to true
@@ -1712,10 +1721,8 @@ In the extension, found writing the first four workshops:
   JupyterLab to click Trust HTML. Checked with Playwright in the
   container on 2026-09-29: with the override the viewer's iframe has
   `allow-same-origin allow-scripts allow-popups` and the graph draws
-  with no console errors. An extension release that let `url-open` (or
-  a new action) take a workspace path and resolve it against the base
-  URL, with an `area` option, would put the graph in a results pane as
-  the design first said; until then the HTML viewer is the format.
+  with no console errors. The viewer is the format; a `url-open` pane
+  at the `/files/` URL would only be worth having for the next item.
   Workshop 5 made the same check for the heatmap, a directory of
   pages, and found the next item.
 
@@ -1732,8 +1739,8 @@ In the extension, found writing the first four workshops:
   an action of its own (`heatmap/index.html`, then
   `heatmap/file_0000.html`, which is the file with the most samples)
   and tells the learner the arrows can be read and not followed.
-  The extension change asked for above, an action that opens a
-  workspace file at its `/files/` URL in a pane, would fix this too.
+  An action that opened a workspace file at its `/files/` URL in a
+  pane, rather than from a blob, would fix this.
 
 Outside the extension:
 
