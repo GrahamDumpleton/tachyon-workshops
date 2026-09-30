@@ -214,15 +214,15 @@ so the install does not wait on PyPI.
 Opening a workshop locally shows a dialog asking you to trust it, since
 its actions run code on your machine. On Binder that dialog is removed:
 the session is a container of its own, created for you and discarded
-when you are done, and at no time is anything done on your machine. The
-`binder/postBuild` script installs a settings override that marks the
-checkout's workshops as trusted, turns off editing, subscribes to the
-checkout's own collection indexes, and names `binder/welcome.md` as the
-message shown when the session starts, which says what the workshops
-are and how to end the session.
+when you are done, and at no time is anything done on your machine.
+`binder/Dockerfile`, which Binder builds the session from, installs a
+settings override that marks the checkout's workshops as trusted, turns
+off editing, subscribes to the checkout's own collection indexes, and
+names `binder/welcome.md` as the message shown when the session starts,
+which says what the workshops are and how to end the session.
 
 The same override turns on reporting to the workshops' own analytics
-service, once a collection's index names one as its sink, so a session
+service, which each collection's index names as its sink, so a session
 reports which pages, actions and checks happened and when, and it can
 be seen where the workshops are clear and where they are not. Sessions
 are anonymous, and the events never carry notebook contents, cell
@@ -255,7 +255,7 @@ it rather than create another.
 Creating the codespace takes a few minutes. VS Code opens first, with
 `.devcontainer/welcome.md` open in it, while `.devcontainer/setup.sh`
 installs Python 3.15, JupyterLab and the extension from
-`binder/requirements.txt`, as `binder/postBuild` does, and
+`binder/requirements.txt`, as `binder/Dockerfile` does, and
 `.devcontainer/start.sh` starts JupyterLab in the background. When
 JupyterLab is ready, VS Code shows a notification that the application
 on port 8888 is available: click Open in Browser to open JupyterLab in
@@ -263,7 +263,7 @@ a new tab. If the notification has gone, open the address of the port
 labelled JupyterLab from VS Code's Ports panel. The tab is not opened
 by itself, because browsers block a tab nobody clicked for. From there
 the workshop browser lists the workshops in order, as on Binder, and
-`setup.sh` installs the same settings override as `binder/postBuild`,
+`setup.sh` installs the same settings override as `binder/Dockerfile`,
 with two differences: it names `.devcontainer/welcome.md` as the
 message shown when JupyterLab starts, and it does not mark the
 workshops as trusted.
@@ -427,11 +427,12 @@ reference/jupyterlab-workshop
                          the full documentation and source of the workshop format
 pyproject.toml           the uv project: JupyterLab and the extension on Python 3.15,
                          with the authoring tools in the dev group
-binder/                  the Binder image: Python 3.15 from conda-forge through
-                         environment.yml, the locked runtime dependencies exported from
-                         uv.lock by `just requirements`, the postBuild that fills a
-                         wheelhouse and writes JupyterLab's settings, and the welcome
-                         message a Binder session opens with
+binder/                  the Binder image: a Dockerfile on python:3.15-rc-slim, since
+                         repo2docker does not yet know 3.15, the locked runtime
+                         dependencies exported from uv.lock by `just requirements`
+                         that it installs, and the welcome message a Binder session
+                         opens with; the Dockerfile fills the wheelhouse and writes
+                         JupyterLab's settings
 .devcontainer/           the Codespaces container: Python 3.15 installed with uv, the
                          same requirements installed with pip, the wheelhouse and
                          settings, a script that starts JupyterLab on port 8888, and the

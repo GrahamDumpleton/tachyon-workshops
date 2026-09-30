@@ -959,6 +959,23 @@ wheels = [
 ]
 
 [[package]]
+name = "notebook"
+version = "7.6.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jupyter-builder" },
+    { name = "jupyter-server" },
+    { name = "jupyterlab" },
+    { name = "jupyterlab-server" },
+    { name = "notebook-shim" },
+    { name = "tornado" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/42/ac/aedb759dc683dcd129f6c75271bab5eb23020b0f7969163c726343718e1e/notebook-7.6.3.tar.gz", hash = "sha256:e2c08e469c0ae20bb0b3214f0ab77e79653317a2f8e5b34c10361c66874a5b50", size = 5501618, upload-time = "2026-09-21T18:07:24.261Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a1/f7/907b98438cf00bdc4e296570058f29a347214bb42338a48e3b7eae58ae2a/notebook-7.6.3-py3-none-any.whl", hash = "sha256:ad7e0eb765fba836cd4a2ab0c7a3a26cde1d91665fbf6f533b6ae7b2de6d88d2", size = 5548452, upload-time = "2026-09-21T18:07:21.563Z" },
+]
+
+[[package]]
 name = "notebook-shim"
 version = "0.2.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1429,6 +1446,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "jupyterlab" },
     { name = "jupyterlab-workshop" },
+    { name = "notebook" },
 ]
 
 [package.dev-dependencies]
@@ -1440,6 +1458,7 @@ dev = [
 requires-dist = [
     { name = "jupyterlab", specifier = ">=4.6,<5" },
     { name = "jupyterlab-workshop", specifier = "==0.15.0" },
+    { name = "notebook", specifier = ">=7.6,<8" },
 ]
 
 [package.metadata.requires-dev]

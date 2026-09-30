@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run once when the codespace is created. Does what the Binder postBuild
+# Run once when the codespace is created. Does what the Binder Dockerfile
 # does, in the codespace: installs JupyterLab and the extension from the
 # same pinned requirements the Binder image uses, fills a wheelhouse for
 # the workshops' environments, and writes the JupyterLab overrides, with
@@ -56,7 +56,7 @@ python="${HOME}/.venv/bin/python"
 # and tell pip to look there first, so the install takes its wheels
 # from disk rather than PyPI. It is find-links only, never no-index:
 # pip still reaches PyPI for anything the wheelhouse lacks. This is the
-# same arrangement as binder/postBuild.
+# same arrangement as binder/Dockerfile.
 shopt -s nullglob
 
 wheels="${HOME}/.wheels"

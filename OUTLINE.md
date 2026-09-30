@@ -1613,13 +1613,24 @@ so both are settled here, before any workshop is written.
 Codespaces settings subscribe to each collection's index by relative
 path and disable opening other directories, subscribing and author
 mode, as the sibling repositories do. Binder gets Python 3.15 through
-`binder/environment.yml` on conda-forge, because repo2docker's
-`runtime.txt` stops at 3.14; the pip requirements are the locked set
-`just requirements` exports beside it. Codespaces gets it through uv's
-Python installer in `setup.sh`, on the plain Ubuntu dev container
-image, because no `devcontainers/python:3.15` image exists yet; both
-are to be replaced by the plain `python-3.15` and `python:3.15` forms
-when those exist, and neither has been built yet (see Open questions).
+`binder/Dockerfile`, built from `python:3.15-rc-slim` with the locked
+requirements `just requirements` exports beside it, because
+repo2docker refuses any Python it has no frozen base environment for
+and it has them only up to 3.14; a `python=3.15` in `environment.yml`
+fails before conda-forge, which does carry 3.15.0rc2, is asked. The
+Dockerfile carries the overrides a `postBuild` would have written,
+since repo2docker ignores every other file once a Dockerfile is
+present, and gives the image the shape Binder needs: user `jovyan`
+with uid 1000, the repository in its home directory, `notebook` for
+the `jupyter notebook` command BinderHub starts the container with,
+under `tini`. It was built and run with BinderHub's command locally
+on 2026-09-30, with a workshop driven through its first pages, before
+the first Binder build. Codespaces gets 3.15 through uv's Python
+installer in `setup.sh`, on the plain Ubuntu dev container image,
+because no `devcontainers/python:3.15` image exists yet. Both revert
+to the plain forms, `environment.yml` with `python=3.15` (or
+`runtime.txt`) and `python:3.15`, once repo2docker and the dev
+container images know 3.15 (see Open questions).
 The container image in `container/` is `python:3.15-rc-slim` with the
 same requirements, the self-test browser and a non-root user, and the
 checkout mounted; it is the way the workshops are run and tested on a
@@ -1747,9 +1758,12 @@ Outside the extension:
   release and pre-release), so FastAPI cannot be installed on Binder or
   in the container, and applications workshop 3 uses Starlette.
 
-- No `mcr.microsoft.com/devcontainers/python:3.15` image and no
-  repo2docker `runtime.txt` support for 3.15 (checked 2026-09-29), hence
-  the `environment.yml` and uv arrangements above.
+- No `mcr.microsoft.com/devcontainers/python:3.15` image, and no
+  repo2docker support for 3.15 by any route (`runtime.txt` and
+  `environment.yml` both end at the frozen base environments it ships,
+  up to 3.14; checked 2026-09-29 and confirmed by the first Binder
+  build on 2026-09-30), hence the `binder/Dockerfile` and uv
+  arrangements above.
 
 - **The error rate depends on the host, so pages never quote one.**
   On 3.15.0rc2 call-heavy programs lose many samples, because a stack
@@ -1933,10 +1947,14 @@ jupyterlab-workshop 0.13.0:
 
 ## Open questions
 
-- **Binder and Codespaces builds.** Neither `binder/environment.yml`
-  with `python=3.15` on conda-forge nor the uv-installed 3.15 in
-  `.devcontainer/setup.sh` has been built. Both are to be tried once
-  the repository is on GitHub, before the first workshop is announced.
+- **Binder and Codespaces builds.** The first Binder build, on
+  2026-09-30, failed in repo2docker with "Python version 3.15 on
+  linux-64 is not supported!", which is repo2docker's list of frozen
+  base environments and not conda-forge; `binder/Dockerfile` replaced
+  `environment.yml` and `postBuild` the same day and is to be tried on
+  mybinder.org. When repo2docker ships a 3.15 lock, go back to the
+  conda route and delete the Dockerfile. The Codespaces build has not
+  been tried.
 
 - **Analytics.** Settled on 2026-09-30. Both collection indexes carry
   an `analytics` block naming the sink the wrapt and decorator

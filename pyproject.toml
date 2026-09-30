@@ -22,6 +22,9 @@ requires-python = ">=3.15"
 dependencies = [
     "jupyterlab>=4.6,<5",
     "jupyterlab-workshop==0.15.0",
+    # BinderHub starts an image with `jupyter notebook`, which notebook 7
+    # provides on top of the same server, serving JupyterLab at /lab.
+    "notebook>=7.6,<8",
 ]
 
 [dependency-groups]

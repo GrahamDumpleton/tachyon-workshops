@@ -1,0 +1,16 @@
+# What the Docker builds leave out of their context. binder/Dockerfile
+# copies the repository into the image's home directory, and
+# container/Dockerfile copies only binder/requirements.txt, but both are
+# built from this directory, so the local environment, the scratch
+# directory, the reference checkout and what running a workshop leaves
+# behind would otherwise be sent to the daemon on every build.
+.git
+.venv
+.claude
+.pytest_cache
+.Trash-*
+scratch
+reference
+workshops/*/work
+workshops/*/_workshop
+**/__pycache__
