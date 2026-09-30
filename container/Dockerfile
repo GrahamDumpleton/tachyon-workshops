@@ -37,7 +37,7 @@ COPY binder/requirements.txt /tmp/requirements.txt
 # system dependencies are installed while still root.
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
 RUN pip install --no-cache-dir --disable-pip-version-check --root-user-action=ignore \
-        -r /tmp/requirements.txt "jupyterlab-workshop[test]==0.13.0" \
+        -r /tmp/requirements.txt "jupyterlab-workshop[test]==0.15.0" \
     && playwright install --with-deps chromium \
     && rm -rf /var/lib/apt/lists/* /tmp/requirements.txt
 
