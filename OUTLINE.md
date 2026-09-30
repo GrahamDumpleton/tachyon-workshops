@@ -1812,8 +1812,10 @@ Outside the extension:
   script of six cases confirmed it and showed that coroutines are
   missed the same way, so the mode sees next to nothing in an asyncio
   program, which workshop 10 should keep in mind. The shipped program
-  calls `parse_date` from a plain loop. Not yet reported to CPython;
-  to be checked again on 3.15.0 final.
+  calls `parse_date` from a plain loop. Reported to CPython on
+  2026-10-01 as [gh-158539](https://github.com/python/cpython/issues/158539);
+  when it is fixed, this note goes and the loop can be a generator
+  expression again if the page reads better that way.
 
 - **The profiler colours its table whether or not it is writing to a
   terminal**, so a table kept with `tee` has the escape codes in it
@@ -1898,9 +1900,12 @@ checked again on 3.15.0 final:
   when the first CI run of the repository failed the workers
   workshop, which had passed in the container, whose kernel has no
   Yama. The workshop now probes with `dump` first and branches, as
-  the attaching workshop does. Worth reporting upstream: the docs do
-  not say the option needs attach permission, and the refusal could
-  be reported rather than swallowed.
+  the attaching workshop does. Already reported upstream as
+  [gh-155031](https://github.com/python/cpython/issues/155031),
+  "Permission error on subprocesses are not propagated back to the
+  user", open since 2026-08-01 with a pull request linked, so the
+  refusal may be reported rather than swallowed in a later release;
+  the docs still do not say the option needs attach permission.
 
 Found writing the applications collection, on 3.15.0rc2 and
 jupyterlab-workshop 0.13.0:
