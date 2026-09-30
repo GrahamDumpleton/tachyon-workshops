@@ -10,6 +10,10 @@
     "profiling"
   ],
   "ordered": true,
+  "analytics": {
+    "sink": "https://workshop-analytics.grumpys.work/events",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyZDMyMDQ4NDkyNWY0OTFkYTM5ZGMwZTcxY2YzMTEyOCIsInN1YiI6InRhY2h5b24td29ya3Nob3BzIiwic2NvcGUiOlsiaW5nZXN0Il0sImxhYmVscyI6e30sIm9yaWdpbnMiOlsiaHR0cHM6Ly9ncmFoYW1kdW1wbGV0b24uZ2l0aHViLmlvIl0sImlhdCI6MTc5MDc2MzYxNCwibmJmIjoxNzkwNzYzNjE0LCJleHAiOjE4MjE1NzExOTl9.R7XlMZuPDuUnIaC-kfoM3mHv8cyC_LE7BClczfE_edE"
+  },
   "workshops": [
     {
       "name": "your-first-profile",

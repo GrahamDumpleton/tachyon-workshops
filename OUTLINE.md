@@ -1629,12 +1629,11 @@ the README says so.
 
 The Binder session forces trust because it is anonymous and thrown
 away; the codespace and the container do not, because they belong to
-the learner. Both hosted images set `analytics.report` to `always` so
-that, once each collection's index carries an analytics block naming
-the sink and its token, progress is reported without asking; until
-then the setting reports nothing. Issuing the token is the user's step
-(see Open questions). Every welcome message says progress is reported
-and what is never sent.
+the learner. Both hosted images set `analytics.report` to `always`,
+and each collection's index carries an analytics block naming the
+sink and its token (see Open questions for the token's term), so
+progress is reported without asking. Every welcome message says
+progress is reported and what is never sent.
 
 **CI.** `.github/workflows/test.yml` lints the catalog, every collection
 index and every workshop, and self-tests every workshop, on each push,
@@ -1939,12 +1938,15 @@ jupyterlab-workshop 0.13.0:
   `.devcontainer/setup.sh` has been built. Both are to be tried once
   the repository is on GitHub, before the first workshop is announced.
 
-- **Analytics.** No token has been issued. When the user issues one
-  (`workshop-analytics token issue --name tachyon-workshops --label
-  deployment=tachyon-workshops`), it goes in a `collection.yaml`
-  beside each collection's index so `just index` copies the block in,
-  as the wrapt workshops now do with one token for every collection
-  and deployment.
+- **Analytics.** Settled on 2026-09-30. Both collection indexes carry
+  an `analytics` block naming the sink the wrapt and decorator
+  workshops report to, `https://workshop-analytics.grumpys.work/events`,
+  and one ingest token for both collections, issued to
+  `tachyon-workshops` and expiring 2027-09-21, as the wrapt workshops
+  share one token. The block lives in the index itself, which `just
+  index` keeps when it regenerates the file. Before the token expires,
+  issue another (`just token-issue --name tachyon-workshops --expires
+  <date>` in the analytics repository) and paste it into both indexes.
 
 - **Live mode in the self-test.** Settled by workshop 14: `send-key`
   reaches the curses interface in the self-test's terminal, and `q`
