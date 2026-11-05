@@ -41,7 +41,8 @@ editor.
 - {open}`tests/test_dates.py` tests how dates are printed, on a
   hundred of the articles.
 
-Every test passes. The suite takes four or five seconds, which is
+Every test passes. The suite takes several seconds, four or five
+where this page was written and more on a slower machine, which is
 long for 118 tests that do very little, and would be minutes if the
 gazette had the thousands of tests a real project has.
 

@@ -208,6 +208,17 @@ container-lab *ARGS:
 container-test NAME *ARGS:
     shift; docker run --rm --init -v "$PWD":/home/learner/tachyon-workshops {{image}} jupyter workshop test workshops/{{NAME}} "$@"
 
+# One processor at half speed stands in for a busy shared host such as
+# Binder, where the first reader found the programs three times
+# slower than where the pages were written. A workshop must pass here
+# as well as unthrottled; read what its checks print on this run
+# against what its pages say, since shares that mix waiting with
+# computing move with the speed of the host.
+# Self-test one workshop inside the container on one processor at half speed.
+[positional-arguments]
+container-test-slow NAME *ARGS:
+    shift; docker run --rm --init --cpuset-cpus=0 --cpus=0.5 -v "$PWD":/home/learner/tachyon-workshops {{image}} jupyter workshop test workshops/{{NAME}} "$@"
+
 # Lint everything inside the container, as `just lint` does here.
 container-lint:
     docker run --rm --init -v "$PWD":/home/learner/tachyon-workshops {{image}} bash -c 'set -e; jupyter workshop lint catalog.json; for i in collections/*/collection.json; do jupyter workshop lint "$i"; done; for w in workshops/*/; do echo "== $w"; jupyter workshop lint "$w"; done'

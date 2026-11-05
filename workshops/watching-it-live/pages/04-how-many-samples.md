@@ -51,9 +51,11 @@ python -m profiling.sampling run -r 5khz -d 5 -o rate.pstats gazette/loop.py 8
 ```
 
 The profiler reports how many samples it captured and in how long:
-twenty-five thousand in five seconds, the rate times the duration.
-At that number a row with 5% is known to within about a quarter of
-a percent, by the same arithmetic.
+twenty-five thousand in five seconds, the rate times the duration,
+or somewhat fewer on a busy machine where it could not keep to the
+rate, which the next page looks at. At twenty-five thousand a row
+with 5% is known to within about a quarter of a percent, by the
+same arithmetic.
 
 For nearly every purpose the usual rate is enough and the duration
 is what to think about. A profile is for finding the function with
@@ -63,7 +65,7 @@ small functions and no large one, or a comparison of two profiles.
 
 ```{verify}
 :id: rate-profile
-:label: rate.pstats holds about twenty-five thousand samples
+:label: rate.pstats holds five seconds of samples at 5 kHz
 :trigger: after:profile-rate
 import pstats
 from pathlib import Path
@@ -71,9 +73,15 @@ from pathlib import Path
 assert Path("rate.pstats").exists(), "No rate.pstats yet: run the command above, which writes it"
 stats = pstats.Stats("rate.pstats")
 samples = max(row[1] for row in stats.stats.values())
-assert 12000 < samples < 27000, (
-    f"rate.pstats holds {samples} samples; expected about 25,000. "
+assert samples < 27000, (
+    f"rate.pstats holds {samples} samples; expected 25,000 at most. "
     "Was it recorded with -r 5khz -d 5?"
 )
-print(f"rate.pstats holds {samples} samples")
+assert samples > 6000, (
+    f"rate.pstats holds {samples} samples; expected far more than five seconds at the usual rate would give. "
+    "Was it recorded with -r 5khz -d 5?"
+)
+print(f"rate.pstats holds {samples} samples" if samples > 20000 else
+      f"rate.pstats holds {samples} samples where 25,000 were asked for: on this machine the profiler "
+      "could not keep to 5 kHz, which the next page is about")
 ```

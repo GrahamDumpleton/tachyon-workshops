@@ -55,9 +55,9 @@ python -m profiling.sampling replay --diff-flamegraph fixed.bin -o diff2.html se
 
 This is the picture the tool is for. `hardest` is red, and it is
 wide at the bottom of its stack: there is a box for line 78, the
-new `sorted`, with nothing beneath it. Its tooltip says about two
-milliseconds before and twenty-five or so now, more than ten times
-as much. `count_words` is grey. Nobody touched it, and it shows.
+new `sorted`, with nothing beneath it. Its tooltip says more than
+ten times the direct time it had: about two milliseconds before
+and twenty-five or so now, where this page was written. `count_words` is grey. Nobody touched it, and it shows.
 
 `reading_ease` and `syllables` are pale blue, and nobody touched
 them either. It is the scaling again, in the other direction and
@@ -68,9 +68,8 @@ Against the first baseline it would not have been, since `hardest`
 would have been one more red box among the red boxes of the last
 page.
 
-The change cost about a twentieth of a second, a third of the
-program's time, in a report whose output did not change by a
-character. No test would have caught it.
+The change cost a third of the program's time, in a report whose
+output did not change by a character. No test would have caught it.
 
 ```{verify}
 :id: change-compared

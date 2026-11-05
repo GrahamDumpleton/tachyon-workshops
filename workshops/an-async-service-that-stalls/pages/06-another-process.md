@@ -90,7 +90,7 @@ CHECK
 
 ```{verify}
 :id: search-recovered
-:label: A search is quick again
+:label: A search is quicker again
 :trigger: after:load-pooled
 :timeout: 40s
 import re
@@ -122,7 +122,10 @@ page was written from, a search took 52 milliseconds, which is what
 it took with no articles being read at all, and an article took 10
 where it had taken 35. The site also served more than twice as many
 requests in the same time, since `load.py` sends the next request
-when the last is answered.
+when the last is answered. That was on a machine with processors to
+spare. On a server that allows the site a single processor, the
+four worker processes and the loop share it, and a search comes
+back sooner than it did without getting all the way back.
 
 ```{file-open}
 :id: open-pooled

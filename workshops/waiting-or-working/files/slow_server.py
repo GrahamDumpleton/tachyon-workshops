@@ -3,7 +3,7 @@
 Usage: python slow_server.py [port] [data/articles.json]
 
 Each of the twenty feeds is a page of RSS holding a hundred articles.
-The server waits a twentieth of a second before it answers, which
+The server waits a fifth of a second before it answers, which
 stands in for the network and the machine at the other end.
 """
 
@@ -14,7 +14,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from xml.sax.saxutils import escape
 
 FEEDS = 20
-DELAY = 0.05
+DELAY = 0.2
 
 
 def build_feeds(path):

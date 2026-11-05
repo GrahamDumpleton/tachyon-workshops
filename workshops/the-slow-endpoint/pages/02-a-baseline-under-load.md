@@ -132,8 +132,9 @@ python -m profiling.sampling replay -l 8 --no-summary baseline.bin | tee before.
 The rows are lines of the program, with the function in brackets.
 Two stand out. `selectors.py`, `select`, is the main thread waiting
 for connections, which is what a server does between requests. And
-line 101 of `web.py`, in `search`, has more samples than every other
-line of the application together.
+line 101 of `web.py`, in `search`, has more samples than any other
+line of the application, and where this page was written more than
+all the others together.
 
 ```{verify}
 :id: before-table

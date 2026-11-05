@@ -45,9 +45,13 @@ no profiler.
 python gazette/feeds.py {{ server_port }}
 ```
 
-About a second and a half, to fetch twenty pages and merge two
+Four seconds and a little more, to fetch twenty pages and merge two
 thousand items into fifteen hundred or so. Where does that time go?
-You know there is a twentieth of a second of waiting in each of twenty
-requests, which is one second. A colleague who had not read the
-server would not know, and would see only a program that fetches,
-parses and merges and is slow. The profiler is how they find out.
+You know there is a fifth of a second of waiting in each of twenty
+requests, which is four seconds on any machine, since a wait takes
+as long on a slow machine as on a quick one. The little more is the
+program's own work, and that does depend on the machine: half a
+second where this page was written, and two or three times that on
+a busy shared server. A colleague who had not read the server would
+know none of this, and would see only a program that fetches, parses
+and merges and is slow. The profiler is how they find out.

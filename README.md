@@ -470,6 +470,7 @@ just index                   write or refresh every collection index and the cat
 just container-build         build the Linux image the workshops run and test in
 just container-lab           JupyterLab in the container, with this checkout mounted
 just container-test <name>   self-test one workshop in the container
+just container-test-slow <name>   the same, on one processor at half speed
 ```
 
 The order of a collection is the list of workshop names in the
@@ -477,6 +478,12 @@ Justfile, which `just index` passes to `jupyter workshop index` one by
 one; a new workshop is added there, in its place, as well as to
 OUTLINE.md and the list above. On a Mac the self-test runs in the
 container, since the profiler cannot read another process there.
+
+Learners run the workshops on machines slower than the one a page was
+written on, and sometimes with a single processor, so no page, quiz
+or check depends on how long anything took where it was written.
+`just container-test-slow` stands in for such a host, and a workshop
+is tested there as well as unthrottled.
 
 ## Updating the release
 

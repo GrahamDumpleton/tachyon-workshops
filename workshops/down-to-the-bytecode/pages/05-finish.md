@@ -21,7 +21,7 @@ the interpreter was executing.
 - **What the samples say.** How long the program spends on that
   instruction, whether or not the choice suits the values that
   arrive. One function given eight classes kept every name and
-  took a third longer.
+  took noticeably longer.
 
 Keep it for the last step. A profile by function finds the part of
 the program that matters, a profile by line finds the loop, and

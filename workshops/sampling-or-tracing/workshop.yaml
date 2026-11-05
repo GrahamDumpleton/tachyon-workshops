@@ -37,7 +37,7 @@ finish: |
   tracing profiler, `cProfile`, now also `profiling.tracing`, is told
   about every call and return, so it knows exact call counts and exact
   times, and the program pays for every one of the four million times
-  it is told: this report took four times as long under it. The
+  it is told: this report took several times as long under it. The
   sampling profiler, Tachyon, glances at the stack from outside a
   thousand times a second, so it estimates from counts, knows nothing
   about how many calls there were, and the program runs at full speed.

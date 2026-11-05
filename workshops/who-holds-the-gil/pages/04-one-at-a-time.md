@@ -74,6 +74,6 @@ options:
   - { text: "The machine has only one processor", explanation: "It may have ten. Only one of them at a time can be running this program's Python code." }
   - { text: "Building a digest is Python code, a thread must hold the GIL to run Python code, and there is one GIL", correct: true }
   - { text: "The thread writing the progress log slowed the others down", explanation: "It holds the GIL for a moment every few milliseconds. The workers lose far more time to each other." }
-  - { text: "Starting threads is slow", explanation: "Starting five threads takes a few milliseconds of a run that lasts most of a second." }
+  - { text: "Starting threads is slow", explanation: "Starting five threads takes a few milliseconds, once, in a run hundreds of times as long." }
 explanation: "The workers run Python bytecode from start to finish, so each needs the GIL all the time and gets it a quarter of the time. Four threads taking turns do what one would."
 ```

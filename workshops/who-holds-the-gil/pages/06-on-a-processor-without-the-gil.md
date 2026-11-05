@@ -40,11 +40,11 @@ python -m profiling.sampling run -a --mode gil -l 4 --no-summary gazette/checksu
 ```
 
 In CPU mode, line 25 of `checksum` has thousands of samples, close to
-four for every millisecond the program ran, and its time column is
-the seconds of processor time the four threads used between them,
-three or four times what the clock measured. In GIL mode the same
-line has a dozen or two. The two tables are of the same program
-doing the same thing, and they differ by a factor of hundreds.
+four for every millisecond the program ran, and its time column adds
+the four threads together, so it comes to three or four times what
+the clock measured. In GIL mode the same line has next to none
+beside that. The two tables are of the same program doing the same
+thing, and they differ by a factor of hundreds.
 
 That is the rule, and it is the one the profiler's documentation
 gives:

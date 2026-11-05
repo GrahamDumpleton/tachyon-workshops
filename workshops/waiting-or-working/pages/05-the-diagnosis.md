@@ -20,17 +20,18 @@ short.
   better data structure, less work.
 
 The feed reader has one of each. The read from the socket is the
-first kind, a second of waiting that twenty requests made one after
-another add up to. Made at the same time, the twenty would take
-little longer than one. `same_story` is the second kind: `merge`
+first kind, four seconds of waiting that twenty requests made one
+after another add up to. Made at the same time, the twenty would
+take little longer than one. `same_story` is the second kind: `merge`
 compares every new item with every item it has kept, more than a
 million comparisons, and an index of the stories already seen would
 replace them all.
 
-Which to fix first is what the wall-clock table is for. The waiting
-is two thirds of the run and the comparison a quarter, so the
-requests come first. **Following the awaits**, later in these
-workshops, fetches the same feeds with `asyncio` and profiles that.
+Which to fix first is what the wall-clock table is for: whichever
+has the larger share of it. Here the waiting is most of the run and
+the comparison a small part, on any machine, so the requests come
+first. **Following the awaits**, later in these workshops, fetches
+the same feeds with `asyncio` and profiles that.
 
 The modes do not need two runs on the same footing to be useful. If
 you only want to know where the processor's time goes, in a program

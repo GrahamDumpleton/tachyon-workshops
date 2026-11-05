@@ -47,10 +47,10 @@ of each other: `worker` and beneath it `build_digest`, `keywords` and
 The profile summary in the sidebar on the left counts three or four
 times as many samples as the run had milliseconds. Each time the
 profiler looked, it read six stacks, and each is a sample. The error
-rate is also much higher than you have seen, a fifth or a quarter,
-because these threads call small functions thousands of times a
-second and a stack that is changing can fail to read. The samples
-that were kept are sound.
+rate is also much higher than you have seen, by how much depends on
+the machine, because these threads call small functions thousands
+of times a second and a stack that is changing can fail to read.
+The samples that were kept are sound.
 
 ## One thread at a time
 

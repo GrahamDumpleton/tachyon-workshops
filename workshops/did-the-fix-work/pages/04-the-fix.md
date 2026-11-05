@@ -37,8 +37,9 @@ change.
 python -m profiling.sampling run -r 10khz --binary -o fixed.bin gazette/report.py
 ```
 
-The report is built in a tenth of a second, where it took nearly
-two. So the fix worked, by the stopwatch. Now the comparison.
+The report is built in a small fraction of the time it took: about
+a tenth of a second against nearly two, where this page was
+written. So the fix worked, by the stopwatch. Now the comparison.
 Nothing but `count_words` was changed. `syllables`, for one, is the
 same code doing the same work on the same articles.
 
@@ -46,10 +47,10 @@ same code doing the same work on the same articles.
 :id: colour-of-syllables
 question: In the comparison of the fixed program with the baseline, what colour will `syllables` be?
 options:
-  - { text: "Grey, since it was not changed and takes as long as it did", explanation: "It does take as long as it did, about four hundredths of a second. The colours do not compare times in that sense." }
+  - { text: "Grey, since it was not changed and takes as long as it did", explanation: "It does take as long as it did, the few hundredths of a second you noted. The colours do not compare times in that sense." }
   - { text: "Blue, since the program as a whole is quicker", explanation: "A box is compared with the same function in the baseline, not with the program as a whole." }
   - { text: "Red, since it has a far larger share of the run than it had", correct: true }
-explanation: "The profiler scales the baseline to the length of the new run before it compares. `syllables` had a fiftieth of a run of two seconds and has three tenths of a run of a tenth of a second, and that is what is coloured."
+explanation: "The profiler scales the baseline to the length of the new run before it compares. `syllables` took the same time in both runs, which was about a fiftieth of the long one and is about three tenths of the short one, and that is what is coloured."
 ```
 
 `replay` can draw the comparison from the two recordings, with no
@@ -73,13 +74,15 @@ python -m profiling.sampling replay --diff-flamegraph baseline.bin -o diff.html 
 
 `count_words` is blue, as it should be. Everything else that has any
 width is red: `hardest`, `reading_ease`, `syllables`, the loading of
-the articles. Hold the mouse over `syllables`. The tooltip says its
-direct time was about three milliseconds in the baseline and is
-nearly forty now, up by more than a thousand percent.
+the articles. Hold the mouse over `syllables`. The tooltip gives its
+direct time in the baseline and now: about three milliseconds and
+nearly forty where this page was written, up by more than a
+thousand percent. Your milliseconds depend on the machine, and the
+jump is as large on any.
 
 You noted its time in the baseline on the second page, and it was
-nearly forty milliseconds then too. The three milliseconds is that
-figure scaled down. Before comparing, the profiler multiplies every
+the same then as it is now. The small figure in the tooltip is that
+time scaled down. Before comparing, the profiler multiplies every
 count in the baseline by the length of the new profile over the
 length of the old, here about a fourteenth, so that the two add up
 to the same total. What the colours compare, then, is each

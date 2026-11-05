@@ -56,14 +56,18 @@ python gazette/feeds.py {{ server_port }} | tee one-by-one.txt
 python gazette/crawl.py {{ server_port }} | tee at-once.txt
 ```
 
-The same fifteen hundred or so items both times, in about four and a
-half seconds and then in about one and a half. Twenty waits of a
-fifth of a second are four seconds when they are made in turn. Made
-four at a time they are five rounds, one second. The half second
-left over in both is work: parsing the pages and merging the items.
+The same fifteen hundred or so items both times, in a little over
+ten seconds and then in a little over two and a half. Twenty waits
+of half a second are ten seconds when they are made in turn. Made
+four at a time they are five rounds, two and a half seconds. Those
+figures are the same on any machine, since a wait takes as long on a
+slow machine as on a quick one. What is left over in both is work,
+parsing the pages and merging the items, and that depends on the
+machine: half a second where this page was written, and two or
+three times that on a busy shared server.
 
 So `asyncio` has done what it is for, and the question now is the
-one to ask of any program: where does the second and a half go?
+one to ask of any program: where does the time that is left go?
 
 ```{verify}
 :id: both-ran

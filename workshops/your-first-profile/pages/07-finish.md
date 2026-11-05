@@ -19,7 +19,7 @@ these workshops builds on.
 
 ```{quiz}
 :id: what-time-is
-question: The table said `count_words` took 1.261 seconds. Where did that number come from?
+question: Suppose the table says `count_words` took 1.261 seconds. Where does that number come from?
 options:
   - { text: "The profiler timed each call to `count_words` and added the times up", explanation: "That is what a tracing profiler does. Tachyon never times a call and does not know how many there were." }
   - { text: "The program reported it", explanation: "The program never knew it was being profiled. Nothing in `report.py` talks to the profiler." }

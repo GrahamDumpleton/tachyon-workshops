@@ -60,10 +60,12 @@ Read it from the top, which in this flame graph is the root.
 
 Two things are missing, and both are the point. The six boxes of the
 event loop are gone, so the graph starts at your code. And the wait
-is gone. Look at the sample count in the sidebar: about five hundred,
-from a run that took a thousand and a half. While every task was
-waiting, no task was running, and a sample with no running task has
-nothing to show. This is `--async-mode running`, the default for
+is gone. Look at the sample count in the sidebar, and at what the
+profiler printed in the terminal: it captured a sample for every
+millisecond of the run, some three thousand, and the graph holds a
+small part of them, the ones taken while the program was working.
+While every task was waiting, no task was running, and a sample
+with no running task has nothing to show. This is `--async-mode running`, the default for
 `--async-aware`: only the task that was running when the sample was
 taken.
 

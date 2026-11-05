@@ -12,7 +12,7 @@ next request, and a task that is waiting costs nothing. When such a
 service is slow, the usual complaint is an odd one: the machine is
 not busy, the services it calls are answering as quickly as ever,
 and still requests that should take a twentieth of a second take
-twice that.
+twice that, or worse.
 
 This workshop finds out why, on a service that does exactly that.
 

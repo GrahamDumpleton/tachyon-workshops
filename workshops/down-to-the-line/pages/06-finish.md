@@ -17,7 +17,7 @@ number before believing the red.
 
 It found the slow line of a twenty line function at a glance, and
 after the fix it showed the same function with the time shared out
-and a tenth of the samples.
+and a small fraction of the samples.
 
 Two heatmaps in two tabs are a comparison made by eye. **Did the fix
 work?**, later in these workshops, compares two profiles properly,

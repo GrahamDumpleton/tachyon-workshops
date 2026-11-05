@@ -16,15 +16,15 @@ rows, as the first workshop taught.
 python -m profiling.sampling run -l 10 --no-summary gazette/pages.py
 ```
 
-The program takes a second and a half to render its pages, and the
-table is clear about where: `format_date`, on its two lines, has
-around three quarters of the direct samples, and the `_strptime`
-rows below it are the standard library's date parser that
-`format_date` calls. The error rate can be high on this program, as
-much as forty percent on some machines and runs, because parsing a
-date builds and tears down a dozen frames in a few microseconds; the third of these workshops
-explains what that costs and what it does not, and the table is
-still sound.
+The program takes a second or two to render its pages, depending on
+the machine, and the table is clear about where: `format_date`, on
+its two lines, has around three quarters of the direct samples, and
+the `_strptime` rows below it are the standard library's date
+parser that `format_date` calls. The error rate can be high on this
+program, as much as forty percent on some machines and runs,
+because parsing a date builds and tears down a dozen frames in a
+few microseconds; the third of these workshops explains what that
+costs and what it does not, and the table is still sound.
 
 So `format_date` is expensive. But `format_date` is called from two
 places: from `summary`, once per article rendered, and from

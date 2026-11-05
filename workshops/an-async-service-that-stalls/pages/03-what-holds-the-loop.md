@@ -106,12 +106,12 @@ divides in two, and the two boxes are the two things a loop does.
 - **`_run_once` above `Handle._run`** is the loop running a task.
   Everything beneath it is that task, until its next `await`.
 
-Here the second is four times the width of the first. The loop was
-running tasks for four fifths of the run. Follow that box down,
-through uvicorn and Starlette's layers, and it narrows hardly at
-all until it reaches the application: `article`, then
-`render_article`, then `related`, on line 44, with about three
-quarters of every sample taken.
+Here the second is several times the width of the first. The loop
+was running tasks for most of the run, and waiting for little of
+it. Follow that box down, through uvicorn and Starlette's layers,
+and it narrows hardly at all until it reaches the application:
+`article`, then `render_article`, then `related`, on line 44, with
+most of the samples in the graph.
 
 Look at `related` in {open}`gazette/asgi.py`. To find the five
 articles most like this one, it compares the article's words with
@@ -122,11 +122,11 @@ hundredth of a second later, the loop belongs to that one request.
 
 ```{quiz}
 :id: read-the-loop
-question: "Where is `search` in this flame graph, given that a search takes twice as long as it should?"
+question: "Where is `search` in this flame graph, given that a search takes far longer than it should?"
 options:
   - { text: "It is the widest box, since it is the slowest request", explanation: "It is the request that takes longest to come back. It spends that time waiting, and a task that is waiting is not on the loop's stack." }
   - { text: "It is a sliver: a search spends its time waiting, for the index service and for its turn, and a task that is waiting is not on the thread's stack", correct: true }
   - { text: "It is not there, since the profiler samples one request at a time", explanation: "The profiler samples the thread, whatever it is running. A search is on the thread for a fraction of a millisecond at a time." }
   - { text: "It is under `related`, which it calls", explanation: "`search` and `related` have nothing to do with each other in the code. One holds up the other only by having the loop." }
-explanation: "The thread's stack shows the task that is running. A search runs for a moment, awaits, and is gone from the stack until the loop comes back to it. The request that suffers is nearly invisible, and the one that causes the suffering is three quarters of the graph. In a profile of an asyncio service, look at what is running."
+explanation: "The thread's stack shows the task that is running. A search runs for a moment, awaits, and is gone from the stack until the loop comes back to it. The request that suffers is nearly invisible, and the one that causes the suffering is most of the graph. In a profile of an asyncio service, look at what is running."
 ```

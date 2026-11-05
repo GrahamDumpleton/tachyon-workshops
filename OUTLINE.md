@@ -310,11 +310,14 @@ charges per call. So this workshop's `gazette/report.py` is the same
 report written the way a tidy program would be, with a function per
 word (`normalise`, `is_stop_word`, `stem`, `record`), phrase pairs,
 and a reading-ease score that counts syllables one letter at a time:
-four million small calls in a fifth of a second. The learner runs it
-plain twice, predicts the slowdown in a quiz, then runs
+four million small calls in a fraction of a second. The learner runs
+it plain twice, the second run keeping its time in `plain.txt`, and
+predicts the slowdown in a quiz whose options are multiples of that
+time and not durations, then runs
 `python -m cProfile -s tottime gazette/report.py`: the report's own
-last line says 0.7 seconds against 0.2, and the header says 4.2
-million calls. The page reads `ncalls` (`stem` 164,151, `normalise`
+last line says several times what it said alone (0.7 seconds against
+0.2 where it was written, 2.4 against 0.6 for the first reader on
+Binder), and the header says 4.2 million calls. The page reads `ncalls` (`stem` 164,151, `normalise`
 415,316, `str.endswith` 1.3 million), says these are counts and not
 estimates, and notes the rows for C methods and the per-`def` keying.
 Then `python -m profiling.tracing`, the same profiler under the name
@@ -325,12 +328,17 @@ program makes, not how long it runs, and that it distorts, since the
 cheap functions carry proportionally more of it.
 
 Then Tachyon on the same program, and the report's last line is back
-to a fifth of a second, which is the point of the collection. The
-table has no `ncalls`, only two hundred samples, and an error rate
+to about what it was alone, which is the point of the collection. The
+table has no `ncalls`, only a few hundred samples, and an error rate
 higher than the first workshop's (a few percent to a fifth, by
-machine), which the page names and hands to workshop 3. A hint
-says why the first workshop's report would not have shown the
-overhead.
+machine), which the page names and hands to workshop 3. The page
+says the profiler costs a share of the machine and not a toll per
+call, so on a single processor the report may take a little longer.
+The check compares the three times the learner's own runs wrote
+(`plain.txt`, `traced.txt`, `sampled.txt`) and never a constant: it
+first tested the profile for under 0.6 seconds, which failed for the
+first reader, whose plain run took 0.62. A hint says why the first
+workshop's report would not have shown the overhead.
 
 Then the docs' rule of thumb as a page: the tracer for a short
 program, for exact counts, for a program whose cost is in a few long
@@ -606,19 +614,24 @@ date and five keywords per item) and merges them, dropping an item
 that tells a story already in the list, which `same_story` decides by
 comparing keyword sets, item against every item kept. The server is
 the shipped `slow_server.py`, a `ThreadingHTTPServer` on `127.0.0.1`
-that sleeps a twentieth of a second before each answer; the page says
+that sleeps a fifth of a second before each answer (four seconds of
+waiting in all, so that the wait is most of the run even on a host
+several times slower, where the computing takes longer and the wait
+does not; it was a twentieth, and on a throttled processor the read
+and `same_story` came out at 47% and 42%); the page says
 the sleep is a stand-in for a distant server and that the program
 fetching cannot tell the difference. It is started in a terminal of
 its own, to the right of the one the profiler runs in, and stopped
 with `interrupt` on the finish page.
 
-Wall-clock mode, run with `--mode wall` spelt out: two thirds of the
+Wall-clock mode, run with `--mode wall` spelt out: most of the
 samples in `socket.py`, `SocketIO.readinto`, where `fetch` ends up,
-and a quarter in `same_story`. A quiz asks what CPU mode does to the
-first row. `--mode cpu`: the read from the socket is gone, the table
-holds a third as many samples, `same_story` has three quarters of
-them, and the page says that a percentage is always a share of what
-the mode kept. Then the rule the docs give: high in wall and absent
+and `same_story` next (nearly nine tenths and under a tenth where it
+was written; the page gives the order and says the shares move with
+the machine). A quiz asks what CPU mode does to the first row.
+`--mode cpu`: the read from the socket is gone, the table holds a
+small part of the samples, `same_story` has most of them, and the
+page says that a percentage is always a share of what the mode kept. Then the rule the docs give: high in wall and absent
 in CPU is waiting, and the fix is concurrency or asking less; high
 in both is work, and the fix is the algorithm. The feed reader has
 one of each, the wall-clock table says which to fix first, and
@@ -689,8 +702,10 @@ is **The price of an exception**.
   no `Thread.join`, and that `checksum` has more than five times the
   samples in CPU mode that it has in GIL mode; `shell` checks that
   each flame graph names the workers' function under
-  `Thread._bootstrap`. The checksum page's timing check needs a host
-  with more than one processor free. Written and tested 2026-09-29.
+  `Thread._bootstrap`. The checksum page's timing check passes on a
+  host that gives the program one processor, where four threads are
+  no quicker than one, and says which case it found; the page
+  describes both. Written and tested 2026-09-29.
 
 - Requires: nothing beyond the standard library.
 
@@ -758,14 +773,16 @@ The feed fetcher from workshop 7 rewritten with `asyncio`,
 `gazette/crawl.py`: a task for each of twenty feeds, started with
 `gather`, with a semaphore that allows four connections to the server
 at a time, since a crawler that opens twenty at once is not a polite
-one. The server is workshop 7's with a delay of a fifth of a second.
-The page first runs the synchronous `feeds.py` and then the crawler,
-unprofiled, four and a half seconds against one and a half.
+one. The server is workshop 7's with a delay of half a second, so
+that the waiting (five rounds, two and a half seconds) outweighs the
+merging on a slow host as well as a quick one. The page first runs
+the synchronous `feeds.py` and then the crawler, unprofiled, a little
+over ten seconds against three.
 
 The default profile is not, as first designed, all event loop. The
 coroutines that run are in it, beneath six frames of `asyncio`, and
-`same_story` has its quarter as it did in workshop 7. What the loop
-has is the waiting: two thirds of the samples in
+`same_story` is the second row as it was in workshop 7. What the loop
+has is the waiting: most of the samples in
 `EpollSelector.select`, one row for the waits of every task, with
 nothing to say whose or for what. The page asks for that prediction
 in a quiz first.
@@ -776,15 +793,15 @@ builds the stack from the chain of awaits, with a `<task>` marker
 naming each task. The root is `Task-1`, `main` is beneath it twice
 (a box carries its line), and the tasks `gather` started are beneath
 the line that awaits them. The loop is gone and so is the waiting: a
-third of the samples remain, since `--async-mode running`, the
+small part of the samples remain, since `--async-mode running`, the
 default, records only the task that was running.
 
 Then `--async-mode all`, as a table and as a flame graph. Every
 suspended task is recorded at the await where it stopped, a sample
-counts once for each task in it, so the table adds up to eight times
+counts once for each task in it, so the table adds up to ten times
 the samples and its times are task-seconds. Two thirds of the tasks'
-time is in `Semaphore.acquire`, the queue for a connection, and three
-tenths in `StreamReader._wait_for_data`, the server: the crawler
+time is in `Semaphore.acquire`, the queue for a connection, and a
+third in `StreamReader._wait_for_data`, the server: the crawler
 waits mostly for a turn. In this mode a running task is shown by its
 coroutines alone, so `merge` is counted on the line of `main` that
 called it.
@@ -1579,6 +1596,45 @@ appear and how they rank, with margins wide enough that a slow CI
 runner passes; a check never re-runs the profiler, and never asserts an
 exact count. Time-based assertions (the traced run is slower) compare
 two measurements made on the same machine in the same page.
+
+**Nothing is tied to the machine the workshops were written on.** The
+first reader ran them on Binder, where the programs took three times
+as long, and found a quiz whose right answer was a duration and a
+check with a limit in seconds, both wrong there
+([issue 1](https://github.com/GrahamDumpleton/tachyon-workshops/issues/1)).
+Three things differ between hosts, and each has a rule.
+
+- *Speed.* How long a program takes, and so how many samples a
+  profile of it holds, is the learner's own figure. A page never
+  states a duration or a sample count as what the learner will see;
+  it quotes the authoring run once at most, as "where this page was
+  written", and otherwise speaks of the time the learner has just
+  seen. Quiz options and questions are relations (several times as
+  long, the first row, a larger share), never durations or counts,
+  and a check compares two files the learner's runs wrote, never a
+  constant in seconds or samples. Ratios between two pieces of
+  computing (the tracer's slowdown, a function's share of the
+  processor) hold across hosts and may be stated as such.
+
+- *Waiting against computing.* A wait the program is given (a
+  server's delay, a sleep, a paced load) takes the same time
+  everywhere, and computing takes longer on a slow host, so a share
+  that mixes the two moves with the host and a ranking can flip. A
+  program whose point is that waiting dominates is given a wait long
+  enough to dominate on a host several times slower, and the page
+  gives the order and says which way the shares move.
+
+- *Processors.* A host may give the program one processor. Where
+  threads or processes are meant to run at once, the page says what
+  one processor looks like, and the check reports which case it
+  found and passes in both. The same goes for a profiler asked for a
+  rate it cannot keep to.
+
+`just container-test-slow <name>` runs the self-test on one processor
+at half speed, and a workshop is not done until it passes there as
+well as unthrottled. A green run there proves the checks and not the
+prose: read what each check printed on the slow run against what the
+page says the learner will see.
 
 **Prediction before execution.** Where the result is surprising, which
 in this subject is often (the default thread view is empty, the wall

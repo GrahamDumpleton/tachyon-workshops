@@ -50,9 +50,12 @@ assert classes == 8, f"by-section.txt is a run with {classes} classes; run the s
 print(f"One class: {one} seconds. Eight classes: {eight} seconds")
 ```
 
-The second run takes about a third longer, for the same work on the
-same data. The source cannot say why, and nor can a profile by
-line, which would show the same lines in much the same proportions.
+The second run takes longer, for the same work on the same data:
+about a third longer where this page was written. How much longer
+depends on the processor, and it varies from run to run, so run the
+pair again if your two times are close. The source cannot say why,
+and nor can a profile by line, which would show the same lines in
+much the same proportions.
 
 ```{quiz}
 :id: what-changes
@@ -114,8 +117,8 @@ attribute loads on lines 89, 93 and 94.
 The profiler reads the instruction that is in the bytecode, and the
 instruction in the bytecode is the specialised one. It cannot see
 that the check inside it failed. It can see that the program is
-spending several times as long there, and that is the extra third
-of a second.
+spending several times as long there, and that is where the extra
+time went.
 
 So the badge says what the interpreter chose, and the samples say
 whether the choice is paying. An instruction that is specialised and

@@ -16,14 +16,16 @@ the `gazette` package, so it is started with `-m`.
 python -m gazette.jobs
 ```
 
-A little under three hundred thousand digests in about three
-seconds, on four processes. Now profile it, with the profiler's
+A little under three hundred thousand digests, on four processes,
+in a few seconds: about three where this page was written, on a
+machine with a processor for each, and several times that where
+the four have to share one. Now profile it, with the profiler's
 defaults. The command is the same with the profiler's words in
 front: `run -m gazette.jobs` where Python had `-m gazette.jobs`.
 
 ```{quiz}
 :id: predict-the-parent
-question: The program spends three seconds building digests. What will be at the top of the profiler's table?
+question: The program spends nearly all of its time building digests. What will be at the top of the profiler's table?
 options:
   - { text: "`build_digest`, since building digests is what takes the time", explanation: "It is what takes the time, in the four worker processes. The profiler is sampling the process that started them." }
   - { text: "`build_batch`, the job that the pool is given", explanation: "`build_batch` runs in the workers. The process being sampled only hands it over, by name." }
@@ -51,11 +53,11 @@ Something like this:
             5/5       0.2         0.005       0.2         0.005  jobs.py:82(main)
 ```
 
-Nineteen samples in twenty are in `Condition.wait`, which is the
-parent waiting for the next batch of digests to arrive. The few
-samples in `jobs.py` are on the lines of `main` that deal the work
-out and gather it in. `build_digest`, where three seconds of four
-processors went, is not in the table at all.
+Nearly every sample is in `Condition.wait`, which is the parent
+waiting for the next batch of digests to arrive. The few samples in
+`jobs.py` are on the lines of `main` that deal the work out and
+gather it in. `build_digest`, where the processors' time went, is
+not in the table at all.
 
 ```{verify}
 :id: parent-table

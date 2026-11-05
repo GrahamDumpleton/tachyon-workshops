@@ -29,19 +29,21 @@ the check below reads.
 python -m profiling.sampling run --mode wall -l 8 --no-summary gazette/feeds.py {{ server_port }} | tee wall.txt
 ```
 
-The first row has about two thirds of the samples, and it is not in
-the feed reader at all: `socket.py`, `SocketIO.readinto`, the
-standard library's read from a network connection. It is where
-`fetch` ends up. `fetch` calls `urlopen`, which goes down through a
-dozen functions of `urllib` and `http.client` to the line that asks
-the operating system for the server's reply and blocks until it
-comes. Two thirds of the samples found the program on that line,
-which is the second of waiting you knew about, out of a second and a
-half.
+The first row has most of the samples, and it is not in the feed
+reader at all: `socket.py`, `SocketIO.readinto`, the standard
+library's read from a network connection. It is where `fetch` ends
+up. `fetch` calls `urlopen`, which goes down through a dozen
+functions of `urllib` and `http.client` to the line that asks the
+operating system for the server's reply and blocks until it comes.
+Its time column is the four seconds of waiting you knew about, and
+its share is those four seconds out of the whole run.
 
-The second row is `same_story`, with around a quarter of the
-samples, and below it `merge`, `keywords` and the rest share what is
-left.
+The second row is `same_story`, and below it `merge`, `keywords` and
+the rest share what is left. Together they are the program's own
+work. Where this page was written the read had nearly nine tenths
+of the samples and `same_story` under a tenth. On a slower machine
+the work takes longer and the waiting does not, so the read's share
+is smaller and `same_story`'s larger, in the same order.
 
 This is the table to read when the question is how long the program
 takes from start to finish, since a user waiting for the merged feed
@@ -51,7 +53,7 @@ comparison of keywords are both just rows with a count.
 
 ```{verify}
 :id: wall-profile
-:label: In wall-clock time the read from the socket has the most samples
+:label: In wall-clock time the read from the socket has more samples than the program's own work
 :trigger: after:profile-wall
 import re
 from pathlib import Path
@@ -70,10 +72,15 @@ def shares(path, command):
 
 wall = shares("wall.txt", "--mode wall")
 waiting = wall.get("SocketIO.readinto", 0.0)
-assert waiting > 35, (
-    f"The read from the socket has {waiting:.0f}% of the samples in wall.txt; expected most of them. "
-    "Is the feed server the one this workshop started?"
+working = wall.get("same_story", 0.0)
+assert waiting > 0, (
+    "wall.txt has no row for the read from the socket, SocketIO.readinto. "
+    "Was it written with --mode wall, by the command above?"
 )
-print(f"{waiting:.0f}% of the samples are in the read from the socket, "
-      f"{wall.get('same_story', 0.0):.0f}% in same_story")
+assert waiting > working, (
+    f"The read from the socket has {waiting:.0f}% of the samples in wall.txt and same_story has {working:.0f}%; "
+    "expected the read to have more. Is the feed server the one this workshop started?"
+)
+print(f"On this machine {waiting:.0f}% of the samples are in the read from the socket "
+      f"and {working:.0f}% in same_story")
 ```

@@ -65,7 +65,7 @@ CHECK
 
 The table is at the end of the server's log, in the terminal on the
 left. Its rows are lines of coroutines and of the functions they
-called, and nine tenths of the samples are on line 44 of `related`.
+called, and nearly all of the samples are on line 44 of `related`.
 The loop's own frames are gone, `select` with them: a sample taken
 while no task was running has no task to be counted against, so the
 percentages are of the time *some task was running*.

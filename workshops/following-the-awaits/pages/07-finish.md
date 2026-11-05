@@ -39,11 +39,11 @@ can read either.
   at the await where it stopped. A sample counts once for every
   task in it, so the times are added over the tasks.
 
-The crawler fetched twenty feeds in a third of the time of the
-program that fetched them in turn, and the profile of it showed what
-is left: half a second of merging, which an index of the stories
-already seen would remove, and a queue for connections that is as
-long as the limit makes it.
+The crawler fetched twenty feeds in less than a third of the time of
+the program that fetched them in turn, and the profile of it showed
+what is left: the merging, which an index of the stories already
+seen would remove, and a queue for connections that is as long as
+the limit makes it.
 
 ```{quiz}
 :id: why-the-loop

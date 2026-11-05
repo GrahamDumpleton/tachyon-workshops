@@ -8,12 +8,12 @@ requires: [quiz:what-only-tracer-knows]
 You have run one program under both of Python's profilers and read
 both tables. `cProfile`, now also `profiling.tracing`, is told about
 every call, so it knows exact counts and exact times and the program
-pays a toll for every call, four times its own running time for this
-one. Tachyon glances at the stack from outside a thousand times a
+pays a toll for every call, several times its own running time for
+this one. Tachyon glances at the stack from outside a thousand times a
 second, so it estimates from what it saw, knows nothing of how many
-calls there were, and costs the program nothing. Short program or
-exact counts, the tracer; long-running, production or call-heavy, the
-sampler; a few percent between two lines, `timeit`.
+calls there were, and costs the program next to nothing. Short
+program or exact counts, the tracer; long-running, production or
+call-heavy, the sampler; a few percent between two lines, `timeit`.
 
 ```{quiz}
 :id: what-only-tracer-knows

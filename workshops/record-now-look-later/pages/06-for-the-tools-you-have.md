@@ -42,8 +42,8 @@ the same reason, and the per-call columns divide by it and mean
 nothing. The times are samples multiplied by the interval, as they
 were in the profiler's own table. An existing tool will read this
 file without complaint, and it is for you to remember that a
-function it shows with a count of 1,253 was seen 1,253 times, and
-may have been called once.
+function it shows with a count of 1,253, say, was seen 1,253 times,
+and may have been called once.
 
 ```{verify}
 :id: pstats-loaded

@@ -42,7 +42,7 @@ Your program is one file, `gazette.report`, with a bar beside it
 as long as a bar gets. The standard library has two, `json` and
 `json.decoder`, with a handful of samples and bars too short to see:
 the profiler saw them on the stack while `load_articles` was parsing
-the articles, and that took a few milliseconds of nearly two seconds.
+the articles, and that took a few milliseconds of a run of seconds.
 Where a program uses packages it has installed, they get a group of
 their own. The grouping is the first thing the heatmap tells you:
 whether the time is in code you can change.

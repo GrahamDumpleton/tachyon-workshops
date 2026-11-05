@@ -60,13 +60,13 @@ is no harm, since they are the landmarks.
 
 ## Two branches
 
-Below `pytest_runtest_protocol` the graph divides in two, and the
-two halves are about the same width.
+Below `pytest_runtest_protocol` the graph divides in two, and both
+branches are wide.
 
 - **`pytest_runtest_call`** is the tests themselves. At the bottom
   of it are the test functions. Two are very wide,
   `test_counts_are_there_after_a_refresh` and
-  `test_a_refresh_of_nothing`, a fifth of the whole run each. One
+  `test_a_refresh_of_nothing`, about a second of the run each. One
   more has a width worth noticing,
   `test_printed_date_of_an_article`, with `load_articles` beneath
   it. The other fifteen test functions are too thin to have names.
@@ -78,10 +78,10 @@ two halves are about the same width.
 
 ```{quiz}
 :id: setup-or-call
-question: "Nearly half of the run is under `pytest_runtest_setup`. What does that say about the suite?"
+question: "A large part of the run is under `pytest_runtest_setup`, nearly half where this page was written. What does that say about the suite?"
 options:
   - { text: "That pytest is slow to start", explanation: "Starting pytest, importing it and finding the tests, is the narrow part at the edge of the graph. Setup is what is done before each test." }
-  - { text: "That nearly half of the time goes on getting ready to run tests, and not on running them", correct: true }
+  - { text: "That much of the time goes on getting ready to run tests, and not on running them", correct: true }
   - { text: "That half of the tests are failing in their setup", explanation: "Every test passed. A fixture that works and is slow looks like this." }
   - { text: "That the tests of the database are slow", explanation: "The tests of the database are among the thin ones under `pytest_runtest_call`. What is slow is what is made for them beforehand." }
 explanation: "A test's time is the fixtures it asks for and then the test. `--durations` reports the two apart, and a reader looking for slow tests sees fifteen quick ones. The flame graph adds the fifteen setups together, and they are the widest thing in it."

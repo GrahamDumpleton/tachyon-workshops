@@ -13,7 +13,7 @@ too and puts each count where it belongs, beside the line.
 Before it does, predict. Look at the loop in `count_words` in
 {open}`gazette/report.py`, lines 29 to 44. Each of these lines runs
 for every article or for every word, and one of them takes most of
-the two seconds.
+the run.
 
 ```{quiz}
 :id: which-line

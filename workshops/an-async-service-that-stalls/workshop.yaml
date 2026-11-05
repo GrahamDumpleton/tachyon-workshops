@@ -52,7 +52,7 @@ layouts:
 gating: soft
 finish: |
   You have found what held up an asyncio service. Searches that spent
-  their time waiting for another service took twice as long when
+  their time waiting for another service took far longer when
   articles were being read, and the flame graph of the event loop's
   thread showed why: the loop was in `related`, computing, for most
   of the run, and while it computes nothing else moves. The

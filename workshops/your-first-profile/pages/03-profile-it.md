@@ -21,7 +21,8 @@ python -m profiling.sampling run gazette/report.py
 
 The report prints exactly as before, in the same time, and then the
 profiler prints its own output below it. Read the first three lines
-of that output first:
+of that output first. These are from the run this page was written
+from:
 
 ```
 Captured 1582 samples in 1.58 seconds
@@ -29,10 +30,14 @@ Sample rate: 1000.00 samples/sec
 Error rate: 0.44
 ```
 
-A thousand samples a second, for as long as the program ran, is about
-sixteen hundred samples. Your numbers will differ a little, because
-your machine took a slightly different time and a sample is a glance
-at whatever was happening at that instant. The error rate is the
+A thousand samples a second, for as long as the program ran, which
+here was 1.58 seconds and so about sixteen hundred samples. Your
+numbers will differ: a little from one run to the next, because a
+sample is a glance at whatever was happening at that instant, and a
+good deal from one machine to another, because a slower machine
+runs the report for longer and so takes more samples of it. The
+first two lines always agree with each other, since the samples are
+the seconds multiplied by the rate. The error rate is the
 share of samples the profiler threw away because the stack was
 changing under it as it read; under one percent is normal, and the
 third workshop in these workshops says what it means.

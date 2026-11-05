@@ -42,8 +42,8 @@ story already in the list.
 {open}`gazette/feeds.py`, in the second tab, is the same program
 without `asyncio`, fetching one feed after another. The server is
 {open}`slow_server.py`, in the third. It runs on this machine and
-waits a fifth of a second before each answer, which stands in for
-the network and the machine at the other end.
+waits half a second before each answer, which stands in for the
+network and a slow machine at the other end.
 
 ## The environment
 

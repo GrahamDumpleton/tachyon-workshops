@@ -98,8 +98,8 @@ processor: the main thread asleep, and request threads waiting, for
 a file, for the network, or for their turn to run Python.
 
 Within the requests the picture has hardly changed. Line 101 of
-`search` is still most of it, so the searches are not only slow to
-arrive, they are where the processor's time goes.
+`search` is still the widest part of it, so the searches are not
+only slow to arrive, they are where the processor's time goes.
 
 ## Which to use
 

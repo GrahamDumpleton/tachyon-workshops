@@ -36,10 +36,14 @@ Compare this run's first line, and its counts, with the run two pages
 back. The sample count is different, the count on every row differs
 by a few or a few dozen, and a row with one direct sample there may
 have none here. This is not the profiler being careless. A sample is a
-glance at a random instant, and two sets of sixteen hundred glances
-agree on the proportions and not on the counts, the way two polls
-agree on who is ahead and not on the exact percentage. `count_words`
-is about four fifths of both runs; whether it is 79% or 81% is noise.
+glance at a random instant, and two sets of glances agree on the
+proportions and not on the counts, the way two polls agree on who
+is ahead and not on the exact percentage. `count_words` is about
+four fifths of both runs; whether it is 79% or 81% is noise. A
+different machine moves the counts further still: one half as quick
+runs the report for twice as long and takes twice the samples, so
+every count on these pages doubles, and the proportions stay where
+they were.
 More samples agree better: a longer run, or a higher sampling rate,
 which the last of these workshops turns into arithmetic.
 
@@ -52,9 +56,9 @@ exact number.
 :id: numbers-move
 question: Two runs of the profiler on the same program give `count_words` 1,261 samples and then 1,288. What should you conclude?
 options:
-  - { text: "The second run was slower and the program should be investigated", explanation: "Twenty-seven samples in sixteen hundred is under two percent, which is the ordinary difference between two sets of random glances." }
+  - { text: "The second run was slower and the program should be investigated", explanation: "Twenty-seven samples in well over a thousand is about two percent, which is the ordinary difference between two sets of random glances." }
   - { text: "Nothing: both say `count_words` has about four fifths of the time, which is the finding, and the counts are noise", correct: true }
-  - { text: "The profiler is unreliable and the tracing profiler should be used instead", explanation: "The tracer would give the same call counts each time, but it would also slow the program four-fold, as the next workshop shows. Sampling is reliable about proportions, not counts." }
+  - { text: "The profiler is unreliable and the tracing profiler should be used instead", explanation: "The tracer would give the same call counts each time, but it would also slow the program several times over, as the next workshop shows. Sampling is reliable about proportions, not counts." }
   - { text: "The first run missed 27 samples because of its error rate", explanation: "Discarded samples are not the reason; the runs took slightly different times and the glances fell at different instants. The error rate is a separate matter, for the third workshop." }
 explanation: "Sampling profiles agree on shapes and ranks, not on counts. Read the proportion and the ranking, and treat a few percent of difference between runs as the noise it is."
 ```

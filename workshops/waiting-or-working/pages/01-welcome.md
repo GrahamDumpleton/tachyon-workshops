@@ -33,10 +33,10 @@ if no item already in the list tells the same story, which
 
 The server is {open}`slow_server.py`, in the tab beside it. It runs
 on this machine and serves the twenty feeds from the gazette's
-articles, and it waits a twentieth of a second before each answer.
-That pause is a stand-in, and an honest one: it is about what a
-request to a server in another city costs, and the program fetching
-the feeds cannot tell the difference.
+articles, and it waits a fifth of a second before each answer. That
+pause is a stand-in, and an honest one: it is what a request to a
+busy server a long way off costs, and the program fetching the feeds
+cannot tell the difference.
 
 ## The environment
 

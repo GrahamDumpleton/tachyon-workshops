@@ -140,15 +140,16 @@ front_page (web.py)                            5.6 s     7.0 s
 health (web.py)                                1.6 s     2.1 s
 ```
 
-`search` has gone from the top of the list to a fifteenth of what
-it was. `select`, the main thread waiting for connections, is the
-same to a fifth of a second, as it should be for two runs of twenty
-seconds. The other views are much as they were. And `<GC>`, the
+`search` has gone from the top of the list to a small fraction of
+what it was, a fifteenth in this run. `select`, the main thread
+waiting for connections, is the same in both, as it should be for
+two runs of twenty seconds. The other views are much as they were. And `<GC>`, the
 garbage collector, has all but gone, which suggests that most of
 its work had been clearing up after the loop in `search`, a
 thousand rows made for each request and nearly all thrown away.
 
 These are seconds, and not shares of a run. A differential flame
 graph compares the two recordings as shares, so that after a fix
-which halves the samples everything it left alone looks larger. A
+which removes many of the samples everything it left alone looks
+larger. A
 table of your own says what you ask it to.

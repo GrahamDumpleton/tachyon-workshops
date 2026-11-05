@@ -39,8 +39,8 @@ heatmap again, into a directory of its own so the first one is kept.
 python -m profiling.sampling run --heatmap -o heatmap-after gazette/report.py
 ```
 
-The report is the same, word for word, and was built in about a
-tenth of a second where it took nearly two. Put the two heatmap
+The report is the same, word for word, and was built in a small
+fraction of the time it took before. Put the two heatmap
 pages for `report.py` one above the other: the first action makes
 room by shrinking the terminal, the second brings back the page from
 before, and the third opens the page from the new heatmap beneath
@@ -78,10 +78,10 @@ Before, one red line had nearly every sample and the rest were pale.
 After, the colour is spread along the loop, with the lines that
 count, test and split each taking a share. There is still a red
 line, because the colour is relative and some line is always the
-hottest in the file. Read its number: a dozen or two samples, where
-line 40 had well over a thousand. A program ten times as quick gave
-the profiler a tenth of the samples, so expect the numbers to move
-more between runs than they did. A profile like this one, with the
+hottest in the file. Read its number: a few dozen samples at most,
+where line 40 had well over a thousand. A program many times as
+quick gave the profiler that many fewer samples, so expect the
+numbers to move more between runs than they did. A profile like this one, with the
 time shared between lines that each do a little necessary work, is
 what a program with nothing left to fix looks like.
 

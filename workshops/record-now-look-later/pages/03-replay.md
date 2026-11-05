@@ -17,9 +17,9 @@ written. With no format it prints the table.
 python -m profiling.sampling replay -l 5 --no-summary report.bin
 ```
 
-The report did not print, and the command took a fraction of a
-second where the program takes a second and a half: nothing ran
-except the profiler reading its file. The first lines say how many
+The report did not print, and the command took a fraction of the
+time the program takes: nothing ran except the profiler reading its
+file. The first lines say how many
 samples it is replaying, the interval between them and the
 compression, and then the table is the one you know, `count_words`
 on lines 36 and 34 at the top.

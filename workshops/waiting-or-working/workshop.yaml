@@ -45,8 +45,8 @@ layouts:
 gating: soft
 finish: |
   You have profiled one program in two modes and read the difference.
-  Wall-clock mode keeps every sample and showed two thirds of the run
-  in a read from a socket; CPU mode keeps only the samples in which
+  Wall-clock mode keeps every sample and showed most of the run in a
+  read from a socket; CPU mode keeps only the samples in which
   the thread was on a processor, and the read vanished, leaving the
   comparison that merges the feeds. High in wall and absent in CPU is
   waiting, and the cure for waiting is to do something else meanwhile.

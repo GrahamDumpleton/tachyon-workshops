@@ -58,10 +58,10 @@ python -m profiling.sampling run --mode exception --sort cumtime -l 14 --no-summ
 ```
 
 The report is the same, and the last line of it says the dates were
-parsed in a little over half the time. Then the profiler says it
-captured several hundred samples and that none were collected: it
-looked at the program five hundred times and never once found an
-exception active. There is no table because there is nothing to put
+parsed in a little over half the time. Then the profiler says how
+many samples it captured, one for each millisecond of the run, and
+that none were collected: it looked at the program hundreds of
+times and never once found an exception active. There is no table because there is nothing to put
 in it.
 
 A date that fits none of the formats still raises `ValueError`, from

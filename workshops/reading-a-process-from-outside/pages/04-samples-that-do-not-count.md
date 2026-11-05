@@ -16,7 +16,7 @@ and counts it. The `Error rate` in the profiler's header is that
 count as a share of the samples attempted.
 
 For the report it was under one percent, because `count_words` sits
-on one line for hundreds of milliseconds. `stream.py` is different:
+on one line for most of the run. `stream.py` is different:
 every word passes through three generators, so frames are entered and
 left tens of thousands of times a second. Profile it and read the
 error rate.

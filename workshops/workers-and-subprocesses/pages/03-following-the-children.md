@@ -150,7 +150,7 @@ cp "$(grep -l syllables jobs/flamegraph_*.html | head -1)" worker.html
 ## What the children would have shown
 
 One file, and it is the parent's: the profile you already have,
-nineteen samples in twenty waiting. Nothing was printed about the
+nearly every sample waiting. Nothing was printed about the
 four workers, the profilers started for them having been refused
 in silence. That silence is the thing to remember about
 `--subprocesses`: a run that writes fewer files than the program
@@ -215,7 +215,7 @@ This is the profile the program deserved. Read it downward.
 
 - Beneath it `build_digest` has a box for each of its lines that
   was sampled, and beneath those are `syllables` and `keywords`.
-  This is where the three seconds went, and it is an ordinary flame
+  This is where the time went, and it is an ordinary flame
   graph of an ordinary function, to be read and acted on as any
   other.
 

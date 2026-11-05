@@ -26,11 +26,12 @@ table, a flame graph or a heatmap later with `replay`, as often as
 you like.
 
 **`-r 10khz`** takes ten thousand samples a second where the
-profiler would otherwise take one thousand. The program takes nearly
-two seconds now, and a thousand a second is plenty for that. Once
-fixed it will take a tenth of a second or so, which at a thousand a
-second is about a hundred samples, too few to say anything about
-the smaller functions. Profiles that are to be compared should be
+profiler would otherwise take one thousand. The program takes
+seconds now, and a thousand a second is plenty for that. Once fixed
+it will take a small fraction of that, a tenth of a second or so
+where this page was written, which at a thousand a second is about
+a hundred samples, too few to say anything about the smaller
+functions. Profiles that are to be compared should be
 made the same way, so the rate is chosen for the shortest of them
 and used for all.
 
@@ -49,8 +50,9 @@ python -m profiling.sampling replay -l 6 --no-summary baseline.bin | tee baselin
 One row has more than nine tenths of the samples: line 44 of
 `count_words`, the search of the list. Below it, with a fiftieth,
 is `syllables`. Note the time beside `syllables`, in the `tottime`
-column: a little under four hundredths of a second. It will matter
-later.
+column: a few hundredths of a second, a little under four where
+this page was written and more on a slower machine. It is your own
+figure that will matter later.
 
 ```{verify}
 :id: baseline-recorded

@@ -15,13 +15,13 @@ Before running it, predict what that does to the table you have.
 
 ```{quiz}
 :id: what-cpu-keeps
-question: In CPU mode, what happens to the row for the read from the socket, which had two thirds of the samples?
+question: In CPU mode, what happens to the row for the read from the socket, which was first in the wall-clock table?
 options:
   - { text: "It stays at the top: the profiler samples the same program, so the table is the same", explanation: "The samples are the same. The mode chooses which of them are kept, and a thread blocked on a read is not on a processor." }
   - { text: "It all but vanishes, and the rows below it move up to fill the table", correct: true }
   - { text: "It stays at the top with a smaller count, since reading from a socket takes some processor time", explanation: "It takes a little, to copy the bytes once they have arrived. Nearly all of the time on that line was spent blocked, waiting for them." }
-  - { text: "The whole table is empty, since the program was waiting most of the time", explanation: "About a third of the run was computing, and those samples are kept." }
-explanation: "A thread waiting for a reply is not on a processor, so its samples are discarded. What remains is the third of the run in which the program was computing."
+  - { text: "The whole table is empty, since the program was waiting most of the time", explanation: "Part of the run was computing, and those samples are kept." }
+explanation: "A thread waiting for a reply is not on a processor, so its samples are discarded. What remains is the part of the run in which the program was computing."
 ```
 
 ```{execute}
@@ -33,23 +33,24 @@ python -m profiling.sampling run --mode cpu -l 8 --no-summary gazette/feeds.py {
 ```
 
 The program took as long as before, and the profiler says it
-captured about as many samples. The table has a third of them. Add
-up the first column, or look at the time columns, which are now in
-milliseconds because the numbers are smaller. The rest were taken
-while the thread was off the processor, and were dropped.
+captured about as many samples. The table has only a small part of
+them. Add up the first column, or look at the time columns, which
+are now in milliseconds because the numbers are smaller. The rest
+were taken while the thread was off the processor, and were dropped.
 
 The read from the socket is gone, or down to a sample or two.
-`same_story` is first, with about
-three quarters of what is left, then `merge` and the lines of
-`keywords`. The row from `importlib` is Python loading modules as the
-program starts, which was always there and is now large enough to
-make the table.
+`same_story` is first, with most of what is left, then `merge` and
+the lines of `keywords`. The row from `importlib` is Python loading
+modules as the program starts, which was always there and is now
+large enough to make the table.
 
 The percentages have changed their meaning along with the mode. In
-the wall-clock table `same_story` had a quarter, of the time that
-passed. Here it has three quarters, of the time the program spent on
-a processor. Both are true. A percentage in a profile is always a
-share of the samples that mode kept.
+the wall-clock table `same_story` had a small share, of the time
+that passed. Here it has by far the largest, of the time the program
+spent on a processor: under a tenth and then about three quarters,
+where this page was written. Both are true. A percentage in a
+profile is always a share of the samples that mode kept. The check
+below prints the four figures from your own two runs.
 
 ```{verify}
 :id: cpu-profile
@@ -81,6 +82,6 @@ assert waiting_cpu < waiting_wall / 3, (
 assert cpu.get("same_story", 0.0) > wall.get("same_story", 0.0), (
     "same_story should have a larger share of the CPU profile than of the wall-clock one"
 )
-print(f"The read from the socket: {waiting_wall:.0f}% of wall-clock time, {waiting_cpu:.0f}% of CPU time. "
+print(f"On this machine, the read from the socket: {waiting_wall:.0f}% of wall-clock time, {waiting_cpu:.0f}% of CPU time. "
       f"same_story: {wall.get('same_story', 0.0):.0f}% and {cpu.get('same_story', 0.0):.0f}%")
 ```

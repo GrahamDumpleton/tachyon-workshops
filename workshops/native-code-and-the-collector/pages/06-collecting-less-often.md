@@ -39,8 +39,9 @@ end of each turn of it `del` to let go of the graph and
 python -m profiling.sampling run -l 12 --no-summary gazette/graph.py | tee once.txt
 ```
 
-The collector ran about twenty times and not eighteen hundred, and
-the program is quicker by around half a second. Before, each of
+The collector ran a dozen or two times and not eighteen hundred,
+and the program is quicker, by a quarter or so where this page was
+written. Before, each of
 those runs looked through the graph as it grew and found nearly
 nothing to free, since the graph being built was all still in use.
 
@@ -60,8 +61,8 @@ the table would say so in two ways.
 
 What you have depends on the run. Often there is no `<GC>` row at
 all, and the two counts of line 89 are equal, something like
-`418/418`: a quarter of the run spent in the collector, and not one
-sample of it marked. Other runs mark some, and then there is a
+`418/418`: a good part of the run spent in the collector, and not
+one sample of it marked. Other runs mark some, and then there is a
 `<GC>` row and the first count is smaller than the second by that
 many. On the release these workshops use the marker is left off
 many of the collector's samples, and sometimes all of them.

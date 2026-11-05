@@ -30,9 +30,9 @@ were.
   server's threads spent, the share that went on each kind, and
   where within it.
 
-Here they agree. Searches were a tenth of the requests and most of
-the time the requests took, which is what a request that takes many
-times as long as the others comes to. When they do not agree, a
+Here they agree. Searches were a tenth of the requests and the
+largest share of the time the requests took, which is what a
+request that takes many times as long as the others comes to. When they do not agree, a
 page that readers wait a long time for and that has little width in
 the graph, the time is going somewhere the profiler is not looking:
 in a queue before the request reaches a thread, in the network, or

@@ -6,8 +6,8 @@ requires: [verify:rate-profile]
 # Keeping up
 
 A sample every millisecond is the default, and the first workshop's
-sixteen hundred samples were enough to put `count_words` at four
-fifths of the run beyond doubt. Two options change how many samples
+samples, a thousand for each second the report ran, were enough to
+put `count_words` at four fifths of the run beyond doubt. Two options change how many samples
 you get. `-r` sets the rate, as a number of samples per second or
 with a suffix (`10khz`, `10k`), and `-d` limits how long the profiler
 samples for, in seconds, after which it stops whether or not the
@@ -24,7 +24,7 @@ python -m profiling.sampling run -r 5khz -d 1 -l 3 --no-summary -o rate.pstats g
 
 The report runs on to its end, since the profiler only stopped
 sampling, but the header says a second and five thousand samples,
-and the table is the same shape as before with three times the
+and the table is the same shape as before with several times the
 samples behind it. The rate you ask for and the rate you get are not
 always the same: reading a stack takes time, and at high rates on a
 busy machine the profiler falls behind. `--realtime-stats` prints the
@@ -57,11 +57,17 @@ from pathlib import Path
 assert Path("rate.pstats").exists(), "No rate.pstats yet: run the 5 kHz command above"
 stats = pstats.Stats("rate.pstats")
 total = stats.total_tt
-assert 0.6 < total < 1.4, (
+assert total < 1.4, (
     f"rate.pstats accounts for {total:.2f} seconds; expected about one second, "
     "the duration -d 1 asked for. Was -d 1 on the command?"
 )
-print(f"{total:.2f} seconds of samples, as -d 1 asked")
+assert total > 0.1, (
+    f"rate.pstats accounts for only {total:.2f} seconds; did the report run under the profiler for the whole second? "
+    "Run the 5 kHz command above again"
+)
+print(f"{total:.2f} seconds of samples, as -d 1 asked" if total > 0.8 else
+      f"{total:.2f} seconds of samples where -d 1 asked for one: on this machine the profiler "
+      "did not keep to 5 kHz, or some samples could not be read. The page says what that means")
 ```
 
 ```{hint}
@@ -69,5 +75,6 @@ print(f"{total:.2f} seconds of samples, as -d 1 asked")
 Every row's time in a pstats file is samples multiplied by the
 interval, so adding up the direct time of every row gives the length
 of time the samples cover. With `-d 1` that is about a second,
-whatever the rate.
+whatever the rate, and less where the profiler fell behind or
+threw samples away.
 ```

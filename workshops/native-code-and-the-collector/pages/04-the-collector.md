@@ -37,7 +37,9 @@ python -m profiling.sampling run -l 8 --no-summary gazette/graph.py | tee gc.txt
 ```
 
 The program's last line says how many times the collector ran:
-about eighteen hundred, in a little over two seconds.
+about eighteen hundred, in the few seconds the program took. The
+count is much the same on any machine, since the collector is set
+off by the number of objects made and not by the clock.
 
 In the table, near the top, is a row with `~` for its file, `0` for
 its line and `<GC>` for its function. It stands for samples taken

@@ -27,8 +27,9 @@ one function, `count_words`, which for every article joins the title
 to the body, lowercases it, strips the punctuation, splits it into
 words, skips the stop words and the numbers, and counts what is left
 twice, once for the whole paper and once for the article's section.
-Read it. It takes nearly two seconds, which is far too long for a
-hundred and eighty thousand words, and one of its lines is the reason.
+Read it. It takes seconds, nearly two where this page was written
+and more on a slower machine, which is far too long for a hundred
+and eighty thousand words, and one of its lines is the reason.
 
 ## The environment
 

@@ -19,7 +19,7 @@ python -m profiling.sampling run --binary -o report.bin gazette/report.py
 After the report and the usual lines about samples and rate, the
 profiler says how the recording went. Under **Binary Encoding** it
 counts the records it wrote, and there are a few dozen of them for
-around sixteen hundred samples, because a sample with the same stack
+well over a thousand samples, because a sample with the same stack
 as the one before is written as "the same again", and a program stuck
 in one line for a second produces the same stack a thousand times
 running. Under **Frame Efficiency**, the frames it wrote against the
@@ -34,8 +34,8 @@ gives the file and the number of samples in it.
 ls -l report.bin
 ```
 
-A few kilobytes, for every stack the profiler saw in a second and a
-half. The file is compressed with zstd where Python has it, which
+A few kilobytes, for every stack the profiler saw in the whole of
+the run. The file is compressed with zstd where Python has it, which
 Python 3.15 does unless it was built without; `--compression none`
 turns that off. A recording of a busier program, whose stack changes
 from one sample to the next, is larger, and still small enough to

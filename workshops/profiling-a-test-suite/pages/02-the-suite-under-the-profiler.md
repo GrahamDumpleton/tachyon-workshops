@@ -35,9 +35,10 @@ of what pytest printed, for comparing later.
 python -m profiling.sampling run --binary -o before.bin -m pytest -q | tee pytest-before.txt
 ```
 
-pytest prints its dots and its verdict, 118 passed in four or five
+pytest prints its dots and its verdict, 118 passed and in how many
 seconds, and then the profiler says what it recorded: a sample for
-each thousandth of a second, so between four and five thousand.
+each thousandth of a second, so a thousand for each of those
+seconds.
 
 ```{verify}
 :id: before-recorded

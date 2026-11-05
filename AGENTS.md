@@ -214,7 +214,9 @@ and prefer them over the underlying commands:
 - `just container-build` builds the Linux image from
   `container/Dockerfile`; `just container-lab` runs JupyterLab in it
   with this checkout mounted, on `http://127.0.0.1:8888/?token=tachyon`;
-  `just container-test <name>` self-tests a workshop in it;
+  `just container-test <name>` self-tests a workshop in it, and
+  `just container-test-slow <name>` does so on one processor at half
+  speed, as a busy shared host would run it;
   `just container-lint` lints in it; `just container-shell` opens a
   shell in it for trying the profiler by hand. Files a workshop writes
   in the container land in this checkout, so `just clean` tidies after
@@ -327,6 +329,26 @@ Conventions for the workshops here:
   and assert on which functions appear and how they rank, with a
   margin, never on exact numbers. A check never re-runs the profiler.
 
+- Nothing depends on the machine. A learner on Binder or in a
+  codespace has a slower processor than the one a page was written
+  on, often several times slower, and may have only one. So a page
+  never states a duration or a sample count as what the learner will
+  see: it speaks of the time or the row the learner has just seen,
+  and quotes the authoring run at most once, as "where this page was
+  written". Quiz questions and options are relations (several times
+  as long, the first row, a larger share), never durations or
+  counts. A check compares two things the learner's own runs wrote,
+  never a constant in seconds or samples. A wait a program is given
+  (a server's delay, a sleep, a paced load) takes the same time on
+  every host while computing does not, so a share that mixes the two
+  moves with the host: make the wait long enough that the intended
+  order holds on a host several times slower, give the order, and
+  say which way the shares move. Where threads or processes are
+  meant to run at once, or the profiler is asked for a high rate,
+  the page says what a host with one processor shows and the check
+  reports which case it found and passes in both. OUTLINE.md has the
+  full decision and the issue that prompted it.
+
 - Terminal pages. A command is one `execute` action with `:wait:`
   set so the check runs after it finishes; a server is started in one
   terminal with the profiler's `-d` duration and driven from a second,
@@ -375,7 +397,10 @@ Conventions for the workshops here:
 - Lint every change. Lint must be clean, warnings included, before a
   workshop is considered done, and a workshop is not done until
   `just test <name>` is green on Linux, which on a Mac means
-  `just container-test <name>`.
+  `just container-test <name>`, and until
+  `just container-test-slow <name>` is green too. Read what the
+  checks print on the slow run against what the pages say: a green
+  run proves the checks, not the prose.
 
 ## Never run a workshop without checking what it does
 

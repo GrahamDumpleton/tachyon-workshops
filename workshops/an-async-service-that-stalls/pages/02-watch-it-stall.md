@@ -70,7 +70,8 @@ python load.py {{ server_port }} 5 search | tee alone.txt
 
 The median is a little over fifty milliseconds, which is the
 twentieth of a second the index service takes and a few thousandths
-for everything else. Eight searches are in hand at any moment, and
+for everything else. It is much the same on any machine, since
+nearly all of it is the wait. Eight searches are in hand at any moment, and
 none of them slows another, because all eight are waiting. This is
 an asyncio service doing what it is good at.
 
@@ -86,7 +87,7 @@ question: What will the median time of a search be, now that articles are being 
 options:
   - { text: "The same, a little over fifty milliseconds, since a search does nothing it did not do before", explanation: "A search does the same work. It does not get the same turns: whenever it is ready to go on, the loop may be busy with an article." }
   - { text: "Less, since there are fewer searches to wait for", explanation: "Searches never waited for each other. They wait for the index service, which answers each in its own time." }
-  - { text: "About twice as long, though a search does nothing different", correct: true }
+  - { text: "A good deal longer, though a search does nothing different", correct: true }
   - { text: "Searches will fail, since the service can only do one thing at a time", explanation: "Nothing fails. Every request is answered, some later than they might have been." }
 explanation: "A search needs the loop several times: to read the request, to send the question to the index service, to read the answer, to reply. Each time, it has to wait until the loop is free, and with articles being rendered the loop is often not."
 ```
@@ -100,7 +101,10 @@ python load.py {{ server_port }} 5 | tee together.txt
 ```
 
 In the run this page was written from, a search went from 55
-milliseconds to 111. Yours will differ, and the direction will not.
+milliseconds to 111. Yours will differ, and the direction will not:
+on a slower machine the second figure is larger still, since what
+the search is kept waiting by is computing, which takes longer
+there.
 
 ```{verify}
 :id: search-slowed

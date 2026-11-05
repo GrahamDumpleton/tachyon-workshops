@@ -48,13 +48,16 @@ python -c "from pathlib import Path; f = Path('heatmap-conftest.html'); assert f
 ```
 
 Two lines have the samples. Line 18, `store.build(path, articles)`,
-has two thousand or so under **Total**: two seconds of building
-databases. Line 11, in `articles`, has a few dozen, for reading the
-articles from their file.
+has nearly all of them under **Total**. A sample is a thousandth of
+a second, so the two thousand or so it had where this page was
+written are two seconds of building databases, and your figure says
+how long it took on your machine and its disk. Line 11, in
+`articles`, has far fewer, for reading the articles from their
+file.
 
-Two seconds is not long to build a database of two thousand
-articles with an index. It is long to do it fifteen times. Look at
-the first line of each fixture:
+A database of two thousand articles with an index does not take
+long to build. It takes long to build it fifteen times. Look at the
+first line of each fixture:
 
 ```python
 @pytest.fixture

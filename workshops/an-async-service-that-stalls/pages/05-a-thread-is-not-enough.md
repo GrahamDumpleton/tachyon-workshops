@@ -43,7 +43,7 @@ python -c "from pathlib import Path; t = Path('gazette/asgi.py').read_text(encod
 question: With `render_article` on a thread of its own, what will the median time of a search be under the same load?
 options:
   - { text: "Back to a little over fifty milliseconds, since the loop is free", explanation: "The loop is free of `related` and not free to run. It needs the interpreter's lock to run any Python, and the thread computing `related` has it." }
-  - { text: "Much what it was, about twice that, since the thread and the loop cannot both run Python at once", correct: true }
+  - { text: "Much what it was with the loop blocked, since the thread and the loop cannot both run Python at once", correct: true }
   - { text: "Worse than before, by several times, since threads are slow to start", explanation: "The threads come from a pool and are started once. Starting them is not what costs." }
   - { text: "Nothing will be served, since Starlette does not allow threads", explanation: "Starlette is content with threads, and uses a pool of them itself for views that are not coroutines." }
 explanation: "In the ordinary build of Python one thread runs Python at a time, the one that holds the global interpreter lock. A thread that is computing gives the lock up only when asked, and then only every few thousandths of a second. The loop has been moved out of the way of the work and still has to queue behind it."
@@ -128,8 +128,9 @@ The graph has two towers now.
   something to do, though the tasks have little left to compute.
 
 The sidebar says what it is doing there. Under **Runtime Stats**,
-**Waiting GIL** is a quarter or so of all the samples, where in a
-profile of the service as it was it would be nothing. Those are
+**Waiting GIL** is a good part of all the samples, a quarter or so
+where this page was written, where in a profile of the service as
+it was it would be nothing. Those are
 samples of a thread that was ready to run Python and was waiting for
 the lock. The loop, with a request to answer, is one of them, and
 wall-clock time counts its wait against whatever line it had

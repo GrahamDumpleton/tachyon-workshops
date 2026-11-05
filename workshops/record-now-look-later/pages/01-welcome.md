@@ -26,7 +26,7 @@ workshop records one profile and looks at it six ways.
 {open}`gazette/report.py` is the report from the first of these
 workshops. It counts the words in the gazette's two thousand
 articles, and its `count_words` has a quadratic mistake on line 36
-that takes a second and a half. The mistake is already found. The
+that takes most of the run. The mistake is already found. The
 subject here is the profile.
 
 ## The environment

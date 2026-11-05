@@ -24,8 +24,8 @@ that lowercases it, a function that drops stop words, a function that
 strips its suffix, and a function that records it, and every article
 has its reading ease scored by counting the syllables in every word,
 one letter at a time. It does more than the first version and does
-it in a fifth of a second. What matters for this workshop is how it
-does it: in about four million small function calls.
+it in a fraction of the time. What matters for this workshop is how
+it does it: in about four million small function calls.
 
 ## The environment
 

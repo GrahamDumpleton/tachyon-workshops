@@ -19,8 +19,11 @@ python gazette/report.py
 ```
 
 The report lists the ten most common words and the articles in each
-section, and its last line says how long it took, about a second and
-a half on most machines. Two thousand short articles is not much text.
+section, and its last line says how long it took: about a second and
+a half where this page was written, and two or three times that on a
+slower machine or a busy shared server. Whatever yours says, it is
+your own time that the rest of the workshop is measured against. Two
+thousand short articles is not much text.
 Something in those four functions is doing more work than the text
 deserves, and the question is which.
 

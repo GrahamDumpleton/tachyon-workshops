@@ -63,8 +63,9 @@ python gazette/digest.py 1 | tee one-thread.txt
 python gazette/digest.py 4 | tee four-threads.txt
 ```
 
-The same, give or take a tenth of a second, on a machine that has
-processors to spare.
+Much the same time, give or take a little, and that is so on any
+machine: four threads finish no sooner than one, however many
+processors are standing idle. The check prints your two times.
 
 ```{verify}
 :id: no-faster

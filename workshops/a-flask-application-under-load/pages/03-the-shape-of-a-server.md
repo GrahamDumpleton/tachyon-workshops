@@ -76,9 +76,10 @@ reply.
 The application's layer is where the width is shared out, and it is
 not shared evenly. The boxes are labelled with a line as well as a
 function, so a view has a box for each of its lines that was
-sampled, and `search (gazette.web:101)` is far wider than every
-other box of the layer put together. The **Hotspots** list in the
-sidebar says the same with numbers.
+sampled, and `search (gazette.web:101)` is the widest box of the
+layer by a long way. On a slow disk it is wider than all the others
+put together. The **Hotspots** list in the sidebar says the same
+with numbers.
 
 ## One thread at a time
 

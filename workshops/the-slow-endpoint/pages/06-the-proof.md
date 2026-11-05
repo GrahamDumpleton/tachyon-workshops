@@ -20,12 +20,18 @@ Print the two tables from `load.py`, before and after.
 cat load-before.txt load-after.txt
 ```
 
-The same number of requests, to within a few, and the search has
-gone from the slowest page by far to one among the others, from a
-tenth of a second to less than a hundredth in the run this page was
-written from. This is the number the readers care about, and no
-profile is needed for it. It says that the fix worked and nothing
-of where.
+Much the same number of requests both times, since `load.py` keeps
+to a pace, and the search has gone from the slowest page by far to
+one among the others, from a tenth of a second to less than a
+hundredth in the run this page was written from. This is the number
+the readers care about, and no profile is needed for it. It says
+that the fix worked and nothing of where.
+
+If the first table has noticeably fewer requests than the second,
+this machine is slow enough that the unfixed server could not keep
+to the pace, and the readers queued for it. The fixed server was
+then sent more in its twenty seconds, which is worth remembering
+when you read the comparison below.
 
 ## Where the time went
 
@@ -130,10 +136,10 @@ wait in either run. None of them was changed.
 
 ```{quiz}
 :id: why-red
-question: The main thread waited in `select` for about eighteen seconds in both recordings. Why is it red in the comparison?
+question: The main thread waited in `select` for nearly the whole of both recordings. Why is it red in the comparison?
 options:
-  - { text: "The fixed server was sent more requests, so the main thread accepted more connections", explanation: "`load.py` keeps to a pace, and sent the same number both times. The two tables it printed say so." }
-  - { text: "The colours compare shares of a recording, and the same eighteen seconds are a larger share of a recording that has fewer samples", correct: true }
+  - { text: "The fixed server was sent more requests, so the main thread accepted more connections", explanation: "`load.py` keeps to a pace, so the two servers were sent much the same requests. And a main thread with more connections to accept would spend less time waiting, not more." }
+  - { text: "The colours compare shares of a recording, and the same wait is a larger share of a recording that has fewer samples", correct: true }
   - { text: "The fix made the main thread slower", explanation: "The fix changed `search`, which runs on the request threads. The main thread's time is the same in both tables." }
   - { text: "Red marks the functions that were not changed", explanation: "Grey is for what is much the same. Red is for a function with more time than in the baseline, as the profiler reckons it." }
 explanation: "Before comparing, the profiler scales the baseline to the length of the newer recording, which here shrinks it, since the fixed server's threads were busy for less time in all. Everything the fix left alone then looks larger than it was. Read the colours as shares: blue shrank as a part of the whole, red grew. For the times themselves, read the tables."
