@@ -1882,7 +1882,8 @@ checked again on 3.15.0 final:
   module beside it fails under the profiler and not without it.
   Workshop 14's program is one file for that reason, and the
   applications collection, whose programs are packages, should run
-  them from the package's parent or with `-m`.
+  them from the package's parent or with `-m`. Reported to CPython on
+  2026-10-01 as [gh-158540](https://github.com/python/cpython/issues/158540).
 
 - **`--mode exception` is refused with `--async-aware`**, with the
   other two modes. The docs' section on restrictions names only cpu
