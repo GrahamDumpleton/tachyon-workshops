@@ -59,12 +59,14 @@ skill:
 # read another process without root, so the workshops will not run
 # here; use `just container-lab` instead.
 # Start JupyterLab from the checkout, listing the workshops in each collection's order.
+[positional-arguments]
 lab *ARGS:
-    uv run jupyter lab --config=jupyter_lab_config.py {{ARGS}}
+    uv run jupyter lab --config=jupyter_lab_config.py "$@"
 
 # Scaffold a new workshop under workshops/; extra args go to `jupyter workshop init`.
+[positional-arguments]
 new NAME *ARGS:
-    uv run jupyter workshop init workshops/{{NAME}} {{ARGS}}
+    shift; uv run jupyter workshop init workshops/{{NAME}} "$@"
 
 # Lint the catalog, every collection index and every workshop, or only the workshops named.
 lint *NAMES:
@@ -93,16 +95,18 @@ lint *NAMES:
     done
 
 # Render one workshop as HTML to check what a page looks like; extra args go to `jupyter workshop render`.
+[positional-arguments]
 render NAME *ARGS:
-    uv run jupyter workshop render workshops/{{NAME}} {{ARGS}}
+    shift; uv run jupyter workshop render workshops/{{NAME}} "$@"
 
 # The self-test runs the workshop's actions and checks for real, as you,
 # on this machine; only the workshop directory is protected, by a
 # temporary copy. Read the workshop first. On macOS the profiler steps
 # fail for want of permission, so test in the container instead.
 # Self-test one workshop in a JupyterLab of its own; extra args go to `jupyter workshop test`.
+[positional-arguments]
 test NAME *ARGS:
-    uv run jupyter workshop test workshops/{{NAME}} {{ARGS}}
+    shift; uv run jupyter workshop test workshops/{{NAME}} "$@"
 
 # Self-test every workshop, writing a JUnit report for each.
 test-all:
@@ -194,13 +198,15 @@ container-build:
     docker build -t {{image}} -f container/Dockerfile .
 
 # Start JupyterLab in the container on http://127.0.0.1:8888/?token=tachyon with this checkout mounted.
+[positional-arguments]
 container-lab *ARGS:
     @echo "Open http://127.0.0.1:8888/?token=tachyon once JupyterLab has started"
-    docker run --rm --init -it -p 127.0.0.1:8888:8888 -e JUPYTER_TOKEN=tachyon -v "$PWD":/home/learner/tachyon-workshops {{image}} {{ARGS}}
+    docker run --rm --init -it -p 127.0.0.1:8888:8888 -e JUPYTER_TOKEN=tachyon -v "$PWD":/home/learner/tachyon-workshops {{image}} "$@"
 
 # Self-test one workshop inside the container; extra args go to `jupyter workshop test`.
+[positional-arguments]
 container-test NAME *ARGS:
-    docker run --rm --init -v "$PWD":/home/learner/tachyon-workshops {{image}} jupyter workshop test workshops/{{NAME}} {{ARGS}}
+    shift; docker run --rm --init -v "$PWD":/home/learner/tachyon-workshops {{image}} jupyter workshop test workshops/{{NAME}} "$@"
 
 # Lint everything inside the container, as `just lint` does here.
 container-lint:
